@@ -1,0 +1,38 @@
+{
+  "name": "twitter-server",
+  "version": "1.0.0",
+  "description": "server for twitter app",
+  "main": "index.js",
+  "scripts": {
+    "start": "node build/index",
+    "build": "npm i && tsc -p .",
+    "dev": "tsc-watch --onSuccess \"nodemon -r dotenv/config   build/index.js\""
+  },
+  "author": "Neema deshwal",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^4.11.0",
+    "@prisma/client": "^5.21.1",
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "graphql": "^16.9.0",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.15",
+    "nodemon": "^3.1.7",
+    "passport-google-oauth2": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/nodemailer": "^6.4.16",
+    "prisma": "^5.21.1",
+    "tsc-watch": "^6.2.0",
+    "typescript": "^5.6.3"
+  }
+}
