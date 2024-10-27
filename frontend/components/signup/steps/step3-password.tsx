@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/select";
 import { days, months, years } from "@/lib/functions";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { useMutation } from "@tanstack/react-query";
+import { createAccount } from "@/graphql/mutation/user";
 
 const formSchema = z.object({
   password: z
@@ -34,20 +36,52 @@ const formSchema = z.object({
     .max(50),
 });
 
-const Step3Password = () => {
+const Step3Password = ({ data, setGetData }: any) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      password: "",
+      confirmpassword: "",
+    },
   });
   const [showpassword, setShowPassword] = useState(false);
   const [showconfirmpassword, setshowconfirmpassword] = useState(false);
-  function onSubmit(values: z.infer<typeof formSchema>) {
+
+  const mutation = useMutation({
+    mutationFn: createAccount,
+    onSuccess: (response: any) => {
+      const result = response.createAccount;
+      setGetData({
+        next_page: result.next_page,
+        email: result.email,
+      });
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+      // Handle error (e.g., show an error message)
+    },
+  });
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+
+    if (values.password !== values.confirmpassword) {
+      return;
+    }
+    const body = {
+      password: values.password,
+      email: data.email,
+    };
+    try {
+      await mutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
   }
   return (
     <div>
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} id="createaccount">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-6">
                 <FormField

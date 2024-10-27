@@ -6,7 +6,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { verifyOtp } from "@/graphql/mutation/user";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,20 +21,47 @@ const formSchema = z.object({
     .max(999999),
 });
 
-const Step2VerifyOtp = () => {
+const Step2VerifyOtp = ({ data, setGetData }: any) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      otp: 0,
+    },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const mutation = useMutation({
+    mutationFn: verifyOtp,
+    onSuccess: (response: any) => {
+      const result = response.verifyOtp;
+      setGetData({
+        next_page: result.next_page,
+        email: result.email,
+      });
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+      // Handle error (e.g., show an error message)
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    const body = {
+      otp: values.otp.toString(),
+      email: data.email,
+    };
+    try {
+      await mutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
   }
   return (
     <div>
       <div>
         <div></div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} id="verifyotp">
             <FormField
               control={form.control}
               name="otp"

@@ -5,8 +5,28 @@ import Step1Creds from "./steps/step1-creds";
 import Step2VerifyOtp from "./steps/step2-verifyotp";
 import Step3Password from "./steps/step3-password";
 
+export interface getDataProps {
+  next_page: string;
+  email: string;
+}
 const CreateAccount = ({ authType }: { authType: "login" | "signup" }) => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [getData, setGetData] = useState<getDataProps>({
+    next_page: "getcred",
+    email: "",
+  });
+
+  function handleSubmitForm() {
+    const form =
+      document.getElementById("getcreds") ||
+      document.getElementById("verifyotp") ||
+      (document.getElementById("createaccount") as HTMLFormElement);
+
+    if (form) {
+      const event = new Event("submit", { cancelable: true, bubbles: true });
+      form.dispatchEvent(event);
+    }
+  }
 
   return (
     <div>
@@ -41,17 +61,33 @@ const CreateAccount = ({ authType }: { authType: "login" | "signup" }) => {
                   <div>
                     <div>
                       <h4 className="font-[700] text-[31px] leading-[36px]">
-                        {/* Create your account */}
-                        {/* We sent you a code */}
-                        Create password
+                        {getData.next_page === "getcred"
+                          ? "Create your account"
+                          : getData.next_page === "verifyotp"
+                          ? " We sent you a code"
+                          : getData.next_page === "password"
+                          ? "Create password"
+                          : ""}
                       </h4>
-                      {/* <p className="text-gray-400 text-[13px] mt-1">
-                        Enter it below to verify your email.
-                      </p> */}
+                      {getData.next_page === "verifyotp" ? (
+                        <p className="text-gray-400 text-[13px] mt-1">
+                          Enter it below to verify your email.
+                        </p>
+                      ) : (
+                        ""
+                      )}
                     </div>
                     <div className="py-[24px]">
-                      {/* <Step2VerifyOtp /> */}
-                      <Step3Password />
+                      {getData.next_page === "getcred" ? (
+                        <Step1Creds data={setGetData} />
+                      ) : getData.next_page === "verifyotp" ? (
+                        <Step2VerifyOtp
+                          setGetData={setGetData}
+                          data={getData}
+                        />
+                      ) : getData.next_page === "password" ? (
+                        <Step3Password data={getData} setGetData={setGetData} />
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -59,7 +95,10 @@ const CreateAccount = ({ authType }: { authType: "login" | "signup" }) => {
                   style={{ boxShadow: "0 -0.4px 0px rgba(255,255,255,0.5)" }}
                   className="p-4 px-20 items-center flex justify-center pt-6"
                 >
-                  <button className="bg-white  text-black items-center w-full py-[0.8rem] font-[700] rounded-full">
+                  <button
+                    onClick={handleSubmitForm}
+                    className="bg-white  text-black items-center w-full py-[0.8rem] font-[700] rounded-full"
+                  >
                     Next
                   </button>
                 </div>

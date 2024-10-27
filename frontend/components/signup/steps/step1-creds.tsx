@@ -21,7 +21,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { days, months, years } from "@/lib/functions";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getCredAndSendOtp } from "@/graphql/mutation/user";
+import { getDataProps } from "../createAccount";
 
+interface NewData {
+  getCredAndSendOtp: getDataProps;
+}
 const formSchema = z.object({
   firstName: z
     .string()
@@ -34,57 +40,97 @@ const formSchema = z.object({
     .min(5, "Email must be at least 5 characters long"),
   dob: z.object({
     month: z.string().min(3, { message: "Month should not be empty" }),
-    year: z.number().min(1, { message: "Year should be a positive number" }),
-    day: z.number().min(1, { message: "Day should be a positive number" }),
+    year: z.coerce
+      .number()
+      .min(1900, { message: "Year should be a valid year" }), // Adjusted min value as appropriate
+    day: z.coerce
+      .number()
+      .min(1, { message: "Day should be a positive number" }),
   }),
 });
 
-const Step1Creds = () => {
+const Step1Creds = ({
+  data,
+}: {
+  data: React.Dispatch<React.SetStateAction<getDataProps>>;
+}) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
+      email: "",
     },
   });
-  function onSubmit(values: z.infer<typeof formSchema>) {
+
+  const mutation = useMutation({
+    mutationFn: getCredAndSendOtp,
+    onSuccess: (newData: any) => {
+      console.log("Success:", newData);
+      const result = newData.getCredAndSendOtp;
+      data((prevVal) => ({
+        ...prevVal,
+        next_page: result.next_page,
+        email: result.email,
+      }));
+      // Handle success (e.g., show a success message, navigate)
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+      // Handle error (e.g., show an error message)
+    },
+  });
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    const newData = {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      dateOfBirth: `${values.dob.month} - ${values.dob.day} - ${values.dob.year}`,
+    };
+    try {
+      await mutation.mutateAsync(newData);
+    } catch (error) {
+      console.log(error);
+    }
   }
+
   return (
     <div>
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} id="getcreds">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-6">
                 <FormField
                   control={form.control}
                   name="firstName"
                   render={({ field }) => (
-                    <FormItem className="relative pt-[1rem] pb-1 border-gray-600  px-1 border rounded-[5px]  focus-within:border-[#1d9bf0]  focus-within:shadow-[0 1px 8px rgba(29, 155, 240, 0.5)] ">
-                      <FormControl>
-                        <Input
-                          id="firstName"
-                          autoFocus
-                          className="block w-full px-4 text-[16px] border-0 focus:outline-none  bg-transparent peer "
-                          placeholder=""
-                          {...field}
-                        />
-                      </FormControl>
+                    <div>
+                      <FormItem className="relative pt-[1rem] pb-1 border-gray-600  px-1 border rounded-[5px]  focus-within:border-[#1d9bf0]  focus-within:shadow-[0 1px 8px rgba(29, 155, 240, 0.5)] ">
+                        <FormControl>
+                          <Input
+                            id="firstName"
+                            autoFocus
+                            className="block w-full px-4 text-[16px] border-0 focus:outline-none  bg-transparent peer "
+                            placeholder=""
+                            {...field}
+                          />
+                        </FormControl>
 
-                      <label
-                        htmlFor="firstName"
-                        className="absolute text-[16px] left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] "
-                      >
-                        First name
-                      </label>
+                        <label
+                          htmlFor="firstName"
+                          className="absolute text-[16px] left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] "
+                        >
+                          First name
+                        </label>
 
-                      <p className="absolute -top-1 right-2 hidden peer-focus:inline text-gray-500">
-                        {form.getValues("firstName").length}/50
-                      </p>
-
+                        <p className="absolute -top-1 right-2 hidden peer-focus:inline text-gray-500">
+                          {form.getValues("firstName").length}/50
+                        </p>
+                      </FormItem>
                       <FormMessage />
-                    </FormItem>
+                    </div>
                   )}
                 />
                 <FormField
@@ -120,25 +166,26 @@ const Step1Creds = () => {
                   control={form.control}
                   name="email"
                   render={({ field }) => (
-                    <FormItem className="relative pt-[1rem] pb-1 border-gray-600  px-1 border rounded-[5px]  focus-within:border-[#1d9bf0]  focus-within:shadow-[0 1px 8px rgba(29, 155, 240, 0.5)] ">
-                      <FormControl>
-                        <Input
-                          id="email"
-                          className="block w-full px-4 text-[16px] border-0 focus:outline-none  bg-transparent peer "
-                          placeholder=""
-                          {...field}
-                        />
-                      </FormControl>
+                    <div>
+                      <FormItem className="relative pt-[1rem] pb-1 border-gray-600  px-1 border rounded-[5px]  focus-within:border-[#1d9bf0]  focus-within:shadow-[0 1px 8px rgba(29, 155, 240, 0.5)] ">
+                        <FormControl>
+                          <Input
+                            id="email"
+                            className="block w-full px-4 text-[16px] border-0 focus:outline-none  bg-transparent peer "
+                            placeholder=""
+                            {...field}
+                          />
+                        </FormControl>
 
-                      <label
-                        htmlFor="email"
-                        className="absolute text-[16px] left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] "
-                      >
-                        email
-                      </label>
-
+                        <label
+                          htmlFor="email"
+                          className="absolute text-[16px] left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] "
+                        >
+                          email
+                        </label>
+                      </FormItem>
                       <FormMessage />
-                    </FormItem>
+                    </div>
                   )}
                 />
               </div>
