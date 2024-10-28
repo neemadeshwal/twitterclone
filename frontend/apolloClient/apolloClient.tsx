@@ -6,6 +6,7 @@ import React from "react";
 const client = new ApolloClient({
   uri: SERVER_URL!,
   cache: new InMemoryCache(),
+  credentials: "include",
 });
 
 export const ApolloProviderWrapper = ({

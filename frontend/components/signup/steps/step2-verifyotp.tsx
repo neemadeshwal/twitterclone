@@ -79,7 +79,11 @@ const Step2VerifyOtp = ({ data, setGetData }: any) => {
 
                   <label
                     htmlFor="verifyotp"
-                    className="absolute text-[16px] left-2 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] "
+                    className={`absolute text-[16px] ${
+                      form.getValues("otp")
+                        ? "text-[11px] top-8 -translate-y-9 text-gray-500"
+                        : "left-4 top-2 -translate-y-4"
+                    } left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] `}
                   >
                     Verification code
                   </label>

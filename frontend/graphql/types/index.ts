@@ -13,3 +13,12 @@ export interface createAccountProps {
   password: string;
   email: string;
 }
+
+export interface getLoginCredsProps {
+  email: string;
+}
+
+export interface checkLoginPassProps {
+  email: string;
+  password: string;
+}

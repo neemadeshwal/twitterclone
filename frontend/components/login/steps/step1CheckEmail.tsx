@@ -21,34 +21,45 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { days, months, years } from "@/lib/functions";
+import { useMutation } from "@tanstack/react-query";
+import { getLoginCreds } from "@/graphql/mutation/user";
 
 const formSchema = z.object({
-  firstName: z
-    .string()
-    .min(2, { message: "firstname should be atleast 2 characters." })
-    .max(50),
-  lastName: z.string().max(50),
   email: z
     .string()
     .email("Invalid email address")
     .min(5, "Email must be at least 5 characters long"),
-  dob: z.object({
-    month: z.string().min(3, { message: "Month should not be empty" }),
-    year: z.number().min(1, { message: "Year should be a positive number" }),
-    day: z.number().min(1, { message: "Day should be a positive number" }),
-  }),
 });
 
-const Step1CheckEmail = () => {
+const Step1CheckEmail = ({ setAuthData }: any) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      email: "",
     },
   });
-  function onSubmit(values: z.infer<typeof formSchema>) {
+
+  const mutation = useMutation({
+    mutationFn: getLoginCreds,
+    onSuccess: (newData: any) => {
+      console.log(newData);
+      const result = newData.getLoginCreds;
+      setAuthData({
+        next_page: result.next_page,
+        email: result.email,
+      });
+    },
+  });
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    const body = {
+      email: values.email,
+    };
+    try {
+      await mutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
   }
   return (
     <div>
@@ -74,7 +85,11 @@ const Step1CheckEmail = () => {
 
                       <label
                         htmlFor="email"
-                        className="absolute text-[16px] left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] "
+                        className={`absolute text-[16px] ${
+                          form.getValues("email")
+                            ? "text-[11px] top-8 -translate-y-9 text-gray-500"
+                            : "left-4 top-2 -translate-y-4"
+                        } left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] `}
                       >
                         email, or username
                       </label>
@@ -84,7 +99,10 @@ const Step1CheckEmail = () => {
                   )}
                 />
                 <div className=" items-center flex justify-center  w-full">
-                  <button className="bg-white  text-black items-center w-full py-[0.6rem] font-[700] rounded-full">
+                  <button
+                    type="submit"
+                    className="bg-white  text-black items-center w-full py-[0.6rem] font-[700] rounded-full"
+                  >
                     Next
                   </button>
                 </div>

@@ -35,7 +35,7 @@ router.get(
       res.cookie("token", token, { httpOnly: true });
       res.redirect("http://localhost:5000");
     }
-    res.redirect("/");
+    res.redirect("http://localhost:5000");
   }
 );
 

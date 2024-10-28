@@ -24,6 +24,7 @@ import { days, months, years } from "@/lib/functions";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { useMutation } from "@tanstack/react-query";
 import { createAccount } from "@/graphql/mutation/user";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   password: z
@@ -37,6 +38,7 @@ const formSchema = z.object({
 });
 
 const Step3Password = ({ data, setGetData }: any) => {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,6 +57,9 @@ const Step3Password = ({ data, setGetData }: any) => {
         next_page: result.next_page,
         email: result.email,
       });
+      if (result.next_page === "signin") {
+        router.push("/");
+      }
     },
     onError: (error) => {
       console.error("Error:", error);
@@ -102,7 +107,11 @@ const Step3Password = ({ data, setGetData }: any) => {
 
                       <label
                         htmlFor="password"
-                        className="absolute text-[16px] left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] "
+                        className={`absolute text-[16px] ${
+                          form.getValues("password")
+                            ? "text-[11px] top-8 -translate-y-9 text-gray-500"
+                            : "left-4 top-2 -translate-y-4"
+                        } left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] `}
                       >
                         Password
                       </label>
@@ -138,7 +147,11 @@ const Step3Password = ({ data, setGetData }: any) => {
 
                       <label
                         htmlFor="cofirmpass"
-                        className="absolute text-[16px] left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] "
+                        className={`absolute text-[16px] ${
+                          form.getValues("confirmpassword")
+                            ? "text-[11px] top-8 -translate-y-9 text-gray-500"
+                            : "left-4 top-2 -translate-y-4"
+                        } left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] `}
                       >
                         Confirm password
                       </label>

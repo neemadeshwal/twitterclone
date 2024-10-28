@@ -6,6 +6,10 @@ import Step2VerifyPass from "./steps/step2VerifyPass";
 
 const SigninAccountbtn = ({ authType }: { authType: "login" | "signup" }) => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [authData, setAuthData] = useState({
+    next_page: "checkemail",
+    email: "",
+  });
 
   return (
     <div>
@@ -42,14 +46,30 @@ const SigninAccountbtn = ({ authType }: { authType: "login" | "signup" }) => {
                       <h4 className="font-[700] text-[31px] leading-[36px]">
                         {/* Create your account */}
                         {/* We sent you a code */}
+                        {authData.next_page === "checkemail"
+                          ? "Sign in to X"
+                          : authData.next_page === "verifypassword"
+                          ? " Enter your password"
+                          : ""}
                         {/* Sign in to X */}
-                        Enter your password
                       </h4>
                       {/* <p className="text-gray-400 text-[13px] mt-1">
                         Enter it below to verify your email.
                       </p> */}
                     </div>
-                    <div className="py-[24px]">{<Step2VerifyPass />}</div>
+                    <div className="py-[24px]">
+                      {authData.next_page === "checkemail" ? (
+                        <Step1CheckEmail setAuthData={setAuthData} />
+                      ) : authData.next_page === "verifypassword" ? (
+                        <Step2VerifyPass
+                          setAuthData={setAuthData}
+                          authData={authData}
+                          setIsCreateOpen={setIsCreateOpen}
+                        />
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

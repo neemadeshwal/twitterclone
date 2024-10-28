@@ -161,8 +161,11 @@ const mutations = {
 
     const token = await JWTService.generateTokenFromUser(newUser);
     console.log(token, "token");
-    ctx.res.cookie("token", token, { httpOnly: true });
-    return { message: "create account successful", next_page: "signin to app" };
+    return {
+      token,
+      message: "create account successful",
+      next_page: "signin",
+    };
   },
   resendOtp: async (
     parent: any,
@@ -224,10 +227,10 @@ const mutations = {
       throw new Error("Password is invalid.PLease try again.");
     }
 
-    const token = await JWTService.generateTokenFromUser;
+    const token = await JWTService.generateTokenFromUser(user);
+    console.log(token);
 
-    ctx.res.cookie("token", token, { httpOnly: true });
-    return { message: "login successful", next_page: "signin to app" };
+    return { token, message: "login successful", next_page: "signin" };
   },
 };
 
