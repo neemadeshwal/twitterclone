@@ -34,3 +34,7 @@ interface getCurrentUser {
   profileImgUrl: string;
   id: string;
 }
+
+export interface createTweetMutateProps {
+  content: string;
+}

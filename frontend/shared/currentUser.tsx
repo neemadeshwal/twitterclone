@@ -20,7 +20,7 @@ const CurrentUser = () => {
           <Image src={user?.profileImgUrl} alt="" width={40} height={40} />
         ) : (
           <div
-            className="rounded-full p-3 px-4 flex items-center justify-center capitalize"
+            className="rounded-full py-2 px-4 flex items-center justify-center capitalize"
             style={{ backgroundColor: color }}
           >
             {user?.firstName.slice(0, 1)}

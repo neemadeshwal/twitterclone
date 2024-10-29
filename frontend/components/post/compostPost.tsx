@@ -1,19 +1,45 @@
+"use client";
 import DivisionBar from "@/shared/divisionbar";
-import React from "react";
+import React, { useState } from "react";
 import { HiOutlinePhotograph } from "react-icons/hi";
 import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
 import { BsEmojiSmile } from "react-icons/bs";
 import { LuFolderClock } from "react-icons/lu";
 import { FiMapPin } from "react-icons/fi";
+import CurrentUser from "@/shared/currentUser";
+import { useMutation } from "@tanstack/react-query";
+import { createTweetMutate } from "@/graphql/mutation/tweet";
 const ComposePost = () => {
+  const [tweetContent, setTweetContent] = useState("");
+  const mutation = useMutation({
+    mutationFn: createTweetMutate,
+    onSuccess: (response: any) => {
+      console.log(response);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  async function onSubmit() {
+    const body = {
+      content: tweetContent,
+    };
+    try {
+      await mutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <div className="w-full ">
       <div className="w-full p-6 px-4 pb-4">
         <div className="flex gap-2 w-full">
-          <div className="bg-cyan-700 rounded-full p-2 h-fit px-4">N</div>
+          <CurrentUser />
           <div className="w-full mt-2 px-2">
             <textarea
+              value={tweetContent}
+              onChange={(e) => setTweetContent(e.target.value)}
               rows={2}
               className="text-[20px] bg-transparent outline-none border-0 w-full placeholder:text-gray-600"
               placeholder="What is happening?!"
@@ -44,7 +70,12 @@ const ComposePost = () => {
               </div>
             </div>
             <div>
-              <button className="py-2 rounded-full x-bgcolor px-4">Post</button>
+              <button
+                onClick={onSubmit}
+                className="py-2 rounded-full x-bgcolor px-4"
+              >
+                Post
+              </button>
             </div>
           </div>
         </div>
