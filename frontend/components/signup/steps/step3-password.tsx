@@ -57,7 +57,9 @@ const Step3Password = ({ data, setGetData }: any) => {
         next_page: result.next_page,
         email: result.email,
       });
+
       if (result.next_page === "signin") {
+        document.cookie = `token=${result.token}`;
         router.push("/");
       }
     },

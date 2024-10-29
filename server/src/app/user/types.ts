@@ -30,9 +30,21 @@ next_page:String
 type checkLoginPassword{
     token:String
 next_page:String
-message:String
+message:String}
+
+type User{
+    email:String
+    firstName:String
+    userName:String
+    lastName:String
+    profileImgUrl:String
+    id:String
 
 
+
+}
+input GetUserByIdInput{
+    id:String
 }
 input getCredAndSendOtpInput{
     email:String

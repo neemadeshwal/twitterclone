@@ -32,3 +32,7 @@ p {
 .dimBg {
   background-color: rgba(31, 34, 39, 0.867);
 }
+
+.gray {
+  color: #a2a2a2b9;
+}

@@ -22,3 +22,15 @@ export interface checkLoginPassProps {
   email: string;
   password: string;
 }
+
+export interface getCurrentUserQueryProps {
+  getCurrentUser: getCurrentUser;
+}
+
+interface getCurrentUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  profileImgUrl: string;
+  id: string;
+}

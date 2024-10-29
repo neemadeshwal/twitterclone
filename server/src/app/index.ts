@@ -7,6 +7,8 @@ import { ApolloServer } from "@apollo/server";
 import passport from "../services/passport";
 import { User } from "./user";
 import { GraphqlContext } from "../interfaces";
+import JWTService from "../services/jwt";
+import { Tweet } from "./tweet";
 
 export async function initServer() {
   const app = express();
@@ -17,22 +19,41 @@ export async function initServer() {
   const graphqlServer = new ApolloServer<GraphqlContext>({
     typeDefs: `
     ${User.types}
+    ${Tweet.types}
   
     type Query {
-      _empty: String
+      ${User.queries}
+      ${Tweet.queries}
     }
     type Mutation{
     ${User.mutations}
+    ${Tweet.mutations}
     }
     `,
     resolvers: {
-      Mutation: { ...User.resolvers.mutations },
+      Mutation: { ...User.resolvers.mutations, ...Tweet.resolvers.mutations },
+      Query: { ...User.resolvers.queries, ...Tweet.resolvers.queries },
     },
+    ...User.resolvers.extraResolvers,
+    ...Tweet.resolvers.extraResolvers,
   });
 
   await graphqlServer.start();
 
-  app.use("/graphql", expressMiddleware(graphqlServer));
+  app.use(
+    "/graphql",
+    expressMiddleware(graphqlServer, {
+      context: async ({ req, res }) => {
+        return {
+          user: req.headers.authorization
+            ? JWTService.decodeToken(
+                req.headers.authorization.split("Bearer ")[1]
+              )
+            : undefined,
+        };
+      },
+    })
+  );
 
   app.use(passport.initialize());
   app.use("/api/auth", AuthRoute);

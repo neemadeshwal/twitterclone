@@ -8,7 +8,7 @@ const DivisionBar = ({ type }: { type: "y" | "x" }) => {
         height: type === "x" ? "1px" : "h-full",
         backgroundColor: "#4949498e",
       }}
-      className={` ${
+      className={`${
         type === "x" ? "w-full h-px" : "h-full w-px"
       }  rounded-full`}
     ></div>

@@ -1,0 +1,74 @@
+import { Tweet } from "@prisma/client";
+import { prismaClient } from "../../client/db";
+import { GraphqlContext } from "../../interfaces";
+
+const queries = {
+  getAllTweet: async (parent: any, payload: any, ctx: GraphqlContext) => {
+    if (!ctx.user) {
+      throw new Error("Unauthorized.No token present");
+    }
+    const tweets = await prismaClient.tweet.findMany();
+    return tweets;
+  },
+  getSingleTweet: async (
+    parent: any,
+    { payload }: { payload: { id: string } },
+    ctx: GraphqlContext
+  ) => {
+    if (!ctx.user) {
+      throw new Error("Unauthorized.No token present");
+    }
+    const { id } = payload;
+    if (!id) {
+      throw new Error("no id present");
+    }
+    const tweet = await prismaClient.tweet.findUnique({ where: { id } });
+
+    if (!tweet) {
+      throw new Error("no user with this id.");
+    }
+    return tweet;
+  },
+};
+const mutations = {
+  createTweet: async (
+    parent: any,
+    { payload }: { payload: { content: string } },
+    ctx: GraphqlContext
+  ) => {
+    if (!ctx.user) {
+      throw new Error("Unauthorized.No token present");
+    }
+    const { content } = payload;
+    if (!content) {
+      throw new Error("No content .Please provide content first.");
+    }
+    const tweet = await prismaClient.tweet.create({
+      data: {
+        content,
+        authorId: ctx.user.id,
+      },
+    });
+    return tweet;
+  },
+};
+
+const extraResolvers = {
+  Tweet: {
+    author: async (parent: Tweet) => {
+      if (!parent.id) {
+        throw new Error("No tweet present");
+      }
+
+      const author = await prismaClient.user.findUnique({
+        where: { id: parent.authorId },
+      });
+      if (!author) {
+        throw new Error("No author present");
+      }
+      return author;
+    },
+  },
+};
+
+export const resolvers = { queries, mutations, extraResolvers };

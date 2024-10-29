@@ -1,4 +1,6 @@
+import { User } from "@prisma/client";
 import { prismaClient } from "../../client/db";
+import { GraphqlContext } from "../../interfaces";
 import JWTService from "../../services/jwt";
 import { checkHashedPassword, hashPassword } from "../../utils/hashPassword";
 import { sendOtp } from "../../utils/nodemailer";
@@ -20,6 +22,42 @@ interface createAccountPayload {
   email: string;
   password: string;
 }
+
+const queries = {
+  getCurrentUser: async (parent: any, payload: any, ctx: GraphqlContext) => {
+    if (!ctx.user) {
+      throw new Error("no token present.");
+    }
+    const user = await prismaClient.user.findUnique({
+      where: { email: ctx.user.email },
+    });
+
+    if (!user) {
+      throw new Error("user not exist.Please login first");
+    }
+    return user;
+  },
+  getUserById: async (
+    parent: any,
+    { payload }: { payload: { id: string } },
+    ctx: GraphqlContext
+  ) => {
+    if (!ctx.user) {
+      throw new Error("no token present");
+    }
+    const { id } = payload;
+    if (!id) {
+      throw new Error("No id present");
+    }
+
+    const user = await prismaClient.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new Error("No user present.");
+    }
+
+    return user;
+  },
+};
 
 const mutations = {
   getCredAndSendOtp: async (
@@ -137,9 +175,11 @@ const mutations = {
     });
     if (existingUserName) {
       if (parsedVerifiedUser.dateOfBirth) {
-        userName = `@${existingUserName}${parsedVerifiedUser.dateOfBirth}`;
+        userName = `@${existingUserName.userName}${parsedVerifiedUser.dateOfBirth}`;
       } else {
-        userName = `@${existingUserName}${Math.floor(Math.random() * 20)}`;
+        userName = `@${existingUserName.userName}${Math.floor(
+          Math.random() * 20
+        )}`;
       }
     } else {
       userName = `@${parsedVerifiedUser.lastName ?? "_"}${
@@ -234,4 +274,16 @@ const mutations = {
   },
 };
 
-export const resolvers = { mutations };
+const extraResolvers = {
+  posts: async (parent: User) => {
+    if (!parent.id) {
+      throw new Error("no id present");
+    }
+    const tweets = await prismaClient.tweet.findMany({
+      where: { authorId: parent.id },
+    });
+    return tweets;
+  },
+};
+
+export const resolvers = { mutations, queries, extraResolvers };
