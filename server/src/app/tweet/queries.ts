@@ -1,5 +1,5 @@
 export const queries = `#graphql
 
-getAllTweet:Tweet
+getAllTweet:[Tweet]
 getSingleTweet(payload:SingleTweetInput!):Tweet
 `;

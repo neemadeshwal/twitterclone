@@ -7,7 +7,11 @@ const queries = {
     if (!ctx.user) {
       throw new Error("Unauthorized.No token present");
     }
-    const tweets = await prismaClient.tweet.findMany();
+    const tweets = await prismaClient.tweet.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { author: true },
+    });
+    console.log(tweets, "tweets....");
     return tweets;
   },
   getSingleTweet: async (
@@ -22,7 +26,10 @@ const queries = {
     if (!id) {
       throw new Error("no id present");
     }
-    const tweet = await prismaClient.tweet.findUnique({ where: { id } });
+    const tweet = await prismaClient.tweet.findUnique({
+      where: { id },
+      include: { author: true },
+    });
 
     if (!tweet) {
       throw new Error("no user with this id.");
@@ -56,6 +63,7 @@ const mutations = {
 const extraResolvers = {
   Tweet: {
     author: async (parent: Tweet) => {
+      console.log("hello");
       if (!parent.id) {
         throw new Error("No tweet present");
       }
@@ -63,9 +71,7 @@ const extraResolvers = {
       const author = await prismaClient.user.findUnique({
         where: { id: parent.authorId },
       });
-      if (!author) {
-        throw new Error("No author present");
-      }
+
       return author;
     },
   },

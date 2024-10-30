@@ -8,14 +8,17 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { LuFolderClock } from "react-icons/lu";
 import { FiMapPin } from "react-icons/fi";
 import CurrentUser from "@/shared/currentUser";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTweetMutate } from "@/graphql/mutation/tweet";
 const ComposePost = () => {
+  const queryClient = useQueryClient();
   const [tweetContent, setTweetContent] = useState("");
   const mutation = useMutation({
     mutationFn: createTweetMutate,
     onSuccess: (response: any) => {
       console.log(response);
+      queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
+      setTweetContent("");
     },
     onError: (error) => {
       console.log(error);

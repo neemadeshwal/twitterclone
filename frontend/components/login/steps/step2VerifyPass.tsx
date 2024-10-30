@@ -54,6 +54,8 @@ const Step2VerifyPass = ({ setAuthData, authData, setIsCreateOpen }: any) => {
       });
       if (result.next_page === "signin") {
         setIsCreateOpen(false);
+        document.cookie = `token=${result.token}`;
+
         router.push("/");
       }
     },

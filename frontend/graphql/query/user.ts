@@ -8,6 +8,7 @@ export const getCurrentUserQuery = gql(`
       firstName
       lastName
       profileImgUrl
+      userName
     }
   }
 `);
