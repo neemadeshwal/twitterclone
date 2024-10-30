@@ -26,6 +26,12 @@ export const getAllTweetQuery = gql(`
                 id
                 
             }
+            commentAuthor{
+                id
+                comment
+                userId
+                tweetId
+            }
          }
         }
     }

@@ -44,6 +44,7 @@ export interface Tweet {
   content: string;
   author: getCurrentUser;
   LikedBy: Like[];
+  commentAuthor: Comment[];
 }
 
 interface getAllTweet {
@@ -62,5 +63,17 @@ export interface Like {
 }
 
 export interface toggleLikeTweetProps {
+  tweetId: string;
+}
+
+export interface CreateCommentProps {
+  comment: string;
+  tweetId: string;
+}
+
+export interface Comment {
+  comment: string;
+  id: string;
+  userId: string;
   tweetId: string;
 }

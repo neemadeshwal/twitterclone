@@ -10,6 +10,7 @@ import { GraphqlContext } from "../interfaces";
 import JWTService from "../services/jwt";
 import { Tweet } from "./tweet";
 import { Like } from "./like";
+import { Comment } from "./comment";
 
 export async function initServer() {
   const app = express();
@@ -22,6 +23,7 @@ export async function initServer() {
     ${User.types}
     ${Tweet.types}
     ${Like.types}
+    ${Comment.types}
   
     type Query {
       ${User.queries}
@@ -31,6 +33,7 @@ export async function initServer() {
     ${User.mutations}
     ${Tweet.mutations}
     ${Like.mutations}
+    ${Comment.mutations}
     }
     `,
     resolvers: {
@@ -38,6 +41,7 @@ export async function initServer() {
         ...User.resolvers.mutations,
         ...Tweet.resolvers.mutations,
         ...Like.resolvers.mutations,
+        ...Comment.resolvers.mutations,
       },
       Query: { ...User.resolvers.queries, ...Tweet.resolvers.queries },
     },

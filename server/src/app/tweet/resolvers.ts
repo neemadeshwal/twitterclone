@@ -9,7 +9,7 @@ const queries = {
     }
     const tweets = await prismaClient.tweet.findMany({
       orderBy: { createdAt: "desc" },
-      include: { author: true, LikedBy: true },
+      include: { author: true, LikedBy: true, commentAuthor: true },
     });
     console.log(tweets, "tweets....");
     return tweets;
@@ -84,6 +84,12 @@ const extraResolvers = {
         },
       });
       return LikedBy;
+    },
+    commentAuthor: async (parent: Tweet) => {
+      const comments = await prismaClient.comment.findMany({
+        where: { tweetId: parent.id },
+      });
+      return comments;
     },
   },
 };

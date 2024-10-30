@@ -7,6 +7,7 @@ type Tweet{
     authorId:String
     author:User
     LikedBy:[Like]
+    commentAuthor:[Comment]
 
 }
 

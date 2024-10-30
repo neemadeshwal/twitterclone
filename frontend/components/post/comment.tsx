@@ -1,7 +1,10 @@
+"use client";
+import { createComment } from "@/graphql/mutation/comment";
 import { getCurrentUser, Tweet } from "@/graphql/types";
 import { getRandomDarkHexColor } from "@/lib/randomColor";
 import CurrentUser from "@/shared/currentUser";
 import DivisionBar from "@/shared/divisionbar";
+import { useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { BiX } from "react-icons/bi";
@@ -15,11 +18,35 @@ import { RiListRadio } from "react-icons/ri";
 const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
   const [showDialogBox, setShowDialogBox] = useState(false);
   const [color, setColor] = useState("");
-  const [tweetContent, setTweetContent] = useState("");
+  const [tweetComment, setTweetComment] = useState("");
 
   useEffect(() => {
     setColor(getRandomDarkHexColor());
   }, []);
+
+  const mutation = useMutation({
+    mutationFn: createComment,
+    onSuccess: (response: any) => {
+      console.log(response);
+      setTweetComment("");
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  const handleComment = async () => {
+    const body = {
+      comment: tweetComment,
+      tweetId: tweet.id,
+    };
+
+    try {
+      await mutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div>
@@ -84,8 +111,8 @@ const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
               <div className="py-2 pt-4 w-full">
                 <div className="w-full mt-2 px-2">
                   <textarea
-                    value={tweetContent}
-                    onChange={(e) => setTweetContent(e.target.value)}
+                    value={tweetComment}
+                    onChange={(e) => setTweetComment(e.target.value)}
                     rows={3}
                     autoFocus
                     className="text-[20px] bg-transparent resize-none outline-none border-0 w-full placeholder:text-gray-600"
@@ -118,7 +145,7 @@ const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
                 </div>
                 <div>
                   <button
-                    // onClick={onSubmit}
+                    onClick={handleComment}
                     className="py-2 rounded-full x-bgcolor px-4"
                   >
                     Reply
