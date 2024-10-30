@@ -4,6 +4,7 @@ import SinglePost from "./singlePost";
 
 const PostList = () => {
   const { allTweet } = useAllTweet();
+  console.log(allTweet, "alltweet");
 
   return (
     <div>

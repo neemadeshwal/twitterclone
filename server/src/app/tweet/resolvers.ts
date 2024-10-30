@@ -9,7 +9,7 @@ const queries = {
     }
     const tweets = await prismaClient.tweet.findMany({
       orderBy: { createdAt: "desc" },
-      include: { author: true },
+      include: { author: true, LikedBy: true },
     });
     console.log(tweets, "tweets....");
     return tweets;
@@ -73,6 +73,17 @@ const extraResolvers = {
       });
 
       return author;
+    },
+    LikedBy: async (parent: Tweet) => {
+      const LikedBy = await prismaClient.like.findUnique({
+        where: {
+          userId_tweetId: {
+            userId: parent.authorId, // Pass the userId as an argument
+            tweetId: parent.id,
+          },
+        },
+      });
+      return LikedBy;
     },
   },
 };

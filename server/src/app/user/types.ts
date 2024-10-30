@@ -39,6 +39,8 @@ type User{
     lastName:String
     profileImgUrl:String
     id:String
+    likedTweets:[Like]
+
 
 
 

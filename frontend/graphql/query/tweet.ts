@@ -11,6 +11,22 @@ export const getAllTweetQuery = gql(`
             userName
             profileImgUrl
          }
+         LikedBy{
+            id
+            userId
+            tweetId
+            tweet{
+                id
+                content
+
+            }
+            user{
+                firstName
+                email
+                id
+                
+            }
+         }
         }
     }
 `);

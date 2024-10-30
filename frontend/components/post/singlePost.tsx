@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { BsChat } from "react-icons/bs";
 import { CiBookmark, CiHeart } from "react-icons/ci";
-import { FaDotCircle } from "react-icons/fa";
+import { FaDotCircle, FaHeart } from "react-icons/fa";
 import {
   IoEllipseOutline,
   IoEllipsisHorizontal,
@@ -15,13 +15,47 @@ import Image from "next/image";
 import { useAllTweet } from "@/hooks/tweet";
 import { Tweet } from "@/graphql/types";
 import { getRandomDarkHexColor } from "@/lib/randomColor";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toggleLikeTweet } from "@/graphql/mutation/like";
+import { useCurrentUser } from "@/hooks/user";
+import Comment from "./comment";
 
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
+  const [liked, setLiked] = useState(false);
+  const queryClient = useQueryClient();
   const [color, setColor] = useState("");
 
   useEffect(() => {
     setColor(getRandomDarkHexColor());
   }, []);
+  const { user } = useCurrentUser();
+
+  const mutation = useMutation({
+    mutationFn: toggleLikeTweet,
+    onSuccess: (response: any) => {
+      console.log(response);
+      queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  async function handleTweetLike() {
+    setLiked((prevVal) => !prevVal);
+    const body = {
+      tweetId: tweet.id,
+    };
+    try {
+      await mutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  useEffect(() => {
+    if (tweet.LikedBy && user) {
+      setLiked(tweet.LikedBy.some((like) => like.userId === user.id));
+    }
+  }, [tweet, user]);
   return (
     <div className="w-full py-3 px-2">
       <div className="flex gap-4 w-full">
@@ -69,16 +103,20 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
             />
           </div>
           <div className="flex justify-between py-2 pt-3 pb-4">
-            <div className="flex gap-1 items-center gray text-[13px] font-[400]">
-              <BsChat className="text-[20px] " />
-              234k
-            </div>
+            <Comment tweet={tweet} user={user!} />
             <div className="flex gap-1 items-center gray text-[13px] font-[400]">
               <LuRepeat2 className="text-[20px] " />
               34k
             </div>
-            <div className="flex gap-1 items-center gray text-[13px] font-[400]">
-              <CiHeart className="text-[20px] " />
+            <div
+              onClick={handleTweetLike}
+              className="flex gap-1 items-center gray text-[13px] cursor-pointer font-[400]"
+            >
+              {liked ? (
+                <FaHeart className="text-[20px] heart-animation text-red-500" />
+              ) : (
+                <CiHeart className="text-[20px] " />
+              )}
               2344k
             </div>
             <div className="flex gap-1 items-center gray text-[13px] font-[400]">

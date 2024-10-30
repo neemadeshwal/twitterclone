@@ -36,3 +36,28 @@ p {
 .gray {
   color: #a2a2a2b9;
 }
+
+@keyframes heartBeat {
+  0%,
+  100% {
+    transform: scale(1);
+    color: #f5305b;
+  }
+  50% {
+    transform: scale(1.21);
+    color: #aa0362;
+  }
+  70% {
+    transform: scale(1.25);
+    color: #aa0362;
+  }
+  90% {
+    transform: scale(1.29);
+    color: #aa0362;
+  }
+}
+
+.heart-animation {
+  animation: heartBeat 0.5s ease forwards;
+  transition: color 0.8s ease;
+}

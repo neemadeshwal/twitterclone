@@ -27,7 +27,7 @@ export interface getCurrentUserQueryProps {
   getCurrentUser: getCurrentUser;
 }
 
-interface getCurrentUser {
+export interface getCurrentUser {
   firstName: string;
   lastName: string;
   email: string;
@@ -43,6 +43,7 @@ export interface Tweet {
   id: string;
   content: string;
   author: getCurrentUser;
+  LikedBy: Like[];
 }
 
 interface getAllTweet {
@@ -51,4 +52,15 @@ interface getAllTweet {
 
 export interface GetAllTweetProps {
   getAllTweet: Tweet[];
+}
+export interface Like {
+  id: string;
+  userId: string;
+  tweetId: string;
+  user: getCurrentUser;
+  tweet: Tweet;
+}
+
+export interface toggleLikeTweetProps {
+  tweetId: string;
 }

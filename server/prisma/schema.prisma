@@ -28,6 +28,8 @@ model User{
   location String?
   userName String @unique
   posts Tweet[]
+  likedTweets Like[]
+
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -42,7 +44,19 @@ model Tweet{
   videoArray String[]
   authorId String
   author User @relation(fields: [authorId],references: [id])
+  LikedBy Like[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Like{
+  id String @id @default(cuid())
+  userId String
+  tweetId String
+
+  user User @relation(fields: [userId],references: [id])
+  tweet Tweet @relation(fields: [tweetId],references: [id])
+
+  @@unique([userId,tweetId])
 }

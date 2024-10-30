@@ -9,6 +9,7 @@ import { User } from "./user";
 import { GraphqlContext } from "../interfaces";
 import JWTService from "../services/jwt";
 import { Tweet } from "./tweet";
+import { Like } from "./like";
 
 export async function initServer() {
   const app = express();
@@ -20,6 +21,7 @@ export async function initServer() {
     typeDefs: `
     ${User.types}
     ${Tweet.types}
+    ${Like.types}
   
     type Query {
       ${User.queries}
@@ -28,10 +30,15 @@ export async function initServer() {
     type Mutation{
     ${User.mutations}
     ${Tweet.mutations}
+    ${Like.mutations}
     }
     `,
     resolvers: {
-      Mutation: { ...User.resolvers.mutations, ...Tweet.resolvers.mutations },
+      Mutation: {
+        ...User.resolvers.mutations,
+        ...Tweet.resolvers.mutations,
+        ...Like.resolvers.mutations,
+      },
       Query: { ...User.resolvers.queries, ...Tweet.resolvers.queries },
     },
     ...User.resolvers.extraResolvers,
