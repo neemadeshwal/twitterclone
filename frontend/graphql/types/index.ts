@@ -34,6 +34,9 @@ export interface getCurrentUser {
   profileImgUrl: string;
   userName: string;
   id: string;
+  tweet: Tweet[];
+  likedTweets: Like[];
+  commentTweets: Comment[];
 }
 
 export interface createTweetMutateProps {
@@ -76,4 +79,8 @@ export interface Comment {
   id: string;
   userId: string;
   tweetId: string;
+}
+
+export interface getUserByIdProps {
+  getUserById: getCurrentUser;
 }

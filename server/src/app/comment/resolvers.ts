@@ -1,6 +1,11 @@
 import { prismaClient } from "../../client/db";
 import { GraphqlContext } from "../../interfaces";
 
+interface CommentProps {
+  id: string;
+  userId: string;
+  tweetId: string;
+}
 const mutations = {
   createComment: async (
     parent: any,
@@ -27,4 +32,21 @@ const mutations = {
   },
 };
 
-export const resolvers = { mutations };
+const extraResolvers = {
+  Comment: {
+    user: async (parent: CommentProps) => {
+      const users = await prismaClient.user.findUnique({
+        where: { id: parent.userId },
+      });
+      return users;
+    },
+    tweet: async (parent: CommentProps) => {
+      const tweet = await prismaClient.tweet.findMany({
+        where: { id: parent.tweetId },
+      });
+      return tweet;
+    },
+  },
+};
+
+export const resolvers = { mutations, extraResolvers };

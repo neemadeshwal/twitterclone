@@ -5,6 +5,12 @@ export const getAllTweetQuery = gql(`
         getAllTweet{
          id 
          content
+         commentAuthor{
+                id
+                comment
+                userId
+                tweetId
+            }
          author{
             firstName
             lastName
@@ -26,12 +32,7 @@ export const getAllTweetQuery = gql(`
                 id
                 
             }
-            commentAuthor{
-                id
-                comment
-                userId
-                tweetId
-            }
+          
          }
         }
     }

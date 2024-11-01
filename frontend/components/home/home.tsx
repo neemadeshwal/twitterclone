@@ -3,8 +3,9 @@ import React from "react";
 import RightSidebar from "./rightSide/rightside";
 import MiddlePost from "./middlePost/middlePost";
 import Sidebar from "./leftSide/sidebar";
+import UserDetail from "../getUser/UserDetail";
 
-const Home = () => {
+const Home = ({ pathType }: { pathType: string }) => {
   return (
     <div className="h-full min-h-screen">
       <div className="px-[110px] flex justify-between h-full pr-[80px] ">
@@ -18,10 +19,10 @@ const Home = () => {
             </div>
           </div>
         </div>
-
         <div className="w-[60%] h-full">
-          <MiddlePost />
+          {pathType?.startsWith("/@") ? <UserDetail /> : <MiddlePost />}
         </div>
+
         <div className="">
           <DivisionBar type="y" />
         </div>

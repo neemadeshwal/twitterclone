@@ -50,7 +50,11 @@ const queries = {
       throw new Error("No id present");
     }
 
-    const user = await prismaClient.user.findUnique({ where: { id } });
+    const user = await prismaClient.user.findUnique({
+      where: { id },
+      include: { posts: true, likedTweets: true, commentTweets: true },
+    });
+    console.log(user, "user user");
     if (!user) {
       throw new Error("No user present.");
     }
@@ -275,14 +279,41 @@ const mutations = {
 };
 
 const extraResolvers = {
-  posts: async (parent: User) => {
-    if (!parent.id) {
-      throw new Error("no id present");
-    }
-    const tweets = await prismaClient.tweet.findMany({
-      where: { authorId: parent.id },
-    });
-    return tweets;
+  User: {
+    posts: async (parent: User) => {
+      console.log("elllo");
+      console.log(parent, "parent");
+      if (!parent.id) {
+        throw new Error("no id present");
+      }
+      const tweets = await prismaClient.tweet.findMany({
+        where: { authorId: parent.id },
+      });
+      return tweets;
+    },
+    likedTweets: async (parent: User) => {
+      const likedTweets = await prismaClient.like.findMany({
+        where: { userId: parent.id },
+        include: { user: true, tweet: true },
+      });
+      return likedTweets;
+    },
+    commentTweets: async (parent: User) => {
+      const commentTweets = await prismaClient.comment.findMany({
+        where: { userId: parent.id },
+        include: { user: true, tweet: true },
+      });
+      return commentTweets;
+    },
+  },
+  Comment: {
+    user: async (parent: { userId: string }) => {
+      const user = await prismaClient.user.findUnique({
+        where: { id: parent.userId },
+      });
+      console.log(user);
+      return user;
+    },
   },
 };
 

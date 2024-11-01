@@ -1,6 +1,11 @@
 import { prismaClient } from "../../client/db";
 import { GraphqlContext } from "../../interfaces";
 
+interface LikeProps {
+  id: string;
+  tweetId: string;
+  userId: string;
+}
 const mutations = {
   toggleLikeTweet: async (
     parent: any,
@@ -47,4 +52,21 @@ const mutations = {
   },
 };
 
-export const resolvers = { mutations };
+const extraResolvers = {
+  Like: {
+    user: async (parent: LikeProps) => {
+      const user = await prismaClient.user.findMany({
+        where: { id: parent.userId },
+      });
+      return user;
+    },
+    tweet: async (parent: LikeProps) => {
+      const tweet = await prismaClient.tweet.findMany({
+        where: { id: parent.tweetId },
+      });
+      return tweet;
+    },
+  },
+};
+
+export const resolvers = { mutations, extraResolvers };

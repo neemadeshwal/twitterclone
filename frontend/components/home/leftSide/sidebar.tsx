@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { GoHome } from "react-icons/go";
 import { MdHomeFilled } from "react-icons/md";
@@ -15,6 +16,7 @@ import { BsTwitterX } from "react-icons/bs";
 import { BsFeather } from "react-icons/bs";
 import { useCurrentUser } from "@/hooks/user";
 import CurrentUser from "@/shared/currentUser";
+import Link from "next/link";
 const sidebarIcons = [
   {
     title: "home",
@@ -49,6 +51,7 @@ const sidebarIcons = [
 ];
 
 const Sidebar = () => {
+  const { user } = useCurrentUser();
   return (
     <div>
       <div className="py-2 ">
@@ -58,12 +61,18 @@ const Sidebar = () => {
         <div className="flex flex-col ">
           {sidebarIcons.map((item, index) => {
             return (
-              <div
+              <Link
                 key={item.title + index}
-                className=" p-2 py-3 hover:bg-[#1d1d1dbb] cursor-pointer rounded-full flex items-center justify-center"
+                href={
+                  item.title === "profile"
+                    ? `/${user?.userName}`
+                    : item.activePathname
+                }
               >
-                <p className="text-[28px]">{item.icon}</p>
-              </div>
+                <div className=" p-2 py-3 hover:bg-[#1d1d1dbb] cursor-pointer rounded-full flex items-center justify-center">
+                  <p className="text-[28px]">{item.icon}</p>
+                </div>
+              </Link>
             );
           })}
         </div>

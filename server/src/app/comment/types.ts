@@ -5,6 +5,8 @@ type Comment{
     comment:String
     userId:String
     tweetId:String
+    user:User
+    tweet:Tweet
     
 }
 
