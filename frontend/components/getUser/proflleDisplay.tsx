@@ -1,16 +1,28 @@
+import { getCurrentUser } from "@/graphql/types";
 import DivisionBar from "@/shared/divisionbar";
+import Image from "next/image";
 import React from "react";
 import { MdOutlineCalendarMonth } from "react-icons/md";
 
-const ProfileDisplay = () => {
+const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
   return (
     <div>
       <div className="relative">
-        <div className="bg-[#3a3a3acd] w-full h-[170px]"></div>
-        <div className="absolute bottom-[-10px] left-4">
-          <div className="bg-cyan-900 w-[150px] h-[150px] border-[4px] border-black rounded-full flex items-center justify-center text-[70px]">
-            N
+        {user?.coverImgUrl ? (
+          <div>
+            <Image src={user.coverImgUrl} alt="" height="100" width="100" />
           </div>
+        ) : (
+          <div className="bg-[#3a3a3acd] w-full h-[170px]"></div>
+        )}
+        <div className="absolute bottom-[-10px] left-4">
+          {user?.profileImgUrl ? (
+            <Image src={user.profileImgUrl} alt="" width="150" height="150" />
+          ) : (
+            <div className="bg-cyan-900 w-[150px] h-[150px] border-[4px] border-black rounded-full flex items-center justify-center text-[70px]">
+              N
+            </div>
+          )}
         </div>
         <div className="flex justify-end w-full py-3 px-4">
           <div className=" rounded-full py-2 px-4 border-[0.1px] capitalize border-white w-fit">
@@ -21,8 +33,10 @@ const ProfileDisplay = () => {
       <div className="">
         <div className="py-6">
           <div className="px-4">
-            <h3 className="text-[20px] font-[800]">Neema deshwal</h3>
-            <p className="gray font-[14px]">@deshwalneema</p>
+            <h3 className="text-[20px] font-[800] capitalize">
+              {user?.firstName} {user?.lastName}
+            </h3>
+            <p className="gray font-[14px]">{user?.userName}</p>
           </div>
           <div className="py-3 px-4">
             <p className="gray font-[14px] flex items-center gap-2">

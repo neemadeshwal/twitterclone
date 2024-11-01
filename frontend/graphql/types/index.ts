@@ -34,6 +34,8 @@ export interface getCurrentUser {
   profileImgUrl: string;
   userName: string;
   id: string;
+  bio: string;
+  coverImgUrl: string;
   tweet: Tweet[];
   likedTweets: Like[];
   commentTweets: Comment[];

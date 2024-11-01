@@ -19,12 +19,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleLikeTweet } from "@/graphql/mutation/like";
 import { useCurrentUser } from "@/hooks/user";
 import Comment from "./comment";
+import { useRouter } from "next/navigation";
 
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
   const queryClient = useQueryClient();
   const [color, setColor] = useState("");
-
+  const router = useRouter();
   useEffect(() => {
     setColor(getRandomDarkHexColor());
   }, []);
@@ -56,8 +57,15 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
       setLiked(tweet.LikedBy.some((like) => like.userId === user.id));
     }
   }, [tweet, user]);
+
+  const handlePostClick = (id: string) => {
+    router.push(`/${tweet.author.userName}/status/${id}`);
+  };
   return (
-    <div className="w-full py-3 px-2">
+    <div
+      onClick={() => handlePostClick(tweet.id)}
+      className="w-full cursor-pointer py-3 px-2"
+    >
       <div className="flex gap-4 w-full">
         <div>
           {tweet.author?.profileImgUrl ? (

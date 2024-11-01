@@ -42,6 +42,8 @@ type User{
     posts:[Tweet]
     likedTweets:[Like]
     commentTweets:[Comment]
+    coverImgUrl:String
+    bio:String
 
 
 

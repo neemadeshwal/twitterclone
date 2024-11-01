@@ -15,7 +15,7 @@ export const useCurrentUser = () => {
 export const useGetUserById = (id: string) => {
   const query = useQuery<getUserByIdProps>({
     queryKey: ["getUser-byId"],
-    queryFn: () => graphqlClient.request(getUserByIdQuery(id)),
+    queryFn: () => graphqlClient.request(getUserByIdQuery, { payload: { id } }),
   });
   return { ...query, user: query.data?.getUserById };
 };

@@ -13,10 +13,9 @@ export const getCurrentUserQuery = gql(`
   }
 `);
 
-export const getUserByIdQuery = (id: string) =>
-  gql(`
-  query GetUserById($id:){
-    getUserById(payload:{id:$id}){
+export const getUserByIdQuery = gql(`
+  query GetUserById($payload:GetUserByIdInput!){
+    getUserById(payload:$payload){
       email
     firstName
     lastName
