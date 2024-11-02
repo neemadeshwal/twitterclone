@@ -28,7 +28,7 @@ const queries = {
     }
     const tweet = await prismaClient.tweet.findUnique({
       where: { id },
-      include: { author: true },
+      include: { author: true, LikedBy: true, commentAuthor: true },
     });
 
     if (!tweet) {
@@ -75,13 +75,11 @@ const extraResolvers = {
       return author;
     },
     LikedBy: async (parent: Tweet) => {
-      const LikedBy = await prismaClient.like.findUnique({
+      const LikedBy = await prismaClient.like.findMany({
         where: {
-          userId_tweetId: {
-            userId: parent.authorId, // Pass the userId as an argument
-            tweetId: parent.id,
-          },
+          tweetId: parent.id,
         },
+        include: { user: true, tweet: true },
       });
       return LikedBy;
     },

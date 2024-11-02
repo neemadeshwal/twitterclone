@@ -50,6 +50,7 @@ export interface Tweet {
   author: getCurrentUser;
   LikedBy: Like[];
   commentAuthor: Comment[];
+  authorId: string;
 }
 
 interface getAllTweet {
@@ -85,4 +86,8 @@ export interface Comment {
 
 export interface getUserByIdProps {
   getUserById: getCurrentUser;
+}
+
+export interface getSingleTweetProps {
+  getSingleTweet: Tweet;
 }

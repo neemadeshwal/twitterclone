@@ -44,11 +44,11 @@ export async function initServer() {
         ...Comment.resolvers.mutations,
       },
       Query: { ...User.resolvers.queries, ...Tweet.resolvers.queries },
+      ...User.resolvers.extraResolvers,
+      ...Tweet.resolvers.extraResolvers,
+      ...Like.resolvers.extraResolvers,
+      ...Comment.resolvers.extraResolvers,
     },
-    ...User.resolvers.extraResolvers,
-    ...Tweet.resolvers.extraResolvers,
-    ...Like.resolvers.extraResolvers,
-    ...Comment.resolvers.extraResolvers,
   });
 
   await graphqlServer.start();
