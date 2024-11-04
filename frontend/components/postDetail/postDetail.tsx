@@ -20,6 +20,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleLikeTweet } from "@/graphql/mutation/like";
 import CurrentUser from "@/shared/currentUser";
 import SinglePost from "../post/singlePost";
+import SingleComment from "./singleComment";
+import { createComment } from "@/graphql/mutation/comment";
 
 const PostDetail = () => {
   const pathname = usePathname();
@@ -33,11 +35,24 @@ const PostDetail = () => {
   const queryClient = useQueryClient();
   const { user } = useCurrentUser();
 
+  const [tweetComment, setTweetComment] = useState("");
+
   const mutation = useMutation({
     mutationFn: toggleLikeTweet,
     onSuccess: (response: any) => {
       console.log(response);
       queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  const commentMutation = useMutation({
+    mutationFn: createComment,
+    onSuccess: (response: any) => {
+      console.log(response);
+      setTweetComment("");
+      queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
     },
     onError: (error) => {
       console.log(error);
@@ -68,6 +83,22 @@ const PostDetail = () => {
   useEffect(() => {
     setColor(getRandomDarkHexColor());
   }, []);
+
+  async function handleReplyComment() {
+    if (!singleTweet || !singleTweet.id) {
+      return;
+    }
+    const body = {
+      comment: tweetComment,
+      tweetId: singleTweet!.id,
+    };
+
+    try {
+      await commentMutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   if (!singleTweet) {
     return <div>loading...</div>;
@@ -179,8 +210,8 @@ const PostDetail = () => {
                   </p>
                 </div>
                 <textarea
-                  // value={tweetComment}
-                  // onChange={(e) => setTweetComment(e.target.value)}
+                  value={tweetComment}
+                  onChange={(e) => setTweetComment(e.target.value)}
                   rows={2}
                   autoFocus
                   className="text-[20px] bg-transparent resize-none outline-none border-0 w-full placeholder:text-gray-600"
@@ -208,7 +239,10 @@ const PostDetail = () => {
                     </div>
                   </div>
                   <div className="">
-                    <button className="py-2 rounded-full x-bgcolor px-4">
+                    <button
+                      onClick={handleReplyComment}
+                      className="py-2 rounded-full x-bgcolor px-4"
+                    >
                       Reply
                     </button>
                   </div>
@@ -222,7 +256,7 @@ const PostDetail = () => {
         </div>
         <div>
           {singleTweet.commentAuthor.map((item) => {
-            return <SinglePost key={item.id} tweet={item} />;
+            return <SingleComment key={item.id} comment={item} />;
           })}
         </div>
       </div>

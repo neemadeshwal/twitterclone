@@ -1,0 +1,19 @@
+import { Tweet } from "@/graphql/types";
+import React from "react";
+import SinglePost from "../post/singlePost";
+
+const PostTab = ({ postlist }: { postlist: Tweet[] }) => {
+  return (
+    <div>
+      <div>
+        {postlist &&
+          postlist.length !== 0 &&
+          postlist.map((item) => {
+            return <SinglePost tweet={item} key={item.id} />;
+          })}
+      </div>
+    </div>
+  );
+};
+
+export default PostTab;

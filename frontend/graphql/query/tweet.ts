@@ -49,12 +49,19 @@ export const getSingleTweetQuery = gql(`
                 comment
                 userId
                 tweetId
+                user{
+                    id
+                    firstName
+                    lastName
+                    userName    
+                }
             }
          author{
             firstName
             lastName
             userName
             profileImgUrl
+            id
          }
          LikedBy{
             id

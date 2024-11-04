@@ -39,6 +39,7 @@ export interface getCurrentUser {
   tweet: Tweet[];
   likedTweets: Like[];
   commentTweets: Comment[];
+  posts: Tweet[];
 }
 
 export interface createTweetMutateProps {
@@ -82,6 +83,7 @@ export interface Comment {
   id: string;
   userId: string;
   tweetId: string;
+  user: getCurrentUser;
 }
 
 export interface getUserByIdProps {

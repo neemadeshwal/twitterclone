@@ -24,19 +24,35 @@ export const getUserByIdQuery = gql(`
     userName
     posts {
       authorId
+      content
+      id
       author {
         email
+        userName
+        profileImgUrl
+        firstName
         
       }
+     LikedBy{
+      id
+      userId
+    
+     }
+      
     }
     commentTweets {
       comment
       id
       userId
       tweetId
-      user {
+      user{
+        firstName
+        userName
+        lastName
         email
+        id
       }
+      
       tweet {
         content
       }
@@ -55,6 +71,10 @@ export const getUserByIdQuery = gql(`
           tweetId
           id
           comment
+          user{
+            firstName
+            userName
+          }
         }
         content
         id

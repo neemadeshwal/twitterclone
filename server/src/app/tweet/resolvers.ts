@@ -9,7 +9,6 @@ const queries = {
     }
     const tweets = await prismaClient.tweet.findMany({
       orderBy: { createdAt: "desc" },
-      include: { author: true, LikedBy: true, commentAuthor: true },
     });
     console.log(tweets, "tweets....");
     return tweets;
@@ -26,11 +25,11 @@ const queries = {
     if (!id) {
       throw new Error("no id present");
     }
+
     const tweet = await prismaClient.tweet.findUnique({
       where: { id },
       include: { author: true, LikedBy: true, commentAuthor: true },
     });
-
     if (!tweet) {
       throw new Error("no user with this id.");
     }
@@ -67,25 +66,29 @@ const extraResolvers = {
       if (!parent.id) {
         throw new Error("No tweet present");
       }
+      console.log("hello two");
 
       const author = await prismaClient.user.findUnique({
         where: { id: parent.authorId },
       });
+      console.log("ig got the author");
 
       return author;
     },
     LikedBy: async (parent: Tweet) => {
+      console.log("ig got the author");
+
       const LikedBy = await prismaClient.like.findMany({
         where: {
           tweetId: parent.id,
         },
-        include: { user: true, tweet: true },
       });
       return LikedBy;
     },
     commentAuthor: async (parent: Tweet) => {
       const comments = await prismaClient.comment.findMany({
         where: { tweetId: parent.id },
+        orderBy: { createdAt: "desc" },
       });
       return comments;
     },

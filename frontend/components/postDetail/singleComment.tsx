@@ -13,15 +13,14 @@ import { LuDot, LuRepeat2 } from "react-icons/lu";
 import DivisionBar from "@/shared/divisionbar";
 import Image from "next/image";
 import { useAllTweet } from "@/hooks/tweet";
-import { Tweet } from "@/graphql/types";
+import { Comment as CommentType, Tweet } from "@/graphql/types";
 import { getRandomDarkHexColor } from "@/lib/randomColor";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleLikeTweet } from "@/graphql/mutation/like";
 import { useCurrentUser } from "@/hooks/user";
-import Comment from "@/components/post/comment";
 import { useRouter } from "next/navigation";
 
-const SinglePost = ({ tweet }: { tweet: Tweet }) => {
+const SingleComment = ({ comment }: { comment: CommentType }) => {
   const [liked, setLiked] = useState(false);
   const queryClient = useQueryClient();
   const [color, setColor] = useState("");
@@ -41,36 +40,36 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
       console.log(error);
     },
   });
-  async function handleTweetLike() {
-    setLiked((prevVal) => !prevVal);
-    const body = {
-      tweetId: tweet.id,
-    };
-    try {
-      await mutation.mutateAsync(body);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  useEffect(() => {
-    if (tweet.LikedBy && user) {
-      setLiked(tweet.LikedBy.some((like) => like.userId === user.id));
-    }
-  }, [tweet, user]);
+  // async function handleTweetLike() {
+  //   setLiked((prevVal) => !prevVal);
+  //   const body = {
+  //     tweetId: comment.id,
+  //   };
+  //   try {
+  //     await mutation.mutateAsync(body);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+  // useEffect(() => {
+  //   if (tweet.LikedBy && user) {
+  //     setLiked(tweet.LikedBy.some((like) => like.userId === user.id));
+  //   }
+  // }, [tweet, user]);
 
-  const handlePostClick = (id: string) => {
-    router.push(`/${tweet.author.userName}/status/${id}`);
-  };
+  // const handlePostClick = (id: string) => {
+  //   router.push(`/${tweet.author.userName}/status/${id}`);
+  // };
   return (
     <div
-      onClick={() => handlePostClick(tweet.id)}
+      // onClick={() => handlePostClick(comment.id)}
       className="w-full cursor-pointer py-3 px-2"
     >
       <div className="flex gap-4 w-full">
         <div>
-          {tweet.author?.profileImgUrl ? (
+          {comment.user?.profileImgUrl ? (
             <Image
-              src={tweet?.author?.profileImgUrl}
+              src={comment?.user?.profileImgUrl}
               alt=""
               width={40}
               height={40}
@@ -80,7 +79,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               className="rounded-full py-2 px-4 flex items-center justify-center capitalize"
               style={{ backgroundColor: color }}
             >
-              {tweet.author?.firstName.slice(0, 1)}
+              {comment.user?.firstName.slice(0, 1)}
             </div>
           )}
         </div>
@@ -88,9 +87,9 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
           <div className="flex justify-between w-full ">
             <div className="flex gap-1 items-center">
               <p className="capitalize font-[600] text-[17px]">
-                {tweet.author?.firstName}
+                {comment.user?.firstName}
               </p>
-              <p className="gray font-[300]">{tweet.author?.userName}</p>
+              <p className="gray font-[300]">{comment.user?.userName}</p>
               <p>
                 <LuDot className="gray font-[300]" />
               </p>
@@ -100,7 +99,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               <IoEllipsisHorizontal className="gray" />
             </div>
           </div>
-          <div>{tweet?.content}</div>
+          <div>{comment?.comment}</div>
           <div className="py-2">
             <Image
               alt=""
@@ -111,13 +110,13 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
             />
           </div>
           <div className="flex justify-between py-2 pt-3 pb-4">
-            <Comment tweet={tweet} user={user!} />
+            {/* <Comment tweet={tweet} user={user!} /> */}
             <div className="flex gap-1 items-center gray text-[13px] font-[400]">
               <LuRepeat2 className="text-[20px] " />
               34k
             </div>
             <div
-              onClick={handleTweetLike}
+              // onClick={handleTweetLike}
               className="flex gap-1 items-center gray text-[13px] cursor-pointer font-[400]"
             >
               {liked ? (
@@ -141,4 +140,4 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   );
 };
 
-export default SinglePost;
+export default SingleComment;

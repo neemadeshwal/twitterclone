@@ -1,10 +1,14 @@
 import { getCurrentUser } from "@/graphql/types";
 import DivisionBar from "@/shared/divisionbar";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { MdOutlineCalendarMonth } from "react-icons/md";
+import PostTab from "./postTab";
+import CommentTab from "./commentTab";
 
 const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
+  const [tabs, setTabs] = useState("post");
+  console.log(user.posts, "user tweet");
   return (
     <div>
       <div className="relative">
@@ -56,24 +60,46 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
           </div>
           <div className="py-4">
             <div className="flex items-center justify-between">
-              <div className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]">
+              <div
+                onClick={() => setTabs("post")}
+                className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]"
+              >
                 <p>posts</p>
               </div>
-              <div className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]">
+              <div
+                onClick={() => setTabs("replies")}
+                className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]"
+              >
                 <p>replies</p>
               </div>
-              <div className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]">
+              <div
+                onClick={() => setTabs("articles")}
+                className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]"
+              >
                 <p>articles</p>
               </div>
-              <div className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]">
+              <div
+                onClick={() => setTabs("media")}
+                className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]"
+              >
                 <p>media</p>
               </div>
-              <div className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]">
+              <div
+                onClick={() => setTabs("likes")}
+                className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]"
+              >
                 <p>likes</p>
               </div>
             </div>
             <DivisionBar type="x" />
           </div>
+          {tabs === "post" ? (
+            <PostTab postlist={user.posts} />
+          ) : tabs === "replies" ? (
+            <CommentTab comment={user.commentTweets} />
+          ) : (
+            "hello"
+          )}
         </div>
       </div>
     </div>

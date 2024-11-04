@@ -46,8 +46,6 @@ export async function initServer() {
       Query: { ...User.resolvers.queries, ...Tweet.resolvers.queries },
       ...User.resolvers.extraResolvers,
       ...Tweet.resolvers.extraResolvers,
-      ...Like.resolvers.extraResolvers,
-      ...Comment.resolvers.extraResolvers,
     },
   });
 

@@ -17,7 +17,7 @@ const formSchema = z.object({
   otp: z.coerce
     .number()
     .int({ message: "Please enter otp." })
-    .min(100000)
+    .min(10000)
     .max(999999),
 });
 
