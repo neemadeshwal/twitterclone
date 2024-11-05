@@ -102,12 +102,14 @@ export const getAllUsersQuery = gql(`
       lastName
       profileImgUrl
       userName
-      follower{
-        followerId
+      followers{
+       followerId
+       
         
       }
       following{
         followingId
+        followerId
       }
     }
   }

@@ -46,8 +46,8 @@ type User{
     bio:String
     followerId:String
     followingId:String
-    follower:User
-    following:User
+    followers:[Follows]
+    following:[Follows]
 
 
 }

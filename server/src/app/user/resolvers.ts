@@ -312,6 +312,29 @@ const extraResolvers = {
       });
       return commentTweets;
     },
+    followers: async (parent: User) => {
+      const followedUsers = await prismaClient.follows.findMany({
+        where: {
+          followingId: parent.id,
+        },
+        include: { follower: true },
+      });
+
+      console.log(followedUsers, "followed usrers");
+
+      return followedUsers;
+    },
+    following: async (parent: User) => {
+      const followingUsers = await prismaClient.follows.findMany({
+        where: {
+          followerId: parent.id,
+        },
+        include: {
+          following: true,
+        },
+      });
+      return followingUsers;
+    },
   },
   Comment: {
     user: async (parent: { userId: string }) => {

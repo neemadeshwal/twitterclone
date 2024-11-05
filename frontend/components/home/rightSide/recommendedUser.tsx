@@ -13,7 +13,7 @@ const RecommendedUser = ({ userList }: { userList: any }) => {
           {userList &&
             userList.length !== 0 &&
             userList.map((item: getCurrentUser) => {
-              return <SingleFollowUser key={item.id} user={item} />;
+              return <SingleFollowUser key={item.id} singleUser={item} />;
             })}
         </div>
       </div>
