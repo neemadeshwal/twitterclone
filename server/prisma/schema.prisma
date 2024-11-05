@@ -30,6 +30,8 @@ model User{
   posts Tweet[]
   likedTweets Like[]
   commentTweets Comment[]
+  followers Follows[] @relation("followers")
+  followingList Follows[] @relation("following")
 
 
   createdAt DateTime @default(now())
@@ -75,3 +77,13 @@ model Comment{
   updatedAt DateTime @updatedAt
 
 }
+
+model Follows{
+followerId String
+follower User @relation("followers",fields: [followerId],references: [id])
+followingId String
+following User @relation("following",fields: [followingId],references: [id])
+@@id([followerId,followingId])
+
+}
+

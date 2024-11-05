@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/graphql/types";
+import { getCurrentUser, Tweet } from "@/graphql/types";
 import DivisionBar from "@/shared/divisionbar";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -9,6 +9,15 @@ import CommentTab from "./commentTab";
 const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
   const [tabs, setTabs] = useState("post");
   console.log(user.posts, "user tweet");
+  console.log(user.likedTweets, "item liked");
+
+  const LikedTweet: Tweet[] = [];
+  if (user.likedTweets.length !== 0) {
+    user.likedTweets.map((item) => {
+      LikedTweet.push(item.tweet);
+    });
+  }
+  console.log(LikedTweet, "likedtweet");
   return (
     <div>
       <div className="relative">
@@ -97,6 +106,8 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
             <PostTab postlist={user.posts} />
           ) : tabs === "replies" ? (
             <CommentTab comment={user.commentTweets} />
+          ) : tabs === "likes" ? (
+            <PostTab postlist={LikedTweet} />
           ) : (
             "hello"
           )}

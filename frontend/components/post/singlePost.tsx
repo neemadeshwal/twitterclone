@@ -62,10 +62,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
     router.push(`/${tweet.author.userName}/status/${id}`);
   };
   return (
-    <div
-      onClick={() => handlePostClick(tweet.id)}
-      className="w-full cursor-pointer py-3 px-2"
-    >
+    <div className="w-full cursor-pointer py-3 px-2">
       <div className="flex gap-4 w-full">
         <div>
           {tweet.author?.profileImgUrl ? (
@@ -100,8 +97,8 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               <IoEllipsisHorizontal className="gray" />
             </div>
           </div>
-          <div>{tweet?.content}</div>
-          <div className="py-2">
+          <div onClick={() => handlePostClick(tweet.id)}>{tweet?.content}</div>
+          <div onClick={() => handlePostClick(tweet.id)} className="py-2">
             <Image
               alt=""
               width={200}

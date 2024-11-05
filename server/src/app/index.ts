@@ -11,6 +11,7 @@ import JWTService from "../services/jwt";
 import { Tweet } from "./tweet";
 import { Like } from "./like";
 import { Comment } from "./comment";
+import { Follows } from "./follows";
 
 export async function initServer() {
   const app = express();
@@ -24,6 +25,7 @@ export async function initServer() {
     ${Tweet.types}
     ${Like.types}
     ${Comment.types}
+    ${Follows.types}
   
     type Query {
       ${User.queries}
@@ -34,6 +36,7 @@ export async function initServer() {
     ${Tweet.mutations}
     ${Like.mutations}
     ${Comment.mutations}
+    ${Follows.mutations}
     }
     `,
     resolvers: {
@@ -42,6 +45,7 @@ export async function initServer() {
         ...Tweet.resolvers.mutations,
         ...Like.resolvers.mutations,
         ...Comment.resolvers.mutations,
+        ...Follows.resolvers.mutations,
       },
       Query: { ...User.resolvers.queries, ...Tweet.resolvers.queries },
       ...User.resolvers.extraResolvers,
