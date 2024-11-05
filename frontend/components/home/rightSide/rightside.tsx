@@ -1,7 +1,12 @@
+"use client";
 import React from "react";
 import { BiSearch } from "react-icons/bi";
+import RecommendedUser from "./recommendedUser";
+import { useGetAllUsers } from "@/hooks/user";
 
 const RightSidebar = () => {
+  const { allUsers } = useGetAllUsers();
+  console.log(allUsers, "allusers");
   return (
     <div className="">
       <div className="px-6">
@@ -14,7 +19,9 @@ const RightSidebar = () => {
             <BiSearch className="absolute top-[22%] gray  left-4 text-[22px] peer-focus:text-[#1d9bf0]" />
           </div>
         </div>
-        <div className="h-[200vh] text-[15px]">fdfd</div>
+        <div className="h-[200vh] text-[15px]">
+          <RecommendedUser userList={allUsers} />
+        </div>
       </div>
     </div>
   );

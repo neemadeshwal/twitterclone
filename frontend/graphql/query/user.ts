@@ -93,3 +93,22 @@ export const getUserByIdQuery = gql(`
 
     }
   }`);
+
+export const getAllUsersQuery = gql(`
+  query GetAllUsers{
+    getAllUsers{
+      id
+      firstName
+      lastName
+      profileImgUrl
+      userName
+      follower{
+        followerId
+        
+      }
+      following{
+        followingId
+      }
+    }
+  }
+    `);

@@ -40,6 +40,8 @@ export interface getCurrentUser {
   likedTweets: Like[];
   commentTweets: Comment[];
   posts: Tweet[];
+  followers: getCurrentUser[];
+  following: getCurrentUser[];
 }
 
 export interface createTweetMutateProps {
@@ -92,4 +94,8 @@ export interface getUserByIdProps {
 
 export interface getSingleTweetProps {
   getSingleTweet: Tweet;
+}
+
+export interface getAllUsersQueryProps {
+  getAllUsers: getCurrentUser[];
 }

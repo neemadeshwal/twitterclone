@@ -61,6 +61,13 @@ const queries = {
 
     return user;
   },
+  getAllUsers: async (parent: any, payload: any, ctx: GraphqlContext) => {
+    if (!ctx.user) {
+      throw new Error("Unauthorized.Please provide the token.");
+    }
+    const allUsers = await prismaClient.user.findMany();
+    return allUsers;
+  },
 };
 
 const mutations = {
