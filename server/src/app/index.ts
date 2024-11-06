@@ -12,6 +12,7 @@ import { Tweet } from "./tweet";
 import { Like } from "./like";
 import { Comment } from "./comment";
 import { Follows } from "./follows";
+import { UploadFile } from "./uploadFile";
 
 export async function initServer() {
   const app = express();
@@ -26,6 +27,7 @@ export async function initServer() {
     ${Like.types}
     ${Comment.types}
     ${Follows.types}
+    ${UploadFile.types}
   
     type Query {
       ${User.queries}
@@ -37,6 +39,7 @@ export async function initServer() {
     ${Like.mutations}
     ${Comment.mutations}
     ${Follows.mutations}
+    ${UploadFile.mutations}
     }
     `,
     resolvers: {
@@ -46,6 +49,7 @@ export async function initServer() {
         ...Like.resolvers.mutations,
         ...Comment.resolvers.mutations,
         ...Follows.resolvers.mutations,
+        ...UploadFile.resolvers.mutations,
       },
       Query: { ...User.resolvers.queries, ...Tweet.resolvers.queries },
       ...User.resolvers.extraResolvers,

@@ -17,3 +17,9 @@ export const CLIENT_SECRET = process.env.CLIENT_SECRET;
 export const CALLBACK_URL = process.env.CALLBACK_URL;
 
 export const EXPRESS_SECRET_KEY = process.env.EXPRESS_SECRET_KEY;
+
+export const CLOUD_NAME = process.env.CLOUD_NAME;
+
+export const CLOUD_API_KEY = process.env.CLOUD_API_KEY;
+
+export const CLOUD_SECRET = process.env.CLOUD_SECRET;

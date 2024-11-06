@@ -122,17 +122,27 @@ const PostDetail = () => {
         <div className="flex items-center gap-1 px-2 py-2">
           <div>
             {singleTweet.author?.profileImgUrl ? (
-              <Image
-                src={singleTweet?.author?.profileImgUrl}
-                alt=""
-                width={40}
-                height={40}
-              />
+              <div>
+                {singleTweet.author?.profileImgUrl.startsWith("#") ? (
+                  <div
+                    style={{
+                      backgroundColor: singleTweet.author?.profileImgUrl,
+                    }}
+                    className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
+                  >
+                    {singleTweet.author?.firstName.slice(0, 1)}
+                  </div>
+                ) : (
+                  <Image
+                    src={singleTweet?.author?.profileImgUrl}
+                    alt=""
+                    width={40}
+                    height={40}
+                  />
+                )}
+              </div>
             ) : (
-              <div
-                className="rounded-full py-2 px-4 flex items-center justify-center capitalize"
-                style={{ backgroundColor: color }}
-              >
+              <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
                 {singleTweet.author?.firstName.slice(0, 1)}
               </div>
             )}
@@ -142,7 +152,7 @@ const PostDetail = () => {
               {singleTweet.author?.firstName} {singleTweet.author?.lastName}
             </h3>
             <p className="gray text-[14px] font-[400]">
-              {singleTweet.author?.userName}
+              @{singleTweet.author?.userName}
             </p>
           </div>
         </div>
@@ -206,7 +216,7 @@ const PostDetail = () => {
                 <div className="gray font-[500] text-[14px] ">
                   Replying to{" "}
                   <p className="x-textcolor inline">
-                    {singleTweet?.author?.userName}
+                    @{singleTweet?.author?.userName}
                   </p>
                 </div>
                 <textarea

@@ -89,7 +89,7 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
               <p className="capitalize font-[600] text-[17px]">
                 {comment.user?.firstName}
               </p>
-              <p className="gray font-[300]">{comment.user?.userName}</p>
+              <p className="gray font-[300]">@{comment.user?.userName}</p>
               <p>
                 <LuDot className="gray font-[300]" />
               </p>
@@ -100,7 +100,7 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
             </div>
           </div>
           <div>{comment?.comment}</div>
-          <div className="py-2">
+          {/* <div className="py-2">
             <Image
               alt=""
               width={200}
@@ -108,7 +108,7 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
               src="/img.jpg"
               className="w-full rounded-[10px]"
             />
-          </div>
+          </div> */}
           <div className="flex justify-between py-2 pt-3 pb-4">
             {/* <Comment tweet={tweet} user={user!} /> */}
             <div className="flex gap-1 items-center gray text-[13px] font-[400]">
