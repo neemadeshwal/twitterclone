@@ -7,6 +7,6 @@ type uploadedFile{
 }
 
 input uploadFilePayload{
-    files:[String]
+    files:[Upload]
 }
 `;

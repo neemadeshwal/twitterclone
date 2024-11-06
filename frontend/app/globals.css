@@ -61,3 +61,13 @@ p {
   animation: heartBeat 0.5s ease forwards;
   transition: color 0.8s ease;
 }
+
+.epr_-99lr9q {
+  background-color: black;
+}
+
+.emoji-black * {
+  &:focus {
+    outline: #aa0362;
+  }
+}

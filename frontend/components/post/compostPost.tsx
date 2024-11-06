@@ -10,15 +10,27 @@ import { FiMapPin } from "react-icons/fi";
 import CurrentUser from "@/shared/currentUser";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTweetMutate } from "@/graphql/mutation/tweet";
+import { uploadFile } from "@/graphql/mutation/uploadFile";
+import EmojiPicker from "emoji-picker-react";
 const ComposePost = () => {
   const queryClient = useQueryClient();
   const [tweetContent, setTweetContent] = useState("");
+  const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const mutation = useMutation({
     mutationFn: createTweetMutate,
     onSuccess: (response: any) => {
       console.log(response);
       queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
       setTweetContent("");
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  const uploadFileMutation = useMutation({
+    mutationFn: uploadFile,
+    onSuccess: (response: any) => {
+      console.log(response);
     },
     onError: (error) => {
       console.log(error);
@@ -34,8 +46,21 @@ const ComposePost = () => {
       console.log(error);
     }
   }
+  async function handleImgUpload(event: any) {
+    const files = Array.from(event.target.files);
+    console.log(files, "formatter files");
+    const body = {
+      files: event.target.files,
+    };
+    try {
+      await uploadFileMutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
-    <div className="w-full ">
+    <div className="w-full relative">
       <div className="w-full p-6 px-4 pb-4">
         <div className="flex gap-2 w-full">
           <CurrentUser />
@@ -54,7 +79,16 @@ const ComposePost = () => {
           <div className="pl-14 flex pt-3 pb-0 justify-between">
             <div className="flex gap-2 ">
               <div className="rounded-full p-2 hover:bg-[#081323] ">
-                <HiOutlinePhotograph className="text-[22px] x-textcolor " />
+                <label htmlFor="file">
+                  <input
+                    type="file"
+                    id="file"
+                    multiple
+                    className="hidden"
+                    onChange={handleImgUpload}
+                  />
+                  <HiOutlinePhotograph className="text-[22px] x-textcolor " />
+                </label>
               </div>
               <div className="rounded-full p-2 hover:bg-[#081323]">
                 <MdOutlineGifBox className="text-[22px] x-textcolor " />
@@ -62,9 +96,14 @@ const ComposePost = () => {
               <div className="rounded-full p-2 hover:bg-[#081323]">
                 <RiListRadio className="text-[22px] x-textcolor " />
               </div>
-              <div className="rounded-full p-2 hover:bg-[#081323]">
+
+              <div
+                onClick={() => setIsEmojiTableOpen((prevVal) => !prevVal)}
+                className="rounded-full p-2 hover:bg-[#081323]"
+              >
                 <BsEmojiSmile className="text-[22px] x-textcolor " />
               </div>
+
               <div className="rounded-full p-2 hover:bg-[#081323]">
                 <LuFolderClock className="text-[22px] x-textcolor " />
               </div>
@@ -84,6 +123,14 @@ const ComposePost = () => {
         </div>
       </div>
       <DivisionBar type="x" />
+      <div className="sticky mx-auto top-12 px-[10%] h-[600px]">
+        {isEmojiTableOpen && (
+          <EmojiPicker
+            className="emoji-black"
+            style={{ width: "300px", height: "400px" }}
+          />
+        )}
+      </div>
     </div>
   );
 };
