@@ -60,8 +60,8 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   };
   console.log(tweet.author, "twwet-author");
   return (
-    <div className="w-full cursor-pointer py-3 px-2">
-      <div className="flex gap-4 w-full">
+    <div className="w-full cursor-pointer py-3 ">
+      <div className="flex gap-4 w-full px-2">
         <div>
           {tweet.author?.profileImgUrl ? (
             <div>

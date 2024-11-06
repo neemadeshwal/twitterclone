@@ -17,6 +17,7 @@ import { BsFeather } from "react-icons/bs";
 import { useCurrentUser } from "@/hooks/user";
 import CurrentUser from "@/shared/currentUser";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 const sidebarIcons = [
   {
     title: "home",
@@ -52,6 +53,7 @@ const sidebarIcons = [
 
 const Sidebar = () => {
   const { user } = useCurrentUser();
+  const pathname = usePathname();
   return (
     <div>
       <div className="py-2 ">
@@ -65,12 +67,16 @@ const Sidebar = () => {
                 key={item.title + index}
                 href={
                   item.title === "profile"
-                    ? `/${user?.userName}`
+                    ? `/@${user?.userName}`
                     : item.activePathname
                 }
               >
                 <div className=" p-2 py-3 hover:bg-[#1d1d1dbb] cursor-pointer rounded-full flex items-center justify-center">
-                  <p className="text-[28px]">{item.icon}</p>
+                  {pathname === item.activePathname ? (
+                    <p className="text-[28px]">{item.iconActive}</p>
+                  ) : (
+                    <p className="text-[28px]">{item.icon}</p>
+                  )}
                 </div>
               </Link>
             );
