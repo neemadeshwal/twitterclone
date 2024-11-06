@@ -8,9 +8,9 @@ import UserDetail from "../getUser/UserDetail";
 const Home = ({ pathType }: { pathType: string }) => {
   return (
     <div className="h-full min-h-screen">
-      <div className="px-[110px] flex justify-between h-full pr-[80px] ">
+      <div className="px-[100px] flex justify-between h-full pr-[80px] ">
         <div className="h-full w-[7%] ">
-          <div className="fixed h-full flex gap-4">
+          <div className="fixed left-[8.8%] h-full flex gap-3">
             <div className=" h-full">
               <Sidebar />
             </div>
@@ -19,7 +19,7 @@ const Home = ({ pathType }: { pathType: string }) => {
             </div>
           </div>
         </div>
-        <div className="w-[60%] h-full">
+        <div className="w-[56%] h-full">
           {pathType?.startsWith("/@") ? <UserDetail /> : <MiddlePost />}
         </div>
 
@@ -27,7 +27,7 @@ const Home = ({ pathType }: { pathType: string }) => {
           <DivisionBar type="y" />
         </div>
 
-        <div className="w-[33%] ">
+        <div className="w-[37%] ">
           <RightSidebar />
         </div>
       </div>

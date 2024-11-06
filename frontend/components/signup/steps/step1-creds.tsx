@@ -82,11 +82,12 @@ const Step1Creds = ({
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    const monthIndex = months.indexOf(values.dob.month) + 1;
     const newData = {
       firstName: values.firstName,
       lastName: values.lastName,
       email: values.email,
-      dateOfBirth: `${values.dob.month} - ${values.dob.day} - ${values.dob.year}`,
+      dateOfBirth: `${monthIndex}/${values.dob.day}/${values.dob.year}`,
     };
     try {
       await mutation.mutateAsync(newData);

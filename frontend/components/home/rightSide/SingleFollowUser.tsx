@@ -55,12 +55,25 @@ const SingleFollowUser = ({ singleUser }: { singleUser: getCurrentUser }) => {
         <div className="flex gap-2 items-center">
           <div>
             {singleUser.profileImgUrl ? (
-              <Image
-                src={singleUser?.profileImgUrl}
-                alt=""
-                width={100}
-                height={100}
-              />
+              <div>
+                {singleUser.profileImgUrl.startsWith("#") ? (
+                  <div className=" flex items-center justify-center capitalize  cursor-pointer">
+                    <p
+                      style={{ backgroundColor: singleUser?.profileImgUrl }}
+                      className=" rounded-full w-10 h-10 flex items-center justify-center "
+                    >
+                      {singleUser?.firstName.slice(0, 1)}
+                    </p>
+                  </div>
+                ) : (
+                  <Image
+                    src={singleUser?.profileImgUrl}
+                    alt=""
+                    width={100}
+                    height={100}
+                  />
+                )}
+              </div>
             ) : (
               <div className=" flex items-center justify-center capitalize  cursor-pointer">
                 <p className="bg-green-900 rounded-full w-10 h-10 flex items-center justify-center ">
@@ -74,7 +87,7 @@ const SingleFollowUser = ({ singleUser }: { singleUser: getCurrentUser }) => {
               {singleUser?.firstName} {user?.lastName}
             </h3>
             <p className="gray text-[14px] font-[300] break-all">
-              {singleUser?.userName}
+              @{singleUser?.userName}
             </p>
           </div>
         </div>

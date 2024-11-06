@@ -14,18 +14,16 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  otp: z.coerce
-    .number()
-    .int({ message: "Please enter otp." })
-    .min(10000)
-    .max(999999),
+  otp: z.string().min(6, {
+    message: "please enter valid otp",
+  }), // First, we treat it as a string.
 });
 
 const Step2VerifyOtp = ({ data, setGetData }: any) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      otp: 0,
+      otp: "",
     },
   });
 

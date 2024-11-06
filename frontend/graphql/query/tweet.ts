@@ -53,7 +53,7 @@ export const getSingleTweetQuery = gql(`
                     id
                     firstName
                     lastName
-                    userName    
+                    userName 
                 }
             }
          author{

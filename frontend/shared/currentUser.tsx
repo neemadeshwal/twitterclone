@@ -7,22 +7,33 @@ import React, { useEffect, useState } from "react";
 const CurrentUser = () => {
   const { user } = useCurrentUser();
   console.log(user, "user");
-  const [color, setColor] = useState("");
 
-  useEffect(() => {
-    setColor(getRandomDarkHexColor());
-  }, []);
+  console.log(user?.profileImgUrl, "profileimg");
 
   return (
     <div className=" ">
       <div className="">
         {user?.profileImgUrl ? (
-          <Image src={user?.profileImgUrl} alt="" width={40} height={40} />
+          <div>
+            {user?.profileImgUrl.startsWith("#") ? (
+              <div
+                className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
+                style={{ backgroundColor: user?.profileImgUrl }}
+              >
+                {user?.firstName.slice(0, 1)}
+              </div>
+            ) : (
+              <Image
+                className="rounded-full w-10 h-10"
+                src={user?.profileImgUrl}
+                alt=""
+                width={40}
+                height={40}
+              />
+            )}
+          </div>
         ) : (
-          <div
-            className="rounded-full py-2 px-4 flex items-center justify-center capitalize"
-            style={{ backgroundColor: color }}
-          >
+          <div className="rounded-full w-10 h-10 bg-purple-950 flex items-center justify-center capitalize">
             {user?.firstName.slice(0, 1)}
           </div>
         )}

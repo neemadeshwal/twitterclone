@@ -24,11 +24,8 @@ import { useRouter } from "next/navigation";
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
   const queryClient = useQueryClient();
-  const [color, setColor] = useState("");
   const router = useRouter();
-  useEffect(() => {
-    setColor(getRandomDarkHexColor());
-  }, []);
+
   const { user } = useCurrentUser();
 
   const mutation = useMutation({
@@ -61,22 +58,31 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const handlePostClick = (id: string) => {
     router.push(`/${tweet.author.userName}/status/${id}`);
   };
+  console.log(tweet.author, "twwet-author");
   return (
     <div className="w-full cursor-pointer py-3 px-2">
       <div className="flex gap-4 w-full">
         <div>
           {tweet.author?.profileImgUrl ? (
-            <Image
-              src={tweet?.author?.profileImgUrl}
-              alt=""
-              width={40}
-              height={40}
-            />
+            <div>
+              {tweet.author?.profileImgUrl.startsWith("#") ? (
+                <div
+                  style={{ backgroundColor: tweet.author?.profileImgUrl }}
+                  className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
+                >
+                  {tweet.author?.firstName.slice(0, 1)}
+                </div>
+              ) : (
+                <Image
+                  src={tweet?.author?.profileImgUrl}
+                  alt=""
+                  width={40}
+                  height={40}
+                />
+              )}
+            </div>
           ) : (
-            <div
-              className="rounded-full py-2 px-4 flex items-center justify-center capitalize"
-              style={{ backgroundColor: color }}
-            >
+            <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
               {tweet.author?.firstName.slice(0, 1)}
             </div>
           )}
@@ -87,7 +93,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               <p className="capitalize font-[600] text-[17px]">
                 {tweet.author?.firstName}
               </p>
-              <p className="gray font-[300]">{tweet.author?.userName}</p>
+              <p className="gray font-[300]">@{tweet.author?.userName}</p>
               <p>
                 <LuDot className="gray font-[300]" />
               </p>

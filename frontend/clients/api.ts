@@ -15,6 +15,8 @@ if (isClient) {
   token = checkToken ? checkToken.split("=")[1] : "";
 }
 
+console.log(token, "token token");
+
 // Create the GraphQL client instance
 export const graphqlClient = new GraphQLClient(SERVER_URL as string, {
   headers: () => ({

@@ -5,6 +5,7 @@ import JWTService from "../../services/jwt";
 import { checkHashedPassword, hashPassword } from "../../utils/hashPassword";
 import { sendOtp } from "../../utils/nodemailer";
 import { redis } from "../../utils/redis/redis";
+import { getRandomDarkHexColor } from "../../utils/getRandomColor";
 
 interface getCredAndSendOtpPayload {
   firstName: string;
@@ -65,7 +66,13 @@ const queries = {
     if (!ctx.user) {
       throw new Error("Unauthorized.Please provide the token.");
     }
-    const allUsers = await prismaClient.user.findMany();
+    const allUsers = await prismaClient.user.findMany({
+      where: {
+        NOT: {
+          id: ctx.user.id,
+        },
+      },
+    });
     return allUsers;
   },
 };
@@ -179,21 +186,21 @@ const mutations = {
 
     const existingUserName = await prismaClient.user.findUnique({
       where: {
-        userName: `@${parsedVerifiedUser.lastName ?? "_"}${
+        userName: `${parsedVerifiedUser.lastName ?? "_"}${
           parsedVerifiedUser.firstName
         }`,
       },
     });
     if (existingUserName) {
-      if (parsedVerifiedUser.dateOfBirth) {
-        userName = `@${existingUserName.userName}${parsedVerifiedUser.dateOfBirth}`;
-      } else {
-        userName = `@${existingUserName.userName}${Math.floor(
-          Math.random() * 20
-        )}`;
-      }
+      // if (parsedVerifiedUser.dateOfBirth) {
+      //   userName = `${existingUserName.userName}${parsedVerifiedUser.dateOfBirth}`;
+      // } else {
+      userName = `${existingUserName.userName}${Math.floor(
+        Math.random() * 20
+      )}`;
+      // }
     } else {
-      userName = `@${parsedVerifiedUser.lastName ?? "_"}${
+      userName = `${parsedVerifiedUser.lastName ?? "_"}${
         parsedVerifiedUser.firstName
       }`;
     }
@@ -207,6 +214,7 @@ const mutations = {
         userName: userName!,
         dateOfBirth: parsedVerifiedUser.dateOfBirth ?? "",
         password: hashedPassword,
+        profileImgUrl: getRandomDarkHexColor(),
       },
     });
 

@@ -17,18 +17,14 @@ import { RiListRadio } from "react-icons/ri";
 
 const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
   const [showDialogBox, setShowDialogBox] = useState(false);
-  const [color, setColor] = useState("");
   const [tweetComment, setTweetComment] = useState("");
-
-  useEffect(() => {
-    setColor(getRandomDarkHexColor());
-  }, []);
 
   const mutation = useMutation({
     mutationFn: createComment,
     onSuccess: (response: any) => {
       console.log(response);
       setTweetComment("");
+      setShowDialogBox(false);
     },
     onError: (error) => {
       console.log(error);
@@ -69,18 +65,25 @@ const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
             <div className="flex w-fit items-center flex-col gap-1 h-full justify-center  ">
               <div className="min-h-[100px] h-full flex items-center  flex-col gap-2">
                 {tweet.author?.profileImgUrl ? (
-                  <Image
-                    src={tweet.author.profileImgUrl}
-                    alt=""
-                    width={40}
-                    height={40}
-                    className="rounded-full"
-                  />
+                  <div>
+                    {tweet.author?.profileImgUrl.startsWith("#") ? (
+                      <div
+                        className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
+                        style={{ backgroundColor: tweet.author?.profileImgUrl }}
+                      >
+                        {tweet.author?.firstName.slice(0, 1)}
+                      </div>
+                    ) : (
+                      <Image
+                        src={tweet?.author?.profileImgUrl}
+                        alt=""
+                        width={40}
+                        height={40}
+                      />
+                    )}
+                  </div>
                 ) : (
-                  <div
-                    className="rounded-full py-2 px-4 flex items-center justify-center capitalize"
-                    style={{ backgroundColor: color }}
-                  >
+                  <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
                     {tweet.author?.firstName.slice(0, 1)}
                   </div>
                 )}
@@ -96,7 +99,7 @@ const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
                   <p className="capitalize font-[600] text-[17px] ">
                     {tweet.author?.firstName} {tweet.author?.lastName}
                   </p>
-                  <p className="gray font-[300]">{tweet.author?.userName}</p>
+                  <p className="gray font-[300]">@{tweet.author?.userName}</p>
                   <p>
                     <LuDot className="gray font-[300]" />
                   </p>
@@ -105,7 +108,9 @@ const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
                 <div className="py-3">{tweet?.content}</div>
                 <div className="gray font-[500] text-[13px] py-1">
                   Replying to{" "}
-                  <p className="x-textcolor inline">{tweet.author?.userName}</p>
+                  <p className="x-textcolor inline">
+                    @{tweet.author?.userName}
+                  </p>
                 </div>
               </div>
               <div className="py-2 pt-4 w-full">
