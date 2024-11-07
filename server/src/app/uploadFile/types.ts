@@ -1,12 +1,13 @@
 export const types = `#graphql
-
-type uploadedFile{
-
-    url: String
-  public_id: String
+scalar upload
+type uploadedFile {
+  filename: String!
+  mimetype: String!
+  encoding: String!
+  url: String!
 }
 
 input uploadFilePayload{
-    files:[Upload]
+    files:[upload]
 }
 `;

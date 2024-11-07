@@ -13,8 +13,15 @@ import { createTweetMutate } from "@/graphql/mutation/tweet";
 import { uploadFile } from "@/graphql/mutation/uploadFile";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import { previewFile } from "@/lib/uploadFile";
+import Image from "next/image";
+import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 const ComposePost = () => {
   const queryClient = useQueryClient();
+  const [showRightChevron, setShowRightChevron] = useState(false);
+  const [showLeftChevron, setShowLeftChevron] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [files, setFiles] = useState<string[]>([]);
   const [tweetContent, setTweetContent] = useState("");
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const mutation = useMutation({
@@ -28,15 +35,15 @@ const ComposePost = () => {
       console.log(error);
     },
   });
-  const uploadFileMutation = useMutation({
-    mutationFn: uploadFile,
-    onSuccess: (response: any) => {
-      console.log(response);
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+  // const uploadFileMutation = useMutation({
+  //   mutationFn: uploadFile,
+  //   onSuccess: (response: any) => {
+  //     console.log(response);
+  //   },
+  //   onError: (error) => {
+  //     console.log(error);
+  //   },
+  // });
   async function onSubmit() {
     const body = {
       content: tweetContent,
@@ -47,16 +54,61 @@ const ComposePost = () => {
       console.log(error);
     }
   }
-  async function handleImgUpload(event: any) {
-    const files = Array.from(event.target.files);
-    console.log(files, "formatter files");
-    const body = {
-      files: event.target.files,
-    };
+  // async function handleImgUpload(event: any) {
+  //   const files = Array.from(event.target.files);
+
+  //   const fileReaders = files.map((file) => {
+  //     return new Promise<string>((resolve, reject) => {
+  //       const reader = new FileReader();
+  //       reader.onload = () => resolve(reader.result as string);
+  //       reader.onerror = () => reject;
+  //       reader.readAsDataURL(file as Blob);
+  //     });
+  //   });
+  //   Promise.all(fileReaders).then((base64files) => setFiles(base64files));
+
+  //   try {
+  //     const base64files = await Promise.all(fileReaders);
+  //     const body = {
+  //       files: base64files,
+  //     };
+
+  //     await uploadFileMutation.mutateAsync(body);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  // async function handleImgUpload(event: React.ChangeEvent<HTMLInputElement>) {
+  //   const files = event.target.files;
+  //   const body = {
+  //     files: files,
+  //   };
+  //   if (!files) {
+  //     return;
+  //   }
+  //   try {
+  //     await uploadFileMutation.mutateAsync({ files });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  async function handleImgUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    if (!event.target.files || event.target.files.length === 0) {
+      return;
+    }
+    setLoading(true);
     try {
-      await uploadFileMutation.mutateAsync(body);
+      const fileUrl = await previewFile(event.target.files);
+      console.log(fileUrl, "fileUrl");
+      if (fileUrl && fileUrl.length !== 0) {
+        setFiles((prevVal) => [...prevVal, ...fileUrl]);
+      }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -73,14 +125,72 @@ const ComposePost = () => {
       }
       if (isEmojiTableOpen) {
         document.addEventListener("click", handleEmojiClose);
+      } else {
+        document.removeEventListener("click", handleEmojiClose);
       }
 
       return () => {
         document.removeEventListener("click", handleEmojiClose);
       };
     };
-  }, [isEmojiTableOpen]);
+  }, []);
 
+  console.log(files, "fiels");
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = (dir: string) => {
+    if (scrollRef.current) {
+      const scrollWidth = scrollRef.current.scrollWidth;
+      const clientWidth = scrollRef.current.clientWidth;
+      const scrollLeft = scrollRef.current.scrollLeft;
+      console.log(scrollWidth - clientWidth, "minus effect");
+      const scrollAmount = 250 + 16;
+      const maxScrollLeft = scrollWidth - clientWidth;
+
+      if (dir === "right") {
+        scrollRef.current.scrollBy({
+          left: scrollAmount,
+          behavior: "smooth",
+        });
+        if (scrollLeft + scrollAmount >= maxScrollLeft) {
+          setShowRightChevron(false);
+        } else {
+          setShowRightChevron(true);
+        }
+      } else {
+        scrollRef.current.scrollBy({
+          left: -scrollAmount,
+          behavior: "smooth",
+        });
+        if (scrollRef.current.scrollLeft <= 0) {
+          setShowLeftChevron(false); // At the start of the scroll area
+        } else {
+          setShowLeftChevron(true); // Not at the start
+        }
+        if (scrollRef.current.scrollLeft + clientWidth < scrollWidth) {
+          setShowRightChevron(true); // Show right chevron if we are not at the end
+        }
+      }
+
+      console.log(clientWidth, "cleintwidht");
+    }
+  };
+
+  useEffect(() => {
+    // Ensure the chevrons are updated when files change
+    if (scrollRef.current) {
+      const scrollWidth = scrollRef.current.scrollWidth;
+      const clientWidth = scrollRef.current.clientWidth;
+      const scrollLeft = scrollRef.current.scrollLeft;
+
+      // Show the right chevron only if there is enough content to scroll
+      setShowRightChevron(scrollLeft + clientWidth < scrollWidth);
+
+      // Show the left chevron only if we're not at the beginning
+      setShowLeftChevron(scrollWidth > 0);
+    }
+  }, [files, scrollRef]);
   return (
     <div className="w-full relative">
       <div className="w-full p-6 px-4 pb-4">
@@ -94,6 +204,60 @@ const ComposePost = () => {
               className="text-[20px] bg-transparent outline-none border-0 w-full placeholder:text-gray-600"
               placeholder="What is happening?!"
             ></textarea>
+            {loading && <div>Loading....</div>}
+            {files && typeof files !== "undefined" && files.length !== 0 && (
+              <div
+                ref={scrollRef}
+                className={`${
+                  files.length === 1 ? "col-span-2" : "col-span-1"
+                } grid grid-rows-1 gap-3 grid-flow-col overflow-hidden `}
+              >
+                {showLeftChevron && (
+                  <div className="absolute left-6 top-[30%] rounded-full p-2 bg-gray-800">
+                    <BiChevronLeft onClick={() => handleScroll("left")} />
+                  </div>
+                )}
+                {showRightChevron && (
+                  <div className="absolute right-6 top-[30%] rounded-full p-2 bg-gray-800">
+                    <BiChevronRight onClick={() => handleScroll("right")} />
+                  </div>
+                )}
+
+                {files.length !== 0 &&
+                  files.map((url: string) => {
+                    console.log(url, "check url");
+                    console.log(url.endsWith("mp4"), "mpv video check");
+                    return (
+                      <div key={url} className=" rounded-[20px]">
+                        {url.endsWith(".mp4") ? (
+                          <div className="w-[270px] h-[270px]">
+                            <video
+                              controls
+                              width="250"
+                              height="250"
+                              loop
+                              autoPlay
+                              className="w-full h-full"
+                              muted
+                            />
+                            <source src={url} type="video/mp4" />
+                          </div>
+                        ) : (
+                          <div className="rounded-[20px] w-[270px]  h-[270px] ">
+                            <Image
+                              src={url}
+                              alt=""
+                              width={500}
+                              height={500}
+                              className="w-full h-full rounded-[20px]"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
             <DivisionBar type="x" />
           </div>
         </div>
@@ -145,12 +309,8 @@ const ComposePost = () => {
         </div>
       </div>
       <DivisionBar type="x" />
-      <div className="sticky mx-auto top-12 px-[10%] h-[600px]">
-        {isEmojiTableOpen && (
-          // <EmojiPicker
-          //   className="emoji-black"
-          //   style={{ width: "300px", height: "400px" }}
-          // />
+      {isEmojiTableOpen && (
+        <div className="sticky mx-auto top-12 px-[10%] h-[600px]">
           <div ref={emojiCloseRef}>
             <Picker
               data={data}
@@ -159,8 +319,8 @@ const ComposePost = () => {
               }
             />
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

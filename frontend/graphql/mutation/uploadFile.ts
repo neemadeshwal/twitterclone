@@ -1,5 +1,6 @@
 import { graphqlClient } from "@/clients/api";
 import { gql } from "@apollo/client";
+import { Upload } from "graphql-upload";
 
 const UPLOAD_FILE = gql`
   mutation UploadFile($payload: uploadFilePayload) {
@@ -13,13 +14,13 @@ const UPLOAD_FILE = gql`
 //   return data;
 // };
 
-export const uploadFile = async (payload: { files: File[] }) => {
-  // FormData to handle file upload in multipart format
-
-  // Send the files as multipart/form-data via graphql client
-  const data = await graphqlClient.request(UPLOAD_FILE, {
-    payload,
+export const uploadFile = async (payload: { files: FileList }) => {
+  const formData = new FormData();
+  Array.from(payload.files).forEach((file) => {
+    formData.append("files", file);
   });
-
+  const data = await graphqlClient.request(UPLOAD_FILE, {
+    payload: { files: formData.getAll("files") },
+  });
   return data;
 };

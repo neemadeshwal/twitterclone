@@ -1,31 +1,27 @@
-import { GraphqlContext } from "../../interfaces";
+import { GraphQLUpload } from "graphql-upload";
+
 import { uploadOnCloudinary } from "../../services/cloudinary";
 
+// You can directly use GraphQLUpload as part of the resolver setup
 const mutations = {
-  uploadFile: async (
-    parent: any,
-    { payload }: { payload: { files: string[] } },
-    ctx: GraphqlContext
-  ) => {
-    if (!ctx.user) {
-      throw new Error("Unauthorized.");
-    }
-    const { files } = payload;
+  uploadFile: async (parent: any, { file }: { file: any }, ctx: any) => {
+    // Destructure the file object to get the readable stream
+    const { createReadStream, filename, mimetype, encoding } = await file;
 
-    if (files.length === 0) {
-      throw new Error("an error occured.");
-    }
+    // You now have access to the readable stream
+    const fileStream = createReadStream();
 
-    try {
-      const uploadResults = await Promise.all(
-        files.map((file) => uploadOnCloudinary(file))
-      );
-      return uploadResults;
-    } catch (error) {
-      console.log(error);
-      throw new Error("error while uploading to cloudinary");
-    }
+    // Upload the file to Cloudinary
+    const cloudinaryResponse = await uploadOnCloudinary(fileStream);
+
+    // You can return additional metadata such as the file URL or Cloudinary response
+    return {
+      filename,
+      mimetype,
+      encoding,
+      url: cloudinaryResponse, // If Cloudinary returns a secure URL
+    };
   },
 };
 
-export const resolvers = { mutations };
+export const resolvers = { mutations, upload: GraphQLUpload };

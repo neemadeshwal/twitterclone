@@ -12,13 +12,16 @@ import { Tweet } from "./tweet";
 import { Like } from "./like";
 import { Comment } from "./comment";
 import { Follows } from "./follows";
-import { UploadFile } from "./uploadFile";
+// import { UploadFile } from "./uploadFile";
+import { GraphQLUpload } from "graphql-upload";
+import FileUploadRouter from "./fileUpload";
 
 export async function initServer() {
   const app = express();
 
-  app.use(bodyParser.json());
-  app.use(cors());
+  app.use(bodyParser.json({ limit: "50mb" }));
+  app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
+  app.use(cors({ origin: "http://localhost:5000" }));
 
   const graphqlServer = new ApolloServer<GraphqlContext>({
     typeDefs: `
@@ -27,7 +30,6 @@ export async function initServer() {
     ${Like.types}
     ${Comment.types}
     ${Follows.types}
-    ${UploadFile.types}
   
     type Query {
       ${User.queries}
@@ -39,7 +41,6 @@ export async function initServer() {
     ${Like.mutations}
     ${Comment.mutations}
     ${Follows.mutations}
-    ${UploadFile.mutations}
     }
     `,
     resolvers: {
@@ -49,7 +50,6 @@ export async function initServer() {
         ...Like.resolvers.mutations,
         ...Comment.resolvers.mutations,
         ...Follows.resolvers.mutations,
-        ...UploadFile.resolvers.mutations,
       },
       Query: { ...User.resolvers.queries, ...Tweet.resolvers.queries },
       ...User.resolvers.extraResolvers,
@@ -76,6 +76,7 @@ export async function initServer() {
 
   app.use(passport.initialize());
   app.use("/api/auth", AuthRoute);
+  app.use("/api/uploads", FileUploadRouter);
 
   return app;
 }
