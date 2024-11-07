@@ -15,7 +15,7 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { previewFile } from "@/lib/uploadFile";
 import Image from "next/image";
-import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import { BiChevronLeft, BiChevronRight, BiX } from "react-icons/bi";
 const ComposePost = () => {
   const queryClient = useQueryClient();
   const [showRightChevron, setShowRightChevron] = useState(false);
@@ -178,19 +178,39 @@ const ComposePost = () => {
   };
 
   useEffect(() => {
-    // Ensure the chevrons are updated when files change
+    const handleScroll = () => {
+      if (scrollRef.current) {
+        const scrollWidth = scrollRef.current.scrollWidth;
+        const clientWidth = scrollRef.current.clientWidth;
+        const scrollLeft = scrollRef.current.scrollLeft;
+        console.log(scrollWidth);
+
+        setShowRightChevron(scrollLeft + clientWidth < scrollWidth);
+
+        setShowLeftChevron(scrollLeft > 0);
+      }
+    };
+
     if (scrollRef.current) {
-      const scrollWidth = scrollRef.current.scrollWidth;
-      const clientWidth = scrollRef.current.clientWidth;
-      const scrollLeft = scrollRef.current.scrollLeft;
+      console.log("hey");
+      scrollRef.current.addEventListener("scroll", handleScroll);
 
-      // Show the right chevron only if there is enough content to scroll
-      setShowRightChevron(scrollLeft + clientWidth < scrollWidth);
-
-      // Show the left chevron only if we're not at the beginning
-      setShowLeftChevron(scrollWidth > 0);
+      // Initial check
+      handleScroll();
     }
+
+    // Clean up event listener
+    return () => {
+      if (scrollRef.current) {
+        scrollRef.current.removeEventListener("scroll", handleScroll);
+      }
+    };
   }, [files, scrollRef]);
+
+  const deletePreviewPhotos = async (deleteUrl: string) => {
+    setFiles((prevVal) => prevVal.filter((url: string) => url !== deleteUrl));
+  };
+
   return (
     <div className="w-full relative">
       <div className="w-full p-6 px-4 pb-4">
@@ -210,7 +230,7 @@ const ComposePost = () => {
                 ref={scrollRef}
                 className={`${
                   files.length === 1 ? "col-span-2" : "col-span-1"
-                } grid grid-rows-1 gap-3 grid-flow-col overflow-hidden `}
+                } grid grid-rows-1 gap-3 grid-flow-col overflow-auto`}
               >
                 {showLeftChevron && (
                   <div className="absolute left-6 top-[30%] rounded-full p-2 bg-gray-800">
@@ -230,7 +250,7 @@ const ComposePost = () => {
                     return (
                       <div key={url} className=" rounded-[20px]">
                         {url.endsWith(".mp4") ? (
-                          <div className="w-[270px] h-[270px]">
+                          <div className="w-[270px] h-[270px] relative">
                             <video
                               controls
                               width="250"
@@ -240,10 +260,21 @@ const ComposePost = () => {
                               className="w-full h-full"
                               muted
                             />
+
                             <source src={url} type="video/mp4" />
+                            <BiX
+                              onClick={() => deletePreviewPhotos(url)}
+                              className="absolute  bg-black/40 text-white w-7 h-7 hover:bg-black/50 cursor-pointer rounded-full right-3 top-3"
+                            />
                           </div>
                         ) : (
-                          <div className="rounded-[20px] w-[270px]  h-[270px] ">
+                          <div
+                            className={`${
+                              files.length === 1
+                                ? "w-full h-[300px]"
+                                : "w-[270px] h-[300px]"
+                            }  rounded-[20px] relative    `}
+                          >
                             <Image
                               src={url}
                               alt=""
@@ -251,6 +282,12 @@ const ComposePost = () => {
                               height={500}
                               className="w-full h-full rounded-[20px]"
                             />
+                            <div className=" ">
+                              <BiX
+                                onClick={() => deletePreviewPhotos(url)}
+                                className="absolute  bg-black/40 text-white w-7 h-7 hover:bg-black/50 cursor-pointer rounded-full right-3 top-3"
+                              />
+                            </div>
                           </div>
                         )}
                       </div>
