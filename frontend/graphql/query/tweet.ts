@@ -58,6 +58,7 @@ export const getSingleTweetQuery = gql(`
                     firstName
                     lastName
                     userName 
+                    profileImgUrl
                 }
             }
          author{

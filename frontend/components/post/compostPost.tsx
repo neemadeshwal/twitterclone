@@ -137,17 +137,14 @@ const ComposePost = () => {
         console.log("hey");
         setIsEmojiTableOpen(false);
       }
-      if (isEmojiTableOpen) {
-        document.addEventListener("click", handleEmojiClose);
-      } else {
-        document.removeEventListener("click", handleEmojiClose);
-      }
-
-      return () => {
-        document.removeEventListener("click", handleEmojiClose);
-      };
     };
-  }, []);
+
+    document.addEventListener("mousedown", handleEmojiClose);
+
+    return () => {
+      document.removeEventListener("mousedown", handleEmojiClose);
+    };
+  }, [isEmojiTableOpen, setIsEmojiTableOpen]);
 
   console.log(files, "fiels");
 
@@ -367,8 +364,8 @@ const ComposePost = () => {
       </div>
       <DivisionBar type="x" />
       {isEmojiTableOpen && (
-        <div className="sticky mx-auto top-12 px-[10%] h-[600px]">
-          <div ref={emojiCloseRef}>
+        <div ref={emojiCloseRef} className="absolute px-[10%] z-[1000]">
+          <div>
             <Picker
               data={data}
               onEmojiSelect={(emoji: any) =>

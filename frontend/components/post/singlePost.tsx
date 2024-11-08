@@ -240,7 +240,9 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               ) : (
                 <CiHeart className="text-[20px] " />
               )}
-              2344k
+              <p className={liked ? "text-red-500" : "gray"}>
+                {tweet?.LikedBy.length}
+              </p>
             </div>
             <div className="flex gap-1 items-center gray text-[13px] font-[400]">
               <IoShareOutline className="text-[20px] " />

@@ -51,7 +51,7 @@ const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
         className="flex gap-1 items-center gray text-[13px] font-[400] cursor-pointer"
       >
         <BsChat className="text-[20px]" />
-        234k
+        <p>{tweet?.commentAuthor.length}</p>
       </div>
       {showDialogBox && (
         <div className="fixed top-0 left-0 w-full h-full z-[1000] dimBg flex items-center justify-center">

@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { CiBookmark, CiHeart } from "react-icons/ci";
 import { FaArrowLeft, FaHeart } from "react-icons/fa";
-import { IoShareOutline } from "react-icons/io5";
+import { IoEllipsisHorizontal, IoShareOutline } from "react-icons/io5";
 import { LuFolderClock, LuRepeat2 } from "react-icons/lu";
 import Comment from "../post/comment";
 import { FiMapPin } from "react-icons/fi";
@@ -22,9 +22,11 @@ import CurrentUser from "@/shared/currentUser";
 import SinglePost from "../post/singlePost";
 import SingleComment from "./singleComment";
 import { createComment } from "@/graphql/mutation/comment";
+import PostActivity from "@/shared/postActivity";
 
 const PostDetail = () => {
   const pathname = usePathname();
+  const [isPostControlDialogOpen, setPostControlDialogOpen] = useState(false);
   console.log(pathname);
   const idArr = pathname.split("/");
   const id = idArr[idArr.length - 1];
@@ -119,56 +121,106 @@ const PostDetail = () => {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1 px-2 py-2">
-          <div>
-            {singleTweet.author?.profileImgUrl ? (
-              <div>
-                {singleTweet.author?.profileImgUrl.startsWith("#") ? (
-                  <div
-                    style={{
-                      backgroundColor: singleTweet.author?.profileImgUrl,
-                    }}
-                    className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
-                  >
-                    {singleTweet.author?.firstName.slice(0, 1)}
-                  </div>
-                ) : (
-                  <Image
-                    src={singleTweet?.author?.profileImgUrl}
-                    alt=""
-                    width={40}
-                    height={40}
-                  />
-                )}
-              </div>
-            ) : (
-              <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
-                {singleTweet.author?.firstName.slice(0, 1)}
-              </div>
+        <div className="flex justify-between p-2 items-center">
+          <div className="flex items-center gap-1 py-2">
+            <div>
+              {singleTweet.author?.profileImgUrl ? (
+                <div>
+                  {singleTweet.author?.profileImgUrl.startsWith("#") ? (
+                    <div
+                      style={{
+                        backgroundColor: singleTweet.author?.profileImgUrl,
+                      }}
+                      className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
+                    >
+                      {singleTweet.author?.firstName.slice(0, 1)}
+                    </div>
+                  ) : (
+                    <Image
+                      src={singleTweet?.author?.profileImgUrl}
+                      alt=""
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full"
+                    />
+                  )}
+                </div>
+              ) : (
+                <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
+                  {singleTweet.author?.firstName.slice(0, 1)}
+                </div>
+              )}
+            </div>
+            <div className="px-4">
+              <h3 className="text-[16px] font-[600] leading-tight  capitalize">
+                {singleTweet.author?.firstName} {singleTweet.author?.lastName}
+              </h3>
+              <p className="gray text-[14px] font-[400]">
+                @{singleTweet.author?.userName}
+              </p>
+            </div>
+          </div>
+          <div
+            className="relative mr-2 cursor-pointer hover:bg-[#253e703e] flex items-center justify-between p-2 rounded-full"
+            onClick={() => setPostControlDialogOpen(true)}
+          >
+            <IoEllipsisHorizontal className="gray hover:text-blue-400  " />
+            {isPostControlDialogOpen && (
+              <PostActivity
+                singleTweet={singleTweet}
+                setPostControlDialogOpen={setPostControlDialogOpen}
+              />
             )}
           </div>
-          <div className="px-4">
-            <h3 className="text-[16px] font-[600] leading-tight  capitalize">
-              {singleTweet.author?.firstName} {singleTweet.author?.lastName}
-            </h3>
-            <p className="gray text-[14px] font-[400]">
-              @{singleTweet.author?.userName}
-            </p>
-          </div>
         </div>
-        <div className="px-3 pr-5 py-2">
-          <div>
-            <div>{singleTweet.content}</div>
-          </div>
-        </div>
+        <div className="px-3 pr-5 py-2"></div>
         <div className="px-3">
-          <Image
-            src="/img.jpg"
-            alt=""
-            width="100"
-            height="100"
-            className="w-full rounded-[10px]"
-          />
+          <div>{singleTweet?.content}</div>
+          {(singleTweet?.photoArray?.length !== 0 ||
+            singleTweet?.videoArray?.length !== 0) && (
+            <div
+              // onClick={() => handlePostClick(tweet.id)}
+              className={`my-2 grid w-full border border-gray-600 z-50 overflow-hidden rounded-[20px] gap-x-[2px] gap-y-[2px] grid-flow-row ${
+                singleTweet?.photoArray?.length +
+                  singleTweet?.videoArray?.length >
+                2
+                  ? "grid-cols-2 h-[500px]"
+                  : singleTweet?.photoArray?.length +
+                      singleTweet?.videoArray?.length ===
+                    2
+                  ? "grid-cols-2 h-[350px] gap-x-[2px]"
+                  : "grid-cols-1 h-[500px]"
+              }`}
+            >
+              {singleTweet?.photoArray?.length !== 0 &&
+                singleTweet?.photoArray.map((url) => (
+                  <div key={url} className="relative overflow-hidden">
+                    <Image
+                      src={url}
+                      alt=""
+                      width={400}
+                      height={500}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+
+              {singleTweet?.videoArray?.length !== 0 &&
+                singleTweet?.videoArray.map((url) => (
+                  <div key={url} className="relative overflow-hidden">
+                    <video
+                      controls
+                      loop
+                      autoPlay
+                      className="w-full h-full object-cover"
+                      muted
+                    >
+                      <source src={url} type="video/mp4" />
+                    </video>
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
         <div className="px-4 py-2">
           <p className="gray">

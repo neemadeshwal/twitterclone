@@ -60,26 +60,38 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
   // const handlePostClick = (id: string) => {
   //   router.push(`/${tweet.author.userName}/status/${id}`);
   // };
+  console.log(comment.user, "user user");
   return (
     <div
       // onClick={() => handlePostClick(comment.id)}
-      className="w-full cursor-pointer py-3 px-2"
+      className="w-full cursor-pointer py-3 "
     >
-      <div className="flex gap-4 w-full">
+      <div className="flex gap-4 w-full px-2">
         <div>
           {comment.user?.profileImgUrl ? (
-            <Image
-              src={comment?.user?.profileImgUrl}
-              alt=""
-              width={40}
-              height={40}
-            />
+            <div>
+              {comment.user?.profileImgUrl.startsWith("#") ? (
+                <div
+                  style={{
+                    backgroundColor: comment.user?.profileImgUrl,
+                  }}
+                  className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
+                >
+                  {comment.user?.firstName.slice(0, 1)}
+                </div>
+              ) : (
+                <Image
+                  src={comment.user?.profileImgUrl}
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 rounded-full"
+                />
+              )}
+            </div>
           ) : (
-            <div
-              className="rounded-full py-2 px-4 flex items-center justify-center capitalize"
-              style={{ backgroundColor: color }}
-            >
-              {comment.user?.firstName.slice(0, 1)}
+            <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
+              {comment?.user?.firstName.slice(0, 1)}
             </div>
           )}
         </div>

@@ -22,9 +22,32 @@ export const getUserByIdQuery = gql(`
     id
     profileImgUrl
     userName
+    followers{
+      followerId
+      followingId
+    }
+    following{
+      followerId
+      followingId
+    }
     posts {
       authorId
       content
+      commentAuthor{
+                id
+                comment
+                userId
+                tweetId
+                user{
+                  profileImgUrl
+                  firstName
+                  lastName
+                  userName
+                  email
+                  id
+                }
+                
+            }
       id
       photoArray
       videoArray
@@ -53,6 +76,7 @@ export const getUserByIdQuery = gql(`
         lastName
         email
         id
+        profileImgUrl
       }
       
       tweet {

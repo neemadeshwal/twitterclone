@@ -8,7 +8,7 @@ import CommentTab from "./commentTab";
 
 const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
   const [tabs, setTabs] = useState("post");
-  console.log(user.posts, "user tweet");
+  console.log(user, "user tweet");
   console.log(user.likedTweets, "item liked");
 
   const LikedTweet: Tweet[] = [];
@@ -30,10 +30,27 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
         )}
         <div className="absolute bottom-[-10px] left-4">
           {user?.profileImgUrl ? (
-            <Image src={user.profileImgUrl} alt="" width="150" height="150" />
+            <div>
+              {user?.profileImgUrl.startsWith("#") ? (
+                <div
+                  className="rounded-full w-[150px] text-[80px] border-4 border-black h-[150px] flex items-center justify-center capitalize"
+                  style={{ backgroundColor: user?.profileImgUrl }}
+                >
+                  {user?.firstName.slice(0, 1)}
+                </div>
+              ) : (
+                <Image
+                  className="rounded-full w-[150px] h-[150px] border-black border-4"
+                  src={user?.profileImgUrl}
+                  alt=""
+                  width={40}
+                  height={40}
+                />
+              )}
+            </div>
           ) : (
-            <div className="bg-cyan-900 w-[150px] h-[150px] border-[4px] border-black rounded-full flex items-center justify-center text-[70px]">
-              N
+            <div className="rounded-full w-10 h-10 bg-purple-950 flex items-center justify-center capitalize">
+              {user?.firstName.slice(0, 1)}
             </div>
           )}
         </div>
@@ -61,10 +78,12 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
           </div>
           <div className="flex gap-4 text-[14px] gray capitalize px-4">
             <div>
-              <span className="text-white">1</span> Following
+              <span className="text-white">{user?.following.length}</span>{" "}
+              Following
             </div>
             <div>
-              <span className="text-white">23</span> followers
+              <span className="text-white">{user?.followers.length}</span>{" "}
+              followers
             </div>
           </div>
           <div className="py-4">
