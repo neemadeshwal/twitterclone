@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { MdOutlineCalendarMonth } from "react-icons/md";
 import PostTab from "./postTab";
 import CommentTab from "./commentTab";
+import MediaTab from "./mediaTab";
 
 const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
   const [tabs, setTabs] = useState("post");
@@ -18,6 +19,13 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
     });
   }
   console.log(LikedTweet, "likedtweet");
+
+  const media =
+    user.posts.length !== 0 &&
+    user.posts.filter(
+      (post) => post.photoArray.length !== 0 || post.videoArray.length !== 0
+    );
+  console.log(media, "media");
   return (
     <div>
       <div className="relative">
@@ -86,37 +94,59 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
               followers
             </div>
           </div>
-          <div className="py-4">
+          <div className="py-1">
             <div className="flex items-center justify-between">
               <div
+                style={{ color: tabs === "post" ? "white" : "#a2a2a2b9" }}
                 onClick={() => setTabs("post")}
-                className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]"
+                className="capitalize relative py-4  gray w-fit cursor-pointer  px-9 hover:bg-[#1f1f1fb8]"
               >
+                {/* <div className="relative w-fit h-full py-4 "> */}
                 <p>posts</p>
+                {tabs === "post" && (
+                  <p className="absolute bottom-0 left-[24%]  bg-blue-500 w-[55%] h-1 rounded-full"></p>
+                )}
+                {/* </div> */}
               </div>
               <div
+                style={{ color: tabs === "replies" ? "white" : "#a2a2a2b9" }}
                 onClick={() => setTabs("replies")}
-                className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]"
+                className="capitalize relative gray w-fit cursor-pointer p-4 px-9 hover:bg-[#1f1f1fb8]"
               >
                 <p>replies</p>
+                {tabs === "replies" && (
+                  <p className="absolute bottom-0 left-[24%]  bg-blue-500 w-[55%] h-1 rounded-full"></p>
+                )}
               </div>
               <div
+                style={{ color: tabs === "articles" ? "white" : "#a2a2a2b9" }}
                 onClick={() => setTabs("articles")}
-                className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]"
+                className="capitalize relative gray w-fit cursor-pointer p-4 px-9 hover:bg-[#1f1f1fb8]"
               >
                 <p>articles</p>
+                {tabs === "articles" && (
+                  <p className="absolute bottom-0 left-[24%]  bg-blue-500 w-[55%] h-1 rounded-full"></p>
+                )}
               </div>
               <div
+                style={{ color: tabs === "media" ? "white" : "#a2a2a2b9" }}
                 onClick={() => setTabs("media")}
-                className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]"
+                className="capitalize relative gray w-fit cursor-pointer p-4 px-9 hover:bg-[#1f1f1fb8]"
               >
                 <p>media</p>
+                {tabs === "media" && (
+                  <p className="absolute bottom-0 left-[24%]  bg-blue-500 w-[55%] h-1 rounded-full"></p>
+                )}
               </div>
               <div
+                style={{ color: tabs === "likes" ? "white" : "#a2a2a2b9" }}
                 onClick={() => setTabs("likes")}
-                className="capitalize gray w-fit cursor-pointer p-4 px-10 hover:bg-[#1f1f1fb8]"
+                className="capitalize relative gray w-fit cursor-pointer p-4 px-9 hover:bg-[#1f1f1fb8]"
               >
                 <p>likes</p>
+                {tabs === "likes" && (
+                  <p className="absolute bottom-0 left-[24%]  bg-blue-500 w-[55%] h-1 rounded-full"></p>
+                )}
               </div>
             </div>
             <DivisionBar type="x" />
@@ -127,8 +157,10 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
             <CommentTab comment={user.commentTweets} />
           ) : tabs === "likes" ? (
             <PostTab postlist={LikedTweet} />
+          ) : tabs === "media" ? (
+            media && media.length !== 0 && <MediaTab mediaPost={media} />
           ) : (
-            "hello"
+            <div>hello</div>
           )}
         </div>
       </div>

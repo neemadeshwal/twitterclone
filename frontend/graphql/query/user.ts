@@ -81,6 +81,8 @@ export const getUserByIdQuery = gql(`
       
       tweet {
         content
+        photoArray
+        videoArray
       }
     }
     likedTweets {
@@ -104,6 +106,8 @@ export const getUserByIdQuery = gql(`
         }
         content
         id
+        videoArray
+        photoArray
         LikedBy {
           tweet {
             authorId
