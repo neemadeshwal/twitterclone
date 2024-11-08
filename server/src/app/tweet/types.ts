@@ -6,6 +6,8 @@ type Tweet{
     id:String
     authorId:String
     author:User
+    photoArray:[String]
+    videoArray:[String]
     LikedBy:[Like]
     commentAuthor:[Comment]
 
@@ -14,6 +16,8 @@ type Tweet{
 
 input CreateTweetInput{
     content:String!
+    photoArray:[String]
+    videoArray:[String]
     
 }
 input SingleTweetInput{

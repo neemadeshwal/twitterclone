@@ -46,6 +46,8 @@ export interface getCurrentUser {
 
 export interface createTweetMutateProps {
   content: string;
+  photoArray: string[];
+  videoArray: string[];
 }
 export interface Tweet {
   id: string;
@@ -54,6 +56,8 @@ export interface Tweet {
   LikedBy: Like[];
   commentAuthor: Comment[];
   authorId: string;
+  photoArray: string[];
+  videoArray: string[];
 }
 
 interface getAllTweet {

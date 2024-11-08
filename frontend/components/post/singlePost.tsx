@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
+  const [isPostControlDialogOpen, setPostControlDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -75,9 +76,10 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               ) : (
                 <Image
                   src={tweet?.author?.profileImgUrl}
-                  alt=""
+                  alt="style one"
                   width={40}
                   height={40}
+                  className="rounded-full w-10 h-10"
                 />
               )}
             </div>
@@ -99,20 +101,130 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               </p>
               <p className="gray font-[300]">5h</p>
             </div>
-            <div>
+            <div
+              className="relative"
+              onClick={() => setPostControlDialogOpen(true)}
+            >
               <IoEllipsisHorizontal className="gray" />
+              {/* <div
+                style={{
+                  boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)",
+                }}
+                className="absolute p-4 right-0 top-0 z-[100] w-[350px] h-[380px] bg-black rounded-[15px]"
+              >
+                hello
+              </div> */}
             </div>
           </div>
           <div onClick={() => handlePostClick(tweet.id)}>{tweet?.content}</div>
-          <div onClick={() => handlePostClick(tweet.id)} className="py-2">
-            <Image
-              alt=""
-              width={200}
-              height={200}
-              src="/img.jpg"
-              className="w-full rounded-[10px]"
-            />
-          </div>
+          {(tweet?.photoArray?.length !== 0 ||
+            tweet?.videoArray?.length !== 0) && (
+            <div
+              onClick={() => handlePostClick(tweet.id)}
+              className={`my-2 grid w-full border border-gray-600 z-50 overflow-hidden rounded-[20px] gap-x-[2px] gap-y-[2px] grid-flow-row ${
+                tweet?.photoArray?.length + tweet?.videoArray?.length > 2
+                  ? "grid-cols-2 h-[500px]"
+                  : tweet?.photoArray?.length + tweet?.videoArray?.length === 2
+                  ? "grid-cols-2 h-[350px] gap-x-[2px]"
+                  : "grid-cols-1 h-[500px]"
+              }`}
+            >
+              {tweet?.photoArray?.length !== 0 &&
+                tweet?.photoArray.map((url) => (
+                  <div key={url} className="relative overflow-hidden">
+                    <Image
+                      src={url}
+                      alt=""
+                      width={400}
+                      height={500}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+
+              {tweet?.videoArray?.length !== 0 &&
+                tweet?.videoArray.map((url) => (
+                  <div key={url} className="relative overflow-hidden">
+                    <video
+                      controls
+                      loop
+                      autoPlay
+                      className="w-full h-full object-cover"
+                      muted
+                    >
+                      <source src={url} type="video/mp4" />
+                    </video>
+                  </div>
+                ))}
+            </div>
+          )}
+
+          {/* <div onClick={() => handlePostClick(tweet.id)}>{tweet?.content}</div>
+          {(tweet?.photoArray?.length !== 0 ||
+            tweet?.videoArray?.length !== 0) && (
+            <div
+              onClick={() => handlePostClick(tweet.id)}
+              className={`my-2 py-2 grid w-full   border border-gray-600 z-50 overflow-cover rounded-[20px]  gap-x-[1.6rem] gap-y-[1.50rem] grid-flow-row ${
+                tweet?.photoArray?.length + tweet?.videoArray?.length > 2
+                  ? "h-[500px] grid-cols-2"
+                  : tweet?.photoArray?.length + tweet?.videoArray?.length == 2
+                  ? "grid-cols-2 h-[350px] gap-x-[14px]"
+                  : "grid-cols-1 h-[500px]"
+              }  `}
+            >
+              {tweet?.photoArray.length !== 0 &&
+                tweet?.photoArray.map((url) => {
+                  return (
+                    <div
+                      key={url}
+                      className={` flex items-center justify-center ${
+                        tweet?.photoArray?.length + tweet?.videoArray?.length >
+                        2
+                          ? " scale-110 h-[80%]"
+                          : tweet?.photoArray?.length +
+                              tweet?.videoArray?.length ==
+                            2
+                          ? " scale-105 h-[80%]"
+                          : "scale-105 w-full h-full"
+                      }`}
+                    >
+                      <Image
+                        src={url}
+                        alt=""
+                        width={400}
+                        height={500}
+                        className={`w-full  h-full`}
+                      />
+                    </div>
+                  );
+                })}
+              {tweet?.videoArray.length !== 0 &&
+                tweet?.videoArray.map((url) => {
+                  return (
+                    <div
+                      key={url}
+                      className={` ${
+                        tweet?.photoArray?.length + tweet?.videoArray?.length >
+                        2
+                          ? "h-[200px] scale-110"
+                          : "h-[400px] scale-105"
+                      }`}
+                    >
+                      <video
+                        controls
+                        width="250"
+                        height="250"
+                        loop
+                        autoPlay
+                        className="w-full h-full"
+                        muted
+                      />
+                      <source src={url} type="video/mp4" />
+                    </div>
+                  );
+                })}
+            </div>
+          )} */}
           <div className="flex justify-between py-2 pt-3 pb-4">
             <Comment tweet={tweet} user={user!} />
             <div className="flex gap-1 items-center gray text-[13px] font-[400]">

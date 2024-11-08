@@ -26,6 +26,8 @@ export const getUserByIdQuery = gql(`
       authorId
       content
       id
+      photoArray
+      videoArray
       author {
         email
         userName

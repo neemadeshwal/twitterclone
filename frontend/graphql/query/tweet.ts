@@ -5,6 +5,8 @@ export const getAllTweetQuery = gql(`
         getAllTweet{
          id 
          content
+         photoArray
+         videoArray
          commentAuthor{
                 id
                 comment
@@ -44,6 +46,8 @@ export const getSingleTweetQuery = gql(`
             
             id 
          content
+         photoArray
+         videoArray
          commentAuthor{
                 id
                 comment

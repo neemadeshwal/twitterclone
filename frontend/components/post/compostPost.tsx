@@ -30,6 +30,7 @@ const ComposePost = () => {
       console.log(response);
       queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
       setTweetContent("");
+      setFiles([]);
     },
     onError: (error) => {
       console.log(error);
@@ -45,8 +46,21 @@ const ComposePost = () => {
   //   },
   // });
   async function onSubmit() {
+    let photoArray: string[] = [];
+    let videoArray: string[] = [];
+    if (files.length !== 0) {
+      files.map((url) => {
+        if (url.endsWith("mp4")) {
+          videoArray.push(url);
+        } else {
+          photoArray.push(url);
+        }
+      });
+    }
     const body = {
       content: tweetContent,
+      photoArray,
+      videoArray,
     };
     try {
       await mutation.mutateAsync(body);
@@ -248,20 +262,26 @@ const ComposePost = () => {
                     console.log(url, "check url");
                     console.log(url.endsWith("mp4"), "mpv video check");
                     return (
-                      <div key={url} className=" rounded-[20px]">
+                      <div key={url} className=" rounded-[20px] py-3">
                         {url.endsWith(".mp4") ? (
-                          <div className="w-[270px] h-[270px] relative">
+                          <div
+                            className={`${
+                              files.length === 1
+                                ? "w-full h-[350px]"
+                                : "w-[240px] h-[350px]"
+                            }  rounded-[20px] relative    `}
+                          >
                             <video
                               controls
                               width="250"
                               height="250"
                               loop
-                              autoPlay
-                              className="w-full h-full"
+                              className="w-full h-full rounded-[20px] object-contain"
                               muted
-                            />
+                            >
+                              <source src={url} type="video/mp4" />
+                            </video>
 
-                            <source src={url} type="video/mp4" />
                             <BiX
                               onClick={() => deletePreviewPhotos(url)}
                               className="absolute  bg-black/40 text-white w-7 h-7 hover:bg-black/50 cursor-pointer rounded-full right-3 top-3"
@@ -271,8 +291,8 @@ const ComposePost = () => {
                           <div
                             className={`${
                               files.length === 1
-                                ? "w-full h-[300px]"
-                                : "w-[270px] h-[300px]"
+                                ? "w-full h-[350px]"
+                                : "w-[240px] h-[350px]"
                             }  rounded-[20px] relative    `}
                           >
                             <Image
@@ -280,7 +300,7 @@ const ComposePost = () => {
                               alt=""
                               width={500}
                               height={500}
-                              className="w-full h-full rounded-[20px]"
+                              className="w-full h-full rounded-[20px] object-contain"
                             />
                             <div className=" ">
                               <BiX

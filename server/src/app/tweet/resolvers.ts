@@ -39,13 +39,17 @@ const queries = {
 const mutations = {
   createTweet: async (
     parent: any,
-    { payload }: { payload: { content: string } },
+    {
+      payload,
+    }: {
+      payload: { content: string; photoArray: string[]; videoArray: string[] };
+    },
     ctx: GraphqlContext
   ) => {
     if (!ctx.user) {
       throw new Error("Unauthorized.No token present");
     }
-    const { content } = payload;
+    const { content, photoArray, videoArray } = payload;
     if (!content) {
       throw new Error("No content .Please provide content first.");
     }
@@ -53,6 +57,8 @@ const mutations = {
       data: {
         content,
         authorId: ctx.user.id,
+        photoArray,
+        videoArray,
       },
     });
     return tweet;

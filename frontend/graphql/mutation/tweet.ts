@@ -7,6 +7,8 @@ const CREATE_TWEET = gql`
     createTweet(payload: $payload) {
       id
       content
+      photoArray
+      videoArray
       author {
         firstName
         lastName
