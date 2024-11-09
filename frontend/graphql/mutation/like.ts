@@ -9,8 +9,20 @@ const TOGGLE_LIKETWEET = gql`
     }
   }
 `;
+const TOGGLE_LIKECOMMENT = gql`
+  mutation toggleLikeComment($payload: toggleLikeCommentInput!) {
+    toggleLikeComment(payload: $payload) {
+      id
+    }
+  }
+`;
 
-export const toggleLikeTweet = async (payload: toggleLikeTweetProps) => {
+export const toggleLikeTweet = async (payload: { tweetId: string }) => {
   const data = await graphqlClient.request(TOGGLE_LIKETWEET, { payload });
+  return data;
+};
+
+export const toggleLikeComment = async (payload: { commentId: string }) => {
+  const data = await graphqlClient.request(TOGGLE_LIKECOMMENT, { payload });
   return data;
 };

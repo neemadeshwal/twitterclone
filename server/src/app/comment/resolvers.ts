@@ -9,13 +9,15 @@ interface CommentProps {
 const mutations = {
   createComment: async (
     parent: any,
-    { payload }: { payload: { comment: string; tweetId: string } },
+    {
+      payload,
+    }: { payload: { comment: string; mediaArray: string[]; tweetId: string } },
     ctx: GraphqlContext
   ) => {
     if (!ctx.user) {
       throw new Error("Unauthorized.No token present");
     }
-    const { comment, tweetId } = payload;
+    const { comment, tweetId, mediaArray } = payload;
 
     if (!comment || !tweetId) {
       throw new Error("Please provide comment or tweetid");
@@ -26,9 +28,44 @@ const mutations = {
         comment,
         tweetId,
         userId: ctx.user?.id,
+        mediaArray,
       },
     });
     return Comment;
+  },
+  replyOnComment: async (
+    parent: any,
+    {
+      payload,
+    }: {
+      payload: { comment: string; commentId: string; mediaArray: string[] };
+    },
+    ctx: GraphqlContext
+  ) => {
+    if (!ctx.user) {
+      throw new Error("Unauthorized");
+    }
+    const { commentId, comment, mediaArray } = payload;
+    if (!commentId) {
+      throw new Error("comment id not present.");
+    }
+    const isCommentExist = await prismaClient.comment.findUnique({
+      where: {
+        id: commentId,
+      },
+    });
+    if (!isCommentExist) {
+      throw new Error("comment doesnot exist");
+    }
+    const replyComment = await prismaClient.comment.create({
+      data: {
+        comment,
+        mediaArray,
+        parentId: commentId,
+        userId: ctx.user.id,
+      },
+    });
+    return replyComment;
   },
 };
 

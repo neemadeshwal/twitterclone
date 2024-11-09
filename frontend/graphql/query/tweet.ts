@@ -48,11 +48,46 @@ export const getSingleTweetQuery = gql(`
          content
          photoArray
          videoArray
+        
+         
          commentAuthor{
                 id
                 comment
                 userId
                 tweetId
+                parentId
+                replies{
+                    comment
+                    userId
+                    id
+                    parent{
+                        comment
+                        id
+                    }
+                    parentId
+                }
+                parent{
+                    comment
+                    id
+                    userId
+                    likes{
+                        userId
+                        id
+                    }
+                    user{
+                        id
+                        firstName
+                        lastName
+                        email
+                        userName
+                        profileImgUrl
+                    }
+                }
+                likes{
+                    id
+                    userId
+                    tweetId
+                }
                 user{
                     id
                     firstName
@@ -72,6 +107,7 @@ export const getSingleTweetQuery = gql(`
             id
             userId
             tweetId
+
             tweet{
                 id
                 content

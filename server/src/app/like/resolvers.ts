@@ -50,6 +50,50 @@ const mutations = {
       return like;
     }
   },
+  toggleLikeComment: async (
+    parent: any,
+    { payload }: { payload: { tweetId: string; commentId: string } },
+    ctx: GraphqlContext
+  ) => {
+    if (!ctx.user) {
+      throw new Error("Unauthorized.Token not present.");
+    }
+    console.log(payload, "paylaod");
+    const { commentId } = payload;
+
+    if (!commentId) {
+      throw new Error("No tweetId or commentId present.");
+    }
+
+    const findLike = await prismaClient.like.findUnique({
+      where: {
+        userId_commentId: {
+          userId: ctx.user.id,
+          commentId,
+        },
+      },
+    });
+
+    if (findLike) {
+      const unlike = await prismaClient.like.delete({
+        where: {
+          userId_commentId: {
+            userId: ctx.user.id,
+            commentId,
+          },
+        },
+      });
+      return unlike;
+    } else {
+      const like = await prismaClient.like.create({
+        data: {
+          userId: ctx.user.id,
+          commentId,
+        },
+      });
+      return like;
+    }
+  },
 };
 
 const extraResolvers = {

@@ -1,10 +1,10 @@
 "use client";
-import { createComment } from "@/graphql/mutation/comment";
-import { getCurrentUser, Tweet } from "@/graphql/types";
+import { createComment, replyOnComment } from "@/graphql/mutation/comment";
+import { Comment, getCurrentUser, Tweet } from "@/graphql/types";
 import { getRandomDarkHexColor } from "@/lib/randomColor";
 import CurrentUser from "@/shared/currentUser";
 import DivisionBar from "@/shared/divisionbar";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { BiX } from "react-icons/bi";
@@ -15,16 +15,24 @@ import { LuDot, LuFolderClock } from "react-icons/lu";
 import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
 
-const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
+const ReplyComment = ({
+  comment,
+  user,
+}: {
+  comment: Comment;
+  user: getCurrentUser;
+}) => {
   const [showDialogBox, setShowDialogBox] = useState(false);
   const [tweetComment, setTweetComment] = useState("");
 
+  const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: createComment,
+    mutationFn: replyOnComment,
     onSuccess: (response: any) => {
       console.log(response);
       setTweetComment("");
       setShowDialogBox(false);
+      queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
     },
     onError: (error) => {
       console.log(error);
@@ -34,7 +42,7 @@ const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
   const handleComment = async () => {
     const body = {
       comment: tweetComment,
-      tweetId: tweet.id,
+      commentId: comment.id,
       mediaArray: [],
     };
 
@@ -52,7 +60,7 @@ const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
         className="flex gap-1 items-center gray text-[13px] font-[400] cursor-pointer"
       >
         <BsChat className="text-[20px]" />
-        <p>{tweet?.commentAuthor.length}</p>
+        <p>{comment?.replies.length}</p>
       </div>
       {showDialogBox && (
         <div className="fixed top-0 left-0 w-full h-full z-[1000] dimBg flex items-center justify-center">
@@ -65,27 +73,28 @@ const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
             </div>
             <div className="flex w-fit items-center flex-col gap-1 h-full justify-center  ">
               <div className="min-h-[100px] h-full flex items-center  flex-col gap-2">
-                {tweet.author?.profileImgUrl ? (
+                {comment.user?.profileImgUrl ? (
                   <div>
-                    {tweet.author?.profileImgUrl.startsWith("#") ? (
+                    {comment.user?.profileImgUrl.startsWith("#") ? (
                       <div
                         className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
-                        style={{ backgroundColor: tweet.author?.profileImgUrl }}
+                        style={{ backgroundColor: comment.user?.profileImgUrl }}
                       >
-                        {tweet.author?.firstName.slice(0, 1)}
+                        {comment.user?.firstName.slice(0, 1)}
                       </div>
                     ) : (
                       <Image
-                        src={tweet?.author?.profileImgUrl}
+                        src={comment?.user?.profileImgUrl}
                         alt=""
                         width={40}
                         height={40}
+                        className="rounded-full w-10 h-10"
                       />
                     )}
                   </div>
                 ) : (
                   <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
-                    {tweet.author?.firstName.slice(0, 1)}
+                    {comment?.user?.firstName.slice(0, 1)}
                   </div>
                 )}
                 <div className="w-1 h-full bg-[#2c2c2cb2] min:h-[100px]"></div>
@@ -98,19 +107,19 @@ const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
               <div>
                 <div className="flex gap-1 items-center mt-1">
                   <p className="capitalize font-[600] text-[17px] ">
-                    {tweet.author?.firstName} {tweet.author?.lastName}
+                    {comment?.user?.firstName} {comment.user?.lastName}
                   </p>
-                  <p className="gray font-[300]">@{tweet.author?.userName}</p>
+                  <p className="gray font-[300]">@{comment.user?.userName}</p>
                   <p>
                     <LuDot className="gray font-[300]" />
                   </p>
                   <p className="gray font-[300]">5h</p>
                 </div>
-                <div className="py-3">{tweet?.content}</div>
+                <div className="py-3">{comment?.comment}</div>
                 <div className="gray font-[500] text-[13px] py-1">
                   Replying to{" "}
                   <p className="x-textcolor inline">
-                    @{tweet.author?.userName}
+                    @{comment.user?.userName}
                   </p>
                 </div>
               </div>
@@ -166,4 +175,4 @@ const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
   );
 };
 
-export default Comment;
+export default ReplyComment;

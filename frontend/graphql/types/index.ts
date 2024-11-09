@@ -77,11 +77,13 @@ export interface Like {
 
 export interface toggleLikeTweetProps {
   tweetId: string;
+  commentId?: string;
 }
 
 export interface CreateCommentProps {
   comment: string;
   tweetId: string;
+  mediaArray: string[];
 }
 
 export interface Comment {
@@ -90,6 +92,10 @@ export interface Comment {
   userId: string;
   tweetId: string;
   user: getCurrentUser;
+  likes: Like[];
+  replies: Comment[];
+  parentId: string;
+  parent: Comment;
 }
 
 export interface getUserByIdProps {

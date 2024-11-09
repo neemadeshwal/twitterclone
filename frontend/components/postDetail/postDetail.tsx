@@ -33,6 +33,7 @@ const PostDetail = () => {
   const [liked, setLiked] = useState(false);
   const { singleTweet } = useGetSingleTweet(id);
   console.log(singleTweet, "singletweet");
+
   const [color, setColor] = useState("");
   const queryClient = useQueryClient();
   const { user } = useCurrentUser();
@@ -43,7 +44,7 @@ const PostDetail = () => {
     mutationFn: toggleLikeTweet,
     onSuccess: (response: any) => {
       console.log(response);
-      queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
+      queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
     },
     onError: (error) => {
       console.log(error);
@@ -93,6 +94,7 @@ const PostDetail = () => {
     const body = {
       comment: tweetComment,
       tweetId: singleTweet!.id,
+      mediaArray: [],
     };
 
     try {
@@ -246,7 +248,9 @@ const PostDetail = () => {
                 ) : (
                   <CiHeart className="text-[20px] " />
                 )}
-                {singleTweet.LikedBy.length}
+                <p className={`${liked ? "text-red-500" : "gray"}`}>
+                  {singleTweet.LikedBy.length}
+                </p>
               </div>
               <div className="flex gap-1 items-center gray text-[13px] font-[400]">
                 <IoShareOutline className="text-[20px] " />

@@ -95,7 +95,9 @@ const extraResolvers = {
       const comments = await prismaClient.comment.findMany({
         where: { tweetId: parent.id },
         orderBy: { createdAt: "desc" },
+        include: { likes: true, replies: true, parent: true },
       });
+      console.log(comments, "comments");
       return comments;
     },
   },

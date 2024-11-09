@@ -46,6 +46,25 @@ export const getUserByIdQuery = gql(`
                   email
                   id
                 }
+                parent{
+                  comment
+                  mediaArray
+                  user{
+                    id
+                    email
+                    userName
+                    firstName
+                    lastName
+                  }
+                }
+                parentId
+                replies{
+                  userId
+                  id
+                  comment
+                  mediaArray
+                  
+                }
                 
             }
       id

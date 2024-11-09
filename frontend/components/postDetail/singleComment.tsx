@@ -16,9 +16,11 @@ import { useAllTweet } from "@/hooks/tweet";
 import { Comment as CommentType, Tweet } from "@/graphql/types";
 import { getRandomDarkHexColor } from "@/lib/randomColor";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toggleLikeTweet } from "@/graphql/mutation/like";
+import { toggleLikeComment, toggleLikeTweet } from "@/graphql/mutation/like";
 import { useCurrentUser } from "@/hooks/user";
 import { useRouter } from "next/navigation";
+import ReplyComment from "./replyOnComment";
+import Link from "next/link";
 
 const SingleComment = ({ comment }: { comment: CommentType }) => {
   const [liked, setLiked] = useState(false);
@@ -31,36 +33,36 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
   const { user } = useCurrentUser();
 
   const mutation = useMutation({
-    mutationFn: toggleLikeTweet,
+    mutationFn: toggleLikeComment,
     onSuccess: (response: any) => {
       console.log(response);
-      queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
+      queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
     },
     onError: (error) => {
       console.log(error);
     },
   });
-  // async function handleTweetLike() {
-  //   setLiked((prevVal) => !prevVal);
-  //   const body = {
-  //     tweetId: comment.id,
-  //   };
-  //   try {
-  //     await mutation.mutateAsync(body);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-  // useEffect(() => {
-  //   if (tweet.LikedBy && user) {
-  //     setLiked(tweet.LikedBy.some((like) => like.userId === user.id));
-  //   }
-  // }, [tweet, user]);
+  async function handleTweetLike(commentId: string) {
+    setLiked((prevVal) => !prevVal);
+    const body = {
+      commentId,
+    };
+    try {
+      await mutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  useEffect(() => {
+    if (comment.likes.length !== 0 && user) {
+      setLiked(comment.likes.some((like) => like.userId === user.id));
+    }
+  }, [comment, user]);
 
   // const handlePostClick = (id: string) => {
   //   router.push(`/${tweet.author.userName}/status/${id}`);
   // };
-  console.log(comment.user, "user user");
+  console.log(comment, "user user");
   return (
     <div
       // onClick={() => handlePostClick(comment.id)}
@@ -111,7 +113,9 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
               <IoEllipsisHorizontal className="gray" />
             </div>
           </div>
-          <div>{comment?.comment}</div>
+          <Link href={`/${comment?.user.userName}/status/${comment.id}`}>
+            <div>{comment?.comment}</div>
+          </Link>
           {/* <div className="py-2">
             <Image
               alt=""
@@ -122,13 +126,13 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
             />
           </div> */}
           <div className="flex justify-between py-2 pt-3 pb-4">
-            {/* <Comment tweet={tweet} user={user!} /> */}
+            <ReplyComment comment={comment} user={user!} />
             <div className="flex gap-1 items-center gray text-[13px] font-[400]">
               <LuRepeat2 className="text-[20px] " />
               34k
             </div>
             <div
-              // onClick={handleTweetLike}
+              onClick={() => handleTweetLike(comment.id)}
               className="flex gap-1 items-center gray text-[13px] cursor-pointer font-[400]"
             >
               {liked ? (
@@ -136,7 +140,9 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
               ) : (
                 <CiHeart className="text-[20px] " />
               )}
-              2344k
+              <p className={`${liked ? "text-red-500" : "gray"}`}>
+                {comment.likes.length}
+              </p>
             </div>
             <div className="flex gap-1 items-center gray text-[13px] font-[400]">
               <IoShareOutline className="text-[20px] " />
