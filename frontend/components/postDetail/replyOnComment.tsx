@@ -32,7 +32,15 @@ const ReplyComment = ({
       console.log(response);
       setTweetComment("");
       setShowDialogBox(false);
-      queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
+
+      queryClient.invalidateQueries({
+        queryKey: [
+          "single-tweet",
+          "single-comment",
+          comment.id,
+          comment.parentId,
+        ],
+      });
     },
     onError: (error) => {
       console.log(error);

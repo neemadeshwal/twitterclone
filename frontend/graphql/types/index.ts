@@ -90,7 +90,9 @@ export interface Comment {
   comment: string;
   id: string;
   userId: string;
+  mediaArray: string[];
   tweetId: string;
+  tweet: Tweet[];
   user: getCurrentUser;
   likes: Like[];
   replies: Comment[];
@@ -121,4 +123,8 @@ export interface followUserProps {
 
 export interface unfollowUserProps {
   userToUnfollowId: string;
+}
+
+export interface GetSingleCommentProps {
+  getCommentById: Comment;
 }

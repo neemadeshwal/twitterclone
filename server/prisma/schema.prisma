@@ -27,11 +27,11 @@ model User{
   dateOfBirth String?
   location String?
   userName String @unique
-  posts Tweet[] @relation(onDelete: CASCADE)
-  likedTweets Like[] @relation(onDelete: CASCADE)
-  commentTweets Comment[] @relation(onDelete: CASCADE)
-  followers Follows[] @relation("followers",onDelete: CASCADE)
-  followingList Follows[] @relation("following",onDelete: CASCADE)
+  posts Tweet[] 
+  likedTweets Like[] @relation()
+  commentTweets Comment[] @relation()
+  followers Follows[] @relation("followers")
+  followingList Follows[] @relation("following")
 
 
   createdAt DateTime @default(now())
@@ -46,9 +46,9 @@ model Tweet{
   photoArray String[]
   videoArray String[]
   authorId String
-  author User @relation(fields: [authorId],references: [id], onDelete: CASCADE)
-  LikedBy Like[] @relation(onDelete: CASCADE)
-  commentAuthor Comment[] @relation(onDelete: CASCADE)
+  author User @relation(fields: [authorId],references: [id],onDelete:Cascade,onUpdate:Cascade)
+  LikedBy Like[] @relation()
+  commentAuthor Comment[] @relation()
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -59,9 +59,9 @@ model Like{
   userId String
   tweetId String?
   commentId String? 
-  comment Comment? @relation(fields: [commentId], references: [id],onDelete: CASCADE)
-  user User @relation(fields: [userId],references: [id],onDelete: CASCADE)
-  tweet Tweet? @relation(fields: [tweetId],references: [id],onDelete: CASCADE)
+  comment Comment? @relation(fields: [commentId], references: [id],onDelete:Cascade)
+  user User @relation(fields: [userId],references: [id],onDelete:Cascade)
+  tweet Tweet? @relation(fields: [tweetId],references: [id],onDelete:Cascade)
 
   @@unique([userId,tweetId])
   @@unique([userId,commentId])
@@ -73,10 +73,10 @@ model Comment{
   mediaArray String[]
   tweetId String?
   userId String
-  tweet Tweet? @relation(fields: [tweetId],references: [id],onDelete: CASCADE)
-  user User @relation(fields: [userId],references: [id],onDelete: CASCADE)
+  tweet Tweet? @relation(fields: [tweetId],references: [id],onDelete:Cascade)
+  user User @relation(fields: [userId],references: [id],onDelete:Cascade)
   parentId String?
-  parent Comment? @relation("CommentReplies",fields: [parentId],references: [id],onDelete: CASCADE)
+  parent Comment? @relation("CommentReplies",fields: [parentId],references: [id],onDelete:Cascade)
 
   replies Comment[] @relation("CommentReplies")
   likes Like[]
@@ -88,9 +88,9 @@ model Comment{
 
 model Follows{
 followerId String
-follower User @relation("followers",fields: [followerId],references: [id],onDelete: CASCADE)
+follower User @relation("followers",fields: [followerId],references: [id],onDelete:Cascade,onUpdate:Cascade)
 followingId String
-following User @relation("following",fields: [followingId],references: [id],onDelete: CASCADE)
+following User @relation("following",fields: [followingId],references: [id],onDelete:Cascade)
 @@id([followerId,followingId])
 
 }

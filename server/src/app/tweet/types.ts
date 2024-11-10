@@ -11,8 +11,12 @@ type Tweet{
     LikedBy:[Like]
     commentAuthor:[Comment]
 
+
 }
 
+input DeleteTweetInput{
+    tweetId:String
+}
 
 input CreateTweetInput{
     content:String!

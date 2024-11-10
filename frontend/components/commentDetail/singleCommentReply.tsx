@@ -19,10 +19,16 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleLikeComment, toggleLikeTweet } from "@/graphql/mutation/like";
 import { useCurrentUser } from "@/hooks/user";
 import { useRouter } from "next/navigation";
-import ReplyComment from "./replyOnComment";
+import ReplyComment from "@/components/postDetail/replyOnComment";
 import Link from "next/link";
 
-const SingleComment = ({ comment }: { comment: CommentType }) => {
+const SingleCommentReply = ({
+  comment,
+  user,
+}: {
+  comment: CommentType;
+  user: any;
+}) => {
   const [liked, setLiked] = useState(false);
   console.log(comment, "comment in comment");
   const queryClient = useQueryClient();
@@ -31,15 +37,12 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
   useEffect(() => {
     setColor(getRandomDarkHexColor());
   }, []);
-  const { user } = useCurrentUser();
 
   const mutation = useMutation({
     mutationFn: toggleLikeComment,
     onSuccess: (response: any) => {
       console.log(response);
-      queryClient.invalidateQueries({
-        queryKey: ["single-comment", comment.id],
-      });
+      queryClient.invalidateQueries({ queryKey: ["single-comment"] });
     },
     onError: (error) => {
       console.log(error);
@@ -157,14 +160,8 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
         </div>
       </div>
       <DivisionBar type="x" />
-      <div>
-        {comment.replies.length !== 0 &&
-          comment.replies.map((item) => {
-            return <SingleComment key={item.id} comment={item} />;
-          })}
-      </div>
     </div>
   );
 };
 
-export default SingleComment;
+export default SingleCommentReply;

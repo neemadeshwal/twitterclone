@@ -3,6 +3,7 @@ export const types = `#graphql
 type Comment{
     id:String
     comment:String
+    mediaArray:[String]
     userId:String
     tweetId:String
     user:User
@@ -25,5 +26,8 @@ input replyOnCommentInput{
     mediaArray:[String]
 
     
+}
+input getCommentByIdInput{
+    commentId:String
 }
 `;

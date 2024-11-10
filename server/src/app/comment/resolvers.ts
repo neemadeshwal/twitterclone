@@ -6,6 +6,42 @@ interface CommentProps {
   userId: string;
   tweetId: string;
 }
+
+const queries = {
+  getCommentById: async (
+    parent: any,
+    { payload }: { payload: { commentId: string } },
+    ctx: GraphqlContext
+  ) => {
+    console.log("hey");
+    if (!ctx.user) {
+      throw new Error("Unauthorized.");
+    }
+
+    const { commentId } = payload;
+
+    console.log(commentId);
+    if (!commentId) {
+      throw new Error("No comment id presnt");
+    }
+
+    const isCommentExist = await prismaClient.comment.findUnique({
+      where: {
+        id: commentId,
+      },
+      include: {
+        likes: true,
+        replies: true,
+      },
+    });
+
+    if (!isCommentExist) {
+      throw new Error("No comment exist with this id.");
+    }
+    console.log(isCommentExist, "iscoemmnt eixst");
+    return isCommentExist;
+  },
+};
 const mutations = {
   createComment: async (
     parent: any,
@@ -75,15 +111,41 @@ const extraResolvers = {
       const users = await prismaClient.user.findUnique({
         where: { id: parent.userId },
       });
+      console.log(users, "users find");
+      console.log("user comment user");
       return users;
     },
     tweet: async (parent: CommentProps) => {
-      const tweet = await prismaClient.tweet.findMany({
+      console.log("tweet check");
+      if (!parent.tweetId) {
+        return null;
+      }
+
+      console.log("tweet eixsit");
+      const tweet = await prismaClient.tweet.findUnique({
         where: { id: parent.tweetId },
       });
+      console.log("user comment user tweet");
+
       return tweet;
+    },
+    likes: async (parent: CommentProps) => {
+      console.log("lieks hey");
+      const likes = await prismaClient.like.findMany({
+        where: { commentId: parent.id },
+      });
+      console.log(likes, "likes in comment");
+      return likes;
+    },
+    replies: async (parent: CommentProps) => {
+      const comment = await prismaClient.comment.findMany({
+        where: {
+          parentId: parent.id,
+        },
+      });
+      return comment;
     },
   },
 };
 
-export const resolvers = { mutations, extraResolvers };
+export const resolvers = { mutations, extraResolvers, queries };

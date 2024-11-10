@@ -63,6 +63,36 @@ const mutations = {
     });
     return tweet;
   },
+  deleteTweet: async (
+    parent: any,
+    { payload }: { payload: { tweetId: string } },
+    ctx: GraphqlContext
+  ) => {
+    if (!ctx.user) {
+      throw new Error("unauthorized");
+    }
+    const { tweetId } = payload;
+    if (!tweetId) {
+      throw new Error("no tweet id preesent");
+    }
+
+    const isTweetExist = await prismaClient.tweet.findUnique({
+      where: {
+        id: tweetId,
+      },
+    });
+
+    if (!isTweetExist) {
+      throw new Error("no tweet exist ");
+    }
+
+    const deleteTweet = await prismaClient.tweet.delete({
+      where: {
+        id: tweetId,
+      },
+    });
+    return deleteTweet;
+  },
 };
 
 const extraResolvers = {
