@@ -4,7 +4,7 @@ import { getCurrentUser, Tweet } from "@/graphql/types";
 import { getRandomDarkHexColor } from "@/lib/randomColor";
 import CurrentUser from "@/shared/currentUser";
 import DivisionBar from "@/shared/divisionbar";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { BiX } from "react-icons/bi";
@@ -18,13 +18,19 @@ import { RiListRadio } from "react-icons/ri";
 const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
   const [showDialogBox, setShowDialogBox] = useState(false);
   const [tweetComment, setTweetComment] = useState("");
-
+  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: createComment,
     onSuccess: (response: any) => {
       console.log(response);
       setTweetComment("");
       setShowDialogBox(false);
+      queryClient.invalidateQueries({
+        queryKey: ["all-tweet"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["single-tweet"],
+      });
     },
     onError: (error) => {
       console.log(error);

@@ -1,6 +1,7 @@
 "use client";
 import { createComment, replyOnComment } from "@/graphql/mutation/comment";
 import { Comment, getCurrentUser, Tweet } from "@/graphql/types";
+import { useGetCommentById } from "@/hooks/comment";
 import { getRandomDarkHexColor } from "@/lib/randomColor";
 import CurrentUser from "@/shared/currentUser";
 import DivisionBar from "@/shared/divisionbar";
@@ -16,7 +17,7 @@ import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
 
 const ReplyComment = ({
-  comment,
+  comment: singleComment,
   user,
 }: {
   comment: Comment;
@@ -26,6 +27,7 @@ const ReplyComment = ({
   const [tweetComment, setTweetComment] = useState("");
 
   const queryClient = useQueryClient();
+  const { singleComment: comment } = useGetCommentById(singleComment.id);
   const mutation = useMutation({
     mutationFn: replyOnComment,
     onSuccess: (response: any) => {
@@ -34,12 +36,7 @@ const ReplyComment = ({
       setShowDialogBox(false);
 
       queryClient.invalidateQueries({
-        queryKey: [
-          "single-tweet",
-          "single-comment",
-          comment.id,
-          comment.parentId,
-        ],
+        queryKey: ["single-tweet", "single-comment", comment!.id],
       });
     },
     onError: (error) => {
@@ -48,6 +45,9 @@ const ReplyComment = ({
   });
 
   const handleComment = async () => {
+    if (!comment) {
+      return;
+    }
     const body = {
       comment: tweetComment,
       commentId: comment.id,
@@ -68,7 +68,7 @@ const ReplyComment = ({
         className="flex gap-1 items-center gray text-[13px] font-[400] cursor-pointer"
       >
         <BsChat className="text-[20px]" />
-        <p>{comment?.replies.length}</p>
+        <p>{comment?.replies?.length}</p>
       </div>
       {showDialogBox && (
         <div className="fixed top-0 left-0 w-full h-full z-[1000] dimBg flex items-center justify-center">
@@ -81,14 +81,16 @@ const ReplyComment = ({
             </div>
             <div className="flex w-fit items-center flex-col gap-1 h-full justify-center  ">
               <div className="min-h-[100px] h-full flex items-center  flex-col gap-2">
-                {comment.user?.profileImgUrl ? (
+                {comment?.user?.profileImgUrl ? (
                   <div>
-                    {comment.user?.profileImgUrl.startsWith("#") ? (
+                    {comment?.user?.profileImgUrl.startsWith("#") ? (
                       <div
                         className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
-                        style={{ backgroundColor: comment.user?.profileImgUrl }}
+                        style={{
+                          backgroundColor: comment?.user?.profileImgUrl,
+                        }}
                       >
-                        {comment.user?.firstName.slice(0, 1)}
+                        {comment?.user?.firstName.slice(0, 1)}
                       </div>
                     ) : (
                       <Image
@@ -115,9 +117,9 @@ const ReplyComment = ({
               <div>
                 <div className="flex gap-1 items-center mt-1">
                   <p className="capitalize font-[600] text-[17px] ">
-                    {comment?.user?.firstName} {comment.user?.lastName}
+                    {comment?.user?.firstName} {comment?.user?.lastName}
                   </p>
-                  <p className="gray font-[300]">@{comment.user?.userName}</p>
+                  <p className="gray font-[300]">@{comment?.user?.userName}</p>
                   <p>
                     <LuDot className="gray font-[300]" />
                   </p>
@@ -127,7 +129,7 @@ const ReplyComment = ({
                 <div className="gray font-[500] text-[13px] py-1">
                   Replying to{" "}
                   <p className="x-textcolor inline">
-                    @{comment.user?.userName}
+                    @{comment?.user?.userName}
                   </p>
                 </div>
               </div>

@@ -34,4 +34,5 @@ export const replyOnComment = async (payload: {
   mediaArray: string[];
 }) => {
   const data = await graphqlClient.request(REPLY_COMMENT, { payload });
+  return data;
 };

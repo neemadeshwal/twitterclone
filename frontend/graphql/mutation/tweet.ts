@@ -20,7 +20,7 @@ const CREATE_TWEET = gql`
 `;
 
 const DELETE_TWEET = gql`
-  mutation deleteTweet($payload: DeleteTweetInput) {
+  mutation deleteTweet($payload: DeleteTweetInput!) {
     deleteTweet(payload: $payload) {
       id
     }
@@ -32,7 +32,7 @@ export const createTweetMutate = async (payload: createTweetMutateProps) => {
   return data;
 };
 
-export const deleteTWeetMutate = async (payload: { tweetId: string }) => {
+export const deleteTweetMutate = async (payload: { tweetId: string }) => {
   const data = await graphqlClient.request(DELETE_TWEET, { payload });
   return data;
 };

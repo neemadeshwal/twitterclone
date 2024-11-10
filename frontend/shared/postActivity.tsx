@@ -1,7 +1,10 @@
 "use client";
+import { deleteTweetMutate } from "@/graphql/mutation/tweet";
 import { Tweet } from "@/graphql/types";
 import { useCurrentUser } from "@/hooks/user";
 import { TrashIcon } from "@radix-ui/react-icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { BsEmojiFrown } from "react-icons/bs";
 import { FiUserX } from "react-icons/fi";
@@ -18,15 +21,48 @@ const PostActivity = ({
 }) => {
   const postRef = useRef<HTMLDivElement>(null);
   const { user } = useCurrentUser();
+  console.log(singleTweet, "single tweet twer");
   const [isUserPost, setIsUserPost] = useState(false);
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const mutation = useMutation({
+    mutationFn: deleteTweetMutate,
+    onSuccess: (response: any) => {
+      queryClient.invalidateQueries({
+        queryKey: ["single-tweet", "all-tweet", singleTweet.id],
+      });
+      router.replace("/");
+      queryClient.refetchQueries({ queryKey: ["all-tweet"] });
+    },
+  });
+  const handleDeletePost = async (id: string) => {
+    if (!id) {
+      return;
+    }
+    const body = {
+      tweetId: id,
+    };
+    try {
+      await mutation.mutateAsync(body);
+      setPostControlDialogOpen(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    if (user?.id === singleTweet?.author.id) {
+    if (!user || !singleTweet) {
+      return;
+    }
+    console.log(user.id);
+    console.log(singleTweet.author.id);
+
+    if (user.id === singleTweet.author.id) {
       setIsUserPost(true);
     } else {
       setIsUserPost(false);
     }
-  }, [singleTweet.id]);
+  }, [singleTweet.id, user]);
   useEffect(() => {
     const handlePostDialog = (event: MouseEvent) => {
       if (postRef.current && !postRef.current.contains(event.target as Node)) {
@@ -50,7 +86,10 @@ const PostActivity = ({
       <div className="flex flex-col gap-6">
         {isUserPost ? (
           <div className=" flex flex-col gap-6">
-            <button className="flex gap-3 items-center font-[600] text-red-500">
+            <button
+              onClick={() => handleDeletePost(singleTweet.id)}
+              className="flex gap-3 items-center font-[600] text-red-500"
+            >
               <MdDelete className="font-[600] text-[20px]" />
               Delete
             </button>

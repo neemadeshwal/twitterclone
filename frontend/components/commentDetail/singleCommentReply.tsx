@@ -21,6 +21,7 @@ import { useCurrentUser } from "@/hooks/user";
 import { useRouter } from "next/navigation";
 import ReplyComment from "@/components/postDetail/replyOnComment";
 import Link from "next/link";
+import SingleComment from "../postDetail/singleComment";
 
 const SingleCommentReply = ({
   comment,
@@ -160,6 +161,12 @@ const SingleCommentReply = ({
         </div>
       </div>
       <DivisionBar type="x" />
+      <div>
+        {comment?.replies?.length !== 0 &&
+          comment?.replies?.map((item) => {
+            return <SingleComment key={item.id} comment={item} />;
+          })}
+      </div>
     </div>
   );
 };

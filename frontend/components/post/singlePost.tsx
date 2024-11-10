@@ -20,6 +20,7 @@ import { toggleLikeTweet } from "@/graphql/mutation/like";
 import { useCurrentUser } from "@/hooks/user";
 import Comment from "./comment";
 import { useRouter } from "next/navigation";
+import PostActivity from "@/shared/postActivity";
 
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
@@ -28,6 +29,9 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const router = useRouter();
 
   const { user } = useCurrentUser();
+  useEffect(() => {
+    queryClient.refetchQueries({ queryKey: ["all-tweet"] });
+  }, []);
 
   const mutation = useMutation({
     mutationFn: toggleLikeTweet,
@@ -106,6 +110,12 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               onClick={() => setPostControlDialogOpen(true)}
             >
               <IoEllipsisHorizontal className="gray" />
+              {isPostControlDialogOpen && (
+                <PostActivity
+                  singleTweet={tweet}
+                  setPostControlDialogOpen={setPostControlDialogOpen}
+                />
+              )}
               {/* <div
                 style={{
                   boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)",

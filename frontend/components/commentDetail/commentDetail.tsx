@@ -47,9 +47,9 @@ const CommentDetail = ({ id }: { id: string }) => {
   const mutation = useMutation({
     mutationFn: toggleLikeTweet,
     onSuccess: (response: any) => {
-      console.log(response);
+      console.log("single comment check.");
       queryClient.invalidateQueries({
-        queryKey: ["single-tweet", "single-comment", id, singleComment!.id],
+        queryKey: ["single-comment", id],
       });
     },
     onError: (error) => {
@@ -62,7 +62,13 @@ const CommentDetail = ({ id }: { id: string }) => {
       console.log(response);
       setTweetComment("");
       queryClient.invalidateQueries({
-        queryKey: ["single-tweet", "single-comment", id, singleComment!.id],
+        queryKey: ["single-tweet"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["single-comment"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [id],
       });
     },
     onError: (error) => {
@@ -311,7 +317,9 @@ const CommentDetail = ({ id }: { id: string }) => {
         <div>
           {singleComment.replies.length !== 0 &&
             singleComment.replies.map((item) => {
-              return <SingleComment key={item.id} comment={item} />;
+              return (
+                <SingleCommentReply key={item.id} comment={item} user={user} />
+              );
             })}
         </div>
       </div>

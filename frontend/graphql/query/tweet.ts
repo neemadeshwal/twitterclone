@@ -18,6 +18,7 @@ export const getAllTweetQuery = gql(`
             lastName
             userName
             profileImgUrl
+            id
          }
          LikedBy{
             id

@@ -21,9 +21,15 @@ import { useCurrentUser } from "@/hooks/user";
 import { useRouter } from "next/navigation";
 import ReplyComment from "./replyOnComment";
 import Link from "next/link";
+import { useGetCommentById } from "@/hooks/comment";
 
-const SingleComment = ({ comment }: { comment: CommentType }) => {
+const SingleComment = ({
+  comment: singleComment,
+}: {
+  comment: CommentType;
+}) => {
   const [liked, setLiked] = useState(false);
+  const { singleComment: comment } = useGetCommentById(singleComment.id);
   console.log(comment, "comment in comment");
   const queryClient = useQueryClient();
   const [color, setColor] = useState("");
@@ -38,7 +44,7 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
     onSuccess: (response: any) => {
       console.log(response);
       queryClient.invalidateQueries({
-        queryKey: ["single-comment", comment.id],
+        queryKey: ["single-comment", comment!.id],
       });
     },
     onError: (error) => {
@@ -57,8 +63,11 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
     }
   }
   useEffect(() => {
-    if (comment.likes.length !== 0 && user) {
-      setLiked(comment.likes.some((like) => like.userId === user.id));
+    if (!comment) {
+      return;
+    }
+    if (comment?.likes?.length !== 0 && user) {
+      setLiked(comment?.likes?.some((like) => like?.userId === user.id));
     }
   }, [comment, user]);
 
@@ -66,6 +75,10 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
   //   router.push(`/${tweet.author.userName}/status/${id}`);
   // };
   console.log(comment, "user user");
+
+  if (!comment) {
+    return;
+  }
   return (
     <div
       // onClick={() => handlePostClick(comment.id)}
@@ -116,7 +129,7 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
               <IoEllipsisHorizontal className="gray" />
             </div>
           </div>
-          <Link href={`/${comment?.user.userName}/comment/${comment.id}`}>
+          <Link href={`/${comment?.user?.userName}/comment/${comment.id}`}>
             <div>{comment?.comment}</div>
           </Link>
           {/* <div className="py-2">
@@ -144,7 +157,7 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
                 <CiHeart className="text-[20px] " />
               )}
               <p className={`${liked ? "text-red-500" : "gray"}`}>
-                {comment.likes.length}
+                {comment?.likes?.length}
               </p>
             </div>
             <div className="flex gap-1 items-center gray text-[13px] font-[400]">
@@ -158,8 +171,8 @@ const SingleComment = ({ comment }: { comment: CommentType }) => {
       </div>
       <DivisionBar type="x" />
       <div>
-        {comment.replies.length !== 0 &&
-          comment.replies.map((item) => {
+        {comment?.replies?.length !== 0 &&
+          comment?.replies?.map((item) => {
             return <SingleComment key={item.id} comment={item} />;
           })}
       </div>
