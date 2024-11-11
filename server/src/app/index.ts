@@ -15,6 +15,7 @@ import { Follows } from "./follows";
 // import { UploadFile } from "./uploadFile";
 import { GraphQLUpload } from "graphql-upload";
 import FileUploadRouter from "./fileUpload";
+import { Repost } from "./repost";
 
 export async function initServer() {
   const app = express();
@@ -30,6 +31,7 @@ export async function initServer() {
     ${Like.types}
     ${Comment.types}
     ${Follows.types}
+    ${Repost.types}
   
     type Query {
       ${User.queries}
@@ -42,6 +44,7 @@ export async function initServer() {
     ${Like.mutations}
     ${Comment.mutations}
     ${Follows.mutations}
+    ${Repost.mutations}
     }
     `,
     resolvers: {
@@ -51,6 +54,7 @@ export async function initServer() {
         ...Like.resolvers.mutations,
         ...Comment.resolvers.mutations,
         ...Follows.resolvers.mutations,
+        ...Repost.resolvers.mutations,
       },
       Query: {
         ...User.resolvers.queries,

@@ -21,6 +21,7 @@ import { useCurrentUser } from "@/hooks/user";
 import Comment from "./comment";
 import { useRouter } from "next/navigation";
 import PostActivity from "@/shared/postActivity";
+import { repostTweet } from "@/graphql/mutation/repost";
 
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
@@ -43,6 +44,27 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
       console.log(error);
     },
   });
+  const repostMutation = useMutation({
+    mutationFn: repostTweet,
+    onSuccess: (response: any) => {
+      console.log(response);
+      queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  async function handleRepostTweet() {
+    const body = {
+      tweetId: tweet.id,
+    };
+    try {
+      await repostMutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async function handleTweetLike() {
     setLiked((prevVal) => !prevVal);
     const body = {
@@ -237,7 +259,10 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
           )} */}
           <div className="flex justify-between py-2 pt-3 pb-4">
             <Comment tweet={tweet} user={user!} />
-            <div className="flex gap-1 items-center gray text-[13px] font-[400]">
+            <div
+              onClick={handleRepostTweet}
+              className="flex gap-1 items-center gray text-[13px] font-[400]"
+            >
               <LuRepeat2 className="text-[20px] " />
               34k
             </div>

@@ -130,6 +130,19 @@ const extraResolvers = {
       console.log(comments, "comments");
       return comments;
     },
+    repostTweet: async (parent: Tweet) => {
+      const repost = await prismaClient.repost.findMany({
+        where: {
+          tweetId: parent.id,
+        },
+        include: {
+          tweet: true,
+          user: true,
+        },
+      });
+      console.log(repost, "respojt");
+      return repost;
+    },
   },
 };
 

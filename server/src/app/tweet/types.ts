@@ -10,6 +10,7 @@ type Tweet{
     videoArray:[String]
     LikedBy:[Like]
     commentAuthor:[Comment]
+    repostTweet:[Repost]
 
 
 }

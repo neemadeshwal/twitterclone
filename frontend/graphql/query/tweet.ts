@@ -7,6 +7,24 @@ export const getAllTweetQuery = gql(`
          content
          photoArray
          videoArray
+         repostTweet{
+            userId
+            tweetId
+            id
+            tweet{
+                id
+                content
+                photoArray
+                videoArray
+                author{
+                    id
+                    userName
+                    email
+                    firstName
+                    lastName
+                }
+            }
+         }
          commentAuthor{
                 id
                 comment
