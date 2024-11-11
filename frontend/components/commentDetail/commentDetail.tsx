@@ -17,11 +17,11 @@ import { usePathname } from "next/navigation";
 import { getRandomDarkHexColor } from "@/lib/randomColor";
 import { useCurrentUser } from "@/hooks/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toggleLikeTweet } from "@/graphql/mutation/like";
+import { toggleLikeComment, toggleLikeTweet } from "@/graphql/mutation/like";
 import CurrentUser from "@/shared/currentUser";
 import SinglePost from "../post/singlePost";
 // import SingleComment from "./SingleComment";
-import { createComment } from "@/graphql/mutation/comment";
+import { createComment, replyOnComment } from "@/graphql/mutation/comment";
 import PostActivity from "@/shared/postActivity";
 import { useGetCommentById } from "@/hooks/comment";
 import SingleComment from "../postDetail/singleComment";
@@ -45,11 +45,11 @@ const CommentDetail = ({ id }: { id: string }) => {
   const [tweetComment, setTweetComment] = useState("");
 
   const mutation = useMutation({
-    mutationFn: toggleLikeTweet,
+    mutationFn: toggleLikeComment,
     onSuccess: (response: any) => {
       console.log("single comment check.");
       queryClient.invalidateQueries({
-        queryKey: ["single-comment", id],
+        queryKey: ["single-comment"],
       });
     },
     onError: (error) => {
@@ -57,18 +57,13 @@ const CommentDetail = ({ id }: { id: string }) => {
     },
   });
   const commentMutation = useMutation({
-    mutationFn: createComment,
+    mutationFn: replyOnComment,
     onSuccess: (response: any) => {
       console.log(response);
       setTweetComment("");
-      queryClient.invalidateQueries({
-        queryKey: ["single-tweet"],
-      });
+
       queryClient.invalidateQueries({
         queryKey: ["single-comment"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [id],
       });
     },
     onError: (error) => {
@@ -81,7 +76,7 @@ const CommentDetail = ({ id }: { id: string }) => {
       return;
     }
     const body = {
-      tweetId: singleComment.id,
+      commentId: singleComment.id,
     };
     try {
       await mutation.mutateAsync(body);
@@ -107,8 +102,8 @@ const CommentDetail = ({ id }: { id: string }) => {
     }
     const body = {
       comment: tweetComment,
-      tweetId: singleComment!.id,
       mediaArray: [],
+      commentId: singleComment.id,
     };
 
     try {

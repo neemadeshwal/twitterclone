@@ -36,7 +36,7 @@ const ReplyComment = ({
       setShowDialogBox(false);
 
       queryClient.invalidateQueries({
-        queryKey: ["single-tweet", "single-comment", comment!.id],
+        queryKey: ["single-comment"],
       });
     },
     onError: (error) => {

@@ -170,12 +170,6 @@ const SingleComment = ({
         </div>
       </div>
       <DivisionBar type="x" />
-      <div>
-        {comment?.replies?.length !== 0 &&
-          comment?.replies?.map((item) => {
-            return <SingleComment key={item.id} comment={item} />;
-          })}
-      </div>
     </div>
   );
 };

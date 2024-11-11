@@ -16,6 +16,7 @@ import Picker from "@emoji-mart/react";
 import { previewFile } from "@/lib/uploadFile";
 import Image from "next/image";
 import { BiChevronLeft, BiChevronRight, BiX } from "react-icons/bi";
+import GifContainer from "@/shared/GifContainer";
 const ComposePost = () => {
   const queryClient = useQueryClient();
   const [showRightChevron, setShowRightChevron] = useState(false);
@@ -23,6 +24,7 @@ const ComposePost = () => {
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
   const [tweetContent, setTweetContent] = useState("");
+  const [openGifContainer, setOpenGifContainer] = useState(false);
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const mutation = useMutation({
     mutationFn: createTweetMutate,
@@ -330,9 +332,13 @@ const ComposePost = () => {
                   <HiOutlinePhotograph className="text-[22px] x-textcolor " />
                 </label>
               </div>
-              <div className="rounded-full p-2 hover:bg-[#081323]">
+              <div
+                className="rounded-full p-2 hover:bg-[#081323]"
+                onClick={() => setOpenGifContainer(true)}
+              >
                 <MdOutlineGifBox className="text-[22px] x-textcolor " />
               </div>
+
               <div className="rounded-full p-2 hover:bg-[#081323]">
                 <RiListRadio className="text-[22px] x-textcolor " />
               </div>
@@ -374,6 +380,9 @@ const ComposePost = () => {
             />
           </div>
         </div>
+      )}
+      {openGifContainer && (
+        <GifContainer setOpenGifContainer={setOpenGifContainer} />
       )}
     </div>
   );

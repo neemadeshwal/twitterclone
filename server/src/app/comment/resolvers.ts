@@ -142,7 +142,11 @@ const extraResolvers = {
         where: {
           parentId: parent.id,
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
+      console.log(comment, "checking replies");
       return comment;
     },
   },
