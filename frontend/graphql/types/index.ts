@@ -146,3 +146,11 @@ export interface Repost {
   tweetId: string;
   commentId: string;
 }
+
+export interface searchQueryProps {
+  getSearchByQuery: {
+    people: getCurrentUser[];
+    post: Tweet[];
+    hashtag: HashTag[];
+  };
+}

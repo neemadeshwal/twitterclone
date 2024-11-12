@@ -1,7 +1,7 @@
 import { prismaClient } from "../../client/db";
 import { GraphqlContext } from "../../interfaces";
 
-const query = {
+const queries = {
   searchQuery: async (
     parent: any,
     { payload }: { payload: { query: string } },
@@ -11,6 +11,7 @@ const query = {
       throw new Error("Unauthorized.");
     }
     const { query } = payload;
+    console.log(query, "query");
     if (!query) {
       throw new Error("No query present.Please provide query first.");
     }
@@ -31,8 +32,14 @@ const query = {
         content: { contains: query, mode: "insensitive" },
       },
     });
-    return { post, people };
+    const hashtag = await prismaClient.hashtag.findMany({
+      where: {
+        text: { contains: query, mode: "insensitive" },
+      },
+    });
+    console.log(post, people, hashtag);
+    return { post, people, hashtag };
   },
 };
 
-export const resolvers = { query };
+export const resolvers = { queries };

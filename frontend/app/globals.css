@@ -71,6 +71,9 @@ p {
     outline: #aa0362;
   }
 }
+.hover-bg {
+  background-color: black;
+}
 
 .hover-bg:hover {
   background-color: #262626c0;

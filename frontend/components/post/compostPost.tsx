@@ -27,7 +27,8 @@ const ComposePost = () => {
   const [tweetContent, setTweetContent] = useState("");
   const [openGifContainer, setOpenGifContainer] = useState(false);
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
-  const [isHashTagDialogOpen, setHashTagDialog] = useState(true);
+  const [isHashTagDialogOpen, setHashTagDialog] = useState(false);
+  const [hashtagPart, setHashtagPart] = useState("");
   const mutation = useMutation({
     mutationFn: createTweetMutate,
     onSuccess: (response: any) => {
@@ -239,6 +240,31 @@ const ComposePost = () => {
     });
   };
 
+  function handleContentChange(content: string) {
+    const parts = content.split(/(\s|$)/);
+    const lastPart = parts[parts.length - 1];
+
+    if (lastPart && lastPart.startsWith("#")) {
+      if (lastPart.length > 1) {
+        setHashTagDialog(true);
+        setHashtagPart(lastPart);
+      } else {
+        setHashTagDialog(false);
+        setHashtagPart("");
+      }
+    } else {
+      setHashTagDialog(false);
+      setHashtagPart("");
+    }
+    setTweetContent(content);
+  }
+
+  useEffect(() => {
+    if (tweetContent.split("#")) {
+      console.log(tweetContent);
+    }
+  }, [tweetContent]);
+
   return (
     <div className="w-full relative">
       <div className="w-full p-6 px-4 pb-4">
@@ -247,15 +273,17 @@ const ComposePost = () => {
           <div className="w-full mt-2 px-2">
             <textarea
               value={tweetContent}
-              onChange={(e) => setTweetContent(e.target.value)}
+              onChange={(e) => handleContentChange(e.target.value)}
               rows={2}
-              className={`text-[20px] bg-transparent   outline-none border-0 w-full placeholder:text-gray-600`}
+              className={`text-[20px] bg-transparent    outline-none border-0 w-full placeholder:text-gray-600`}
               placeholder="What is happening?!"
             ></textarea>
             {isHashTagDialogOpen && (
               <div className="mt-2">
                 <HashtagContainer
-                  content="relative"
+                  content={hashtagPart}
+                  tweetContent={tweetContent}
+                  setTweetContent={setTweetContent}
                   setHashTagDialog={setHashTagDialog}
                 />
               </div>
