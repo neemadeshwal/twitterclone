@@ -12,6 +12,8 @@ type Comment{
     parent:Comment
     replies:[Comment]
     parentId:String
+    repostComment:[Repost]
+
     
 }
 

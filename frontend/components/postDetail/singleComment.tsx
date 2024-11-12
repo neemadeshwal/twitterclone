@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import ReplyComment from "./replyOnComment";
 import Link from "next/link";
 import { useGetCommentById } from "@/hooks/comment";
+import { repostComment } from "@/graphql/mutation/repost";
 
 const SingleComment = ({
   comment: singleComment,
@@ -29,6 +30,7 @@ const SingleComment = ({
   comment: CommentType;
 }) => {
   const [liked, setLiked] = useState(false);
+  const [repost, setRepost] = useState(false);
   const { singleComment: comment } = useGetCommentById(singleComment.id);
   console.log(comment, "comment in comment");
   const queryClient = useQueryClient();
@@ -38,6 +40,7 @@ const SingleComment = ({
     setColor(getRandomDarkHexColor());
   }, []);
   const { user } = useCurrentUser();
+  console.log(singleComment, "singlecomment");
 
   const mutation = useMutation({
     mutationFn: toggleLikeComment,
@@ -62,12 +65,42 @@ const SingleComment = ({
       console.log(error);
     }
   }
+  const repostMutation = useMutation({
+    mutationFn: repostComment,
+    onSuccess: (response: any) => {
+      console.log(response);
+      queryClient.invalidateQueries({ queryKey: ["single-comment"] });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  async function handleRepostComment() {
+    setRepost((prevVal) => !prevVal);
+
+    if (!singleComment || !singleComment.id) {
+      return;
+    }
+    const body = {
+      commentId: singleComment.id,
+    };
+    try {
+      await repostMutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useEffect(() => {
     if (!comment) {
       return;
     }
     if (comment?.likes?.length !== 0 && user) {
       setLiked(comment?.likes?.some((like) => like?.userId === user.id));
+    }
+    if (comment?.repostComment?.length !== 0 && user) {
+      setRepost(
+        comment?.repostComment?.some((repost) => repost.userId === user.id)
+      );
     }
   }, [comment, user]);
 
@@ -143,9 +176,18 @@ const SingleComment = ({
           </div> */}
           <div className="flex justify-between py-2 pt-3 pb-4">
             <ReplyComment comment={comment} user={user!} />
-            <div className="flex gap-1 items-center gray text-[13px] font-[400]">
-              <LuRepeat2 className="text-[20px] " />
-              34k
+            <div
+              onClick={handleRepostComment}
+              className="flex gap-1 items-center gray text-[13px] font-[400]"
+            >
+              {repost ? (
+                <LuRepeat2 className="text-[20px] text-[#00ba7c] " />
+              ) : (
+                <LuRepeat2 className="text-[20px] " />
+              )}
+              <p className={`${repost ? "text-[#00ba7c]" : "gray"}`}>
+                {comment?.repostComment?.length}
+              </p>
             </div>
             <div
               onClick={() => handleTweetLike(comment.id)}

@@ -149,6 +149,18 @@ const extraResolvers = {
       console.log(comment, "checking replies");
       return comment;
     },
+    repostComment: async (parent: CommentProps) => {
+      const repostComment = await prismaClient.repost.findMany({
+        where: {
+          commentId: parent.id,
+        },
+        include: {
+          comment: true,
+          user: true,
+        },
+      });
+      return repostComment;
+    },
   },
 };
 

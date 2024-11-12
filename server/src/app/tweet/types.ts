@@ -11,8 +11,15 @@ type Tweet{
     LikedBy:[Like]
     commentAuthor:[Comment]
     repostTweet:[Repost]
+    hashtags:[HashTag]
 
 
+
+}
+type HashTag{
+    id:String
+    text:String
+    tweets:[Tweet]
 }
 
 input DeleteTweetInput{

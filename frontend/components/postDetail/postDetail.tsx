@@ -23,6 +23,7 @@ import SinglePost from "../post/singlePost";
 import SingleComment from "./singleComment";
 import { createComment } from "@/graphql/mutation/comment";
 import PostActivity from "@/shared/postActivity";
+import { repostTweet } from "@/graphql/mutation/repost";
 
 const PostDetail = () => {
   const pathname = usePathname();
@@ -32,6 +33,7 @@ const PostDetail = () => {
   const id = idArr[idArr.length - 1];
   const [liked, setLiked] = useState(false);
   const { singleTweet } = useGetSingleTweet(id);
+  const [repost, setRepost] = useState(false);
   console.log(singleTweet, "singletweet");
 
   const [color, setColor] = useState("");
@@ -61,6 +63,29 @@ const PostDetail = () => {
       console.log(error);
     },
   });
+  const repostMutation = useMutation({
+    mutationFn: repostTweet,
+    onSuccess: (response: any) => {
+      console.log(response);
+      queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  async function handleRepostTweet() {
+    if (!singleTweet || !singleTweet.id) {
+      return;
+    }
+    const body = {
+      tweetId: singleTweet.id,
+    };
+    try {
+      await repostMutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async function handleTweetLike() {
     setLiked((prevVal) => !prevVal);
     if (!singleTweet?.id) {
@@ -81,6 +106,11 @@ const PostDetail = () => {
     }
     if (singleTweet.LikedBy && user) {
       setLiked(singleTweet.LikedBy.some((like) => like.userId === user.id));
+    }
+    if (singleTweet.repostTweet && user) {
+      setRepost(
+        singleTweet.repostTweet.some((repost) => repost.userId === user.id)
+      );
     }
   }, [singleTweet, user]);
   useEffect(() => {
@@ -235,9 +265,18 @@ const PostDetail = () => {
           <div>
             <div className="flex justify-between py-2 pt-3 pb-4">
               <Comment tweet={singleTweet} user={user!} />
-              <div className="flex gap-1 items-center gray text-[13px] font-[400]">
-                <LuRepeat2 className="text-[20px] " />
-                34k
+              <div
+                onClick={handleRepostTweet}
+                className="flex gap-1 items-center cursor-pointer gray text-[13px] font-[400]"
+              >
+                {repost ? (
+                  <LuRepeat2 className="text-[20px] text-[#00ba7c] " />
+                ) : (
+                  <LuRepeat2 className="text-[20px] " />
+                )}
+                <p className={`${repost ? "text-[#00ba7c]" : "gray"}`}>
+                  {singleTweet?.repostTweet.length}
+                </p>
               </div>
               <div
                 onClick={handleTweetLike}

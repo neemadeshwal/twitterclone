@@ -58,6 +58,13 @@ export interface Tweet {
   authorId: string;
   photoArray: string[];
   videoArray: string[];
+  repostTweet: Repost[];
+  hashtags: HashTag[];
+}
+
+interface HashTag {
+  id: string;
+  text: string;
 }
 
 interface getAllTweet {
@@ -66,6 +73,9 @@ interface getAllTweet {
 
 export interface GetAllTweetProps {
   getAllTweet: Tweet[];
+}
+export interface getAllHashTagsProps {
+  getAllHashTags: HashTag[];
 }
 export interface Like {
   id: string;
@@ -98,6 +108,7 @@ export interface Comment {
   replies: Comment[];
   parentId: string;
   parent: Comment;
+  repostComment: Repost[];
 }
 
 export interface getUserByIdProps {
@@ -127,4 +138,11 @@ export interface unfollowUserProps {
 
 export interface GetSingleCommentProps {
   getCommentById: Comment;
+}
+
+export interface Repost {
+  id: string;
+  userId: string;
+  tweetId: string;
+  commentId: string;
 }

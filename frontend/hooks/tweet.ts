@@ -1,6 +1,14 @@
 import { graphqlClient } from "@/clients/api";
-import { getAllTweetQuery, getSingleTweetQuery } from "@/graphql/query/tweet";
-import { GetAllTweetProps, getSingleTweetProps } from "@/graphql/types";
+import {
+  allHashTagQuery,
+  getAllTweetQuery,
+  getSingleTweetQuery,
+} from "@/graphql/query/tweet";
+import {
+  getAllHashTagsProps,
+  GetAllTweetProps,
+  getSingleTweetProps,
+} from "@/graphql/types";
 import { useQuery } from "@tanstack/react-query";
 
 export const useAllTweet = () => {
@@ -21,4 +29,14 @@ export const useGetSingleTweet = (id: String) => {
     staleTime: 1000 * 60 * 5,
   });
   return { ...query, singleTweet: query.data?.getSingleTweet };
+};
+
+export const useGetAllHashTag = () => {
+  const query = useQuery<getAllHashTagsProps>({
+    queryKey: ["all-hashtag"],
+    queryFn: () => graphqlClient.request(allHashTagQuery),
+    staleTime: 1000 * 60 * 5,
+  });
+  console.log(query, "query query");
+  return { ...query, allHashtag: query.data?.getAllHashTags };
 };

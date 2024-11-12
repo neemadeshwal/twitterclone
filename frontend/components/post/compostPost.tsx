@@ -17,6 +17,7 @@ import { previewFile } from "@/lib/uploadFile";
 import Image from "next/image";
 import { BiChevronLeft, BiChevronRight, BiX } from "react-icons/bi";
 import GifContainer from "@/shared/GifContainer";
+import HashtagContainer from "@/shared/HashtagContainer";
 const ComposePost = () => {
   const queryClient = useQueryClient();
   const [showRightChevron, setShowRightChevron] = useState(false);
@@ -26,6 +27,7 @@ const ComposePost = () => {
   const [tweetContent, setTweetContent] = useState("");
   const [openGifContainer, setOpenGifContainer] = useState(false);
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
+  const [isHashTagDialogOpen, setHashTagDialog] = useState(true);
   const mutation = useMutation({
     mutationFn: createTweetMutate,
     onSuccess: (response: any) => {
@@ -223,6 +225,19 @@ const ComposePost = () => {
   const deletePreviewPhotos = async (deleteUrl: string) => {
     setFiles((prevVal) => prevVal.filter((url: string) => url !== deleteUrl));
   };
+  const renderContent = (content: string) => {
+    const parts = content.split(/(#\w+)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith("#")) {
+        return (
+          <span key={index} className="text-blue-500">
+            {part}
+          </span>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
 
   return (
     <div className="w-full relative">
@@ -234,9 +249,18 @@ const ComposePost = () => {
               value={tweetContent}
               onChange={(e) => setTweetContent(e.target.value)}
               rows={2}
-              className="text-[20px] bg-transparent outline-none border-0 w-full placeholder:text-gray-600"
+              className={`text-[20px] bg-transparent   outline-none border-0 w-full placeholder:text-gray-600`}
               placeholder="What is happening?!"
             ></textarea>
+            {isHashTagDialogOpen && (
+              <div className="mt-2">
+                <HashtagContainer
+                  content="relative"
+                  setHashTagDialog={setHashTagDialog}
+                />
+              </div>
+            )}
+
             {loading && <div>Loading....</div>}
             {files && typeof files !== "undefined" && files.length !== 0 && (
               <div

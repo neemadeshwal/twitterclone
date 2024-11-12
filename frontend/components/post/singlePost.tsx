@@ -25,6 +25,7 @@ import { repostTweet } from "@/graphql/mutation/repost";
 
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
+  const [repost, setRepost] = useState(false);
   const [isPostControlDialogOpen, setPostControlDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -80,12 +81,16 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
     if (tweet.LikedBy && user) {
       setLiked(tweet.LikedBy.some((like) => like.userId === user.id));
     }
+    if (tweet.repostTweet && user) {
+      setRepost(tweet.repostTweet.some((repost) => repost.userId === user.id));
+    }
   }, [tweet, user]);
 
   const handlePostClick = (id: string) => {
     router.push(`/${tweet.author.userName}/status/${id}`);
   };
   console.log(tweet.author, "twwet-author");
+
   return (
     <div className="w-full cursor-pointer py-3 ">
       <div className="flex gap-4 w-full px-2">
@@ -148,7 +153,21 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               </div> */}
             </div>
           </div>
-          <div onClick={() => handlePostClick(tweet.id)}>{tweet?.content}</div>
+          <div onClick={() => handlePostClick(tweet.id)}>
+            {tweet?.content}
+
+            {tweet?.hashtags?.length !== 0 && (
+              <div className="mt-2">
+                {tweet?.hashtags?.map((item) => {
+                  return (
+                    <span key={item.id} className="x-textcolor ">
+                      {item.text}{" "}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+          </div>
           {(tweet?.photoArray?.length !== 0 ||
             tweet?.videoArray?.length !== 0) && (
             <div
@@ -263,8 +282,14 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               onClick={handleRepostTweet}
               className="flex gap-1 items-center gray text-[13px] font-[400]"
             >
-              <LuRepeat2 className="text-[20px] " />
-              34k
+              {repost ? (
+                <LuRepeat2 className="text-[20px] text-[#00ba7c] " />
+              ) : (
+                <LuRepeat2 className="text-[20px] " />
+              )}
+              <p className={`${repost ? "text-[#00ba7c]" : "gray"}`}>
+                {tweet?.repostTweet.length}
+              </p>
             </div>
             <div
               onClick={handleTweetLike}

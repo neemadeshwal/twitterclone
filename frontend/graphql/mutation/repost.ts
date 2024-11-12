@@ -18,6 +18,8 @@ const REPOST_COMMENT = gql`
 `;
 
 export const repostComment = async (payload: { commentId: string }) => {
+  console.log("repost commetn tjjl");
+  console.log(payload, "payload");
   const data = await graphqlClient.request(REPOST_COMMENT, { payload });
   return data;
 };

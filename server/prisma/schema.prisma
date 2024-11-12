@@ -51,6 +51,7 @@ model Tweet{
   LikedBy Like[] @relation()
   commentAuthor Comment[] @relation()
   repostTweet Repost[]
+  hashtags Hashtag[] @relation("hashtag")
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -96,6 +97,11 @@ followingId String
 following User @relation("following",fields: [followingId],references: [id],onDelete:Cascade)
 @@id([followerId,followingId])
 
+}
+model Hashtag{
+  id String @id @default(cuid())
+  text String @unique
+  tweets Tweet[] @relation("hashtag")
 }
 
 model Repost {

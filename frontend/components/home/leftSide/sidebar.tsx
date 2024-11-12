@@ -26,10 +26,10 @@ const sidebarIcons = [
     activePathname: "/",
   },
   {
-    title: "search",
+    title: "explore",
     icon: <IoSearch />,
     iconActive: <FaSearch />,
-    activePathname: "/search",
+    activePathname: "/explore",
   },
   {
     title: "notifications",

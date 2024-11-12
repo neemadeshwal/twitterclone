@@ -9,6 +9,12 @@ query getCommentById($payload:getCommentByIdInput){
         tweetId
         userId
         parentId
+        repostComment{
+            userId
+            tweetId
+            id
+            commentId
+         }
         tweet{
             id
             

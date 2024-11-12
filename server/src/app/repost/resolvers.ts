@@ -52,11 +52,11 @@ const mutations = {
       throw new Error("no user present.");
     }
     const { commentId } = payload;
-
+    console.log(commentId, "comment ommj id");
     if (!commentId) {
       throw new Error("no id present");
     }
-    const repostTweet = await prismaClient.repost.findUnique({
+    const repostComment = await prismaClient.repost.findUnique({
       where: {
         userId_commentId: {
           userId: ctx.user.id,
@@ -64,8 +64,8 @@ const mutations = {
         },
       },
     });
-    if (repostTweet) {
-      const repostTweet = await prismaClient.repost.delete({
+    if (repostComment) {
+      const repostcomment = await prismaClient.repost.delete({
         where: {
           userId_commentId: {
             userId: ctx.user.id,
@@ -73,11 +73,11 @@ const mutations = {
           },
         },
       });
-      return repostTweet;
+      return repostcomment;
     } else {
       const repostTweet = await prismaClient.repost.create({
         data: {
-          tweetId: commentId,
+          commentId: commentId,
           userId: ctx.user.id,
         },
       });

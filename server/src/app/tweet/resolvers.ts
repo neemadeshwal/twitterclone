@@ -9,6 +9,9 @@ const queries = {
     }
     const tweets = await prismaClient.tweet.findMany({
       orderBy: { createdAt: "desc" },
+      include: {
+        hashtags: true,
+      },
     });
     console.log(tweets, "tweets....");
     return tweets;
@@ -28,12 +31,25 @@ const queries = {
 
     const tweet = await prismaClient.tweet.findUnique({
       where: { id },
-      include: { author: true, LikedBy: true, commentAuthor: true },
+      include: {
+        author: true,
+        LikedBy: true,
+        commentAuthor: true,
+        hashtags: true,
+      },
     });
     if (!tweet) {
       throw new Error("no user with this id.");
     }
     return tweet;
+  },
+  getAllHashTags: async (parent: any, payload: any, ctx: GraphqlContext) => {
+    if (!ctx.user) {
+      throw new Error("Unauthorized");
+    }
+
+    const allHashtag = await prismaClient.hashtag.findMany({});
+    return allHashtag;
   },
 };
 const mutations = {
@@ -53,12 +69,46 @@ const mutations = {
     if (!content) {
       throw new Error("No content .Please provide content first.");
     }
+    const hashtags = content.match(/#\w+/g) || [];
+    const cleanContent = content.replace(/#\w+/g, "").trim();
+
+    console.log(hashtags, "hastags");
+    if (hashtags.length == 0) {
+      return;
+    }
+    const allHashtag = await Promise.all(
+      hashtags.map(async (hashtag) => {
+        const findHashTag = await prismaClient.hashtag.findUnique({
+          where: {
+            text: hashtag.toLowerCase(),
+          },
+        });
+
+        if (!findHashTag) {
+          const findHashTag = await prismaClient.hashtag.create({
+            data: {
+              text: hashtag.toLowerCase(),
+            },
+          });
+          return findHashTag;
+        }
+        return findHashTag;
+      })
+    );
     const tweet = await prismaClient.tweet.create({
       data: {
-        content,
+        content: cleanContent,
         authorId: ctx.user.id,
         photoArray,
         videoArray,
+        hashtags: {
+          connect:
+            allHashtag.length !== 0
+              ? allHashtag.map((tag) => ({
+                  id: tag?.id,
+                }))
+              : undefined,
+        },
       },
     });
     return tweet;
@@ -98,22 +148,17 @@ const mutations = {
 const extraResolvers = {
   Tweet: {
     author: async (parent: Tweet) => {
-      console.log("hello");
       if (!parent.id) {
         throw new Error("No tweet present");
       }
-      console.log("hello two");
 
       const author = await prismaClient.user.findUnique({
         where: { id: parent.authorId },
       });
-      console.log("ig got the author");
 
       return author;
     },
     LikedBy: async (parent: Tweet) => {
-      console.log("ig got the author");
-
       const LikedBy = await prismaClient.like.findMany({
         where: {
           tweetId: parent.id,
@@ -127,7 +172,6 @@ const extraResolvers = {
         orderBy: { createdAt: "desc" },
         include: { likes: true, replies: true, parent: true },
       });
-      console.log(comments, "comments");
       return comments;
     },
     repostTweet: async (parent: Tweet) => {
@@ -140,8 +184,20 @@ const extraResolvers = {
           user: true,
         },
       });
-      console.log(repost, "respojt");
       return repost;
+    },
+    hashtags: async (parent: Tweet) => {
+      console.log("hashtag scheck");
+      const hashtag = await prismaClient.hashtag.findMany({
+        where: {
+          tweets: {
+            some: {
+              id: parent.id,
+            },
+          },
+        },
+      });
+      return hashtag;
     },
   },
 };
