@@ -16,6 +16,7 @@ const queries = {
     console.log(tweets, "tweets....");
     return tweets;
   },
+
   getSingleTweet: async (
     parent: any,
     { payload }: { payload: { id: string } },

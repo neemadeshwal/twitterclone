@@ -3,8 +3,7 @@ import { useSearchquery } from "@/hooks/search";
 import React, { useState } from "react";
 import { BiSearch } from "react-icons/bi";
 
-const SearchBar = () => {
-  const [searchbarTab, setSearchBarTab] = useState("people");
+const SearchBar = ({ searchbarTab, setSearchBarTab }: any) => {
   const { allSearchResult } = useSearchquery("neema");
   console.log(allSearchResult, "allsearch");
   return (
