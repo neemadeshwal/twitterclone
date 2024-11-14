@@ -12,7 +12,7 @@ const SearchPage = () => {
   return (
     <div>
       <div>
-        <div className="sticky top-0">
+        <div className="sticky top-0 z-[1000]">
           <SearchBar
             searchbarTab={searchbarTab}
             setSearchBarTab={setSearchBarTab}
