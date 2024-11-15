@@ -36,6 +36,9 @@ const queries = {
       where: {
         text: { contains: query, mode: "insensitive" },
       },
+      include: {
+        tweets: true,
+      },
     });
     console.log(post, people, hashtag);
     return { post, people, hashtag };

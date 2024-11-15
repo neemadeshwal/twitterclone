@@ -6,7 +6,13 @@ import { useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-const SingleFollowUser = ({ singleUser }: { singleUser: getCurrentUser }) => {
+const SingleFollowUser = ({
+  singleUser,
+  filterArray,
+}: {
+  singleUser: getCurrentUser;
+  filterArray?: boolean;
+}) => {
   const { user } = useCurrentUser();
   const [isAlreadyFollowing, setIsAlreadyFollowing] = useState(false);
 
@@ -35,9 +41,10 @@ const SingleFollowUser = ({ singleUser }: { singleUser: getCurrentUser }) => {
     }
   };
   useEffect(() => {
-    if (!singleUser || !user) {
+    if (!singleUser || !user || !filterArray) {
       return;
     }
+
     console.log(singleUser.followers, "followers");
     const isFollowing = singleUser.followers.find(
       (item) => item.followerId === user.id

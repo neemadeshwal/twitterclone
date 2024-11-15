@@ -62,7 +62,7 @@ export interface Tweet {
   hashtags: HashTag[];
 }
 
-interface HashTag {
+export interface HashTag {
   id: string;
   text: string;
 }
