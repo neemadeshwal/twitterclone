@@ -55,7 +55,6 @@ const queries = {
       where: { id },
       include: { posts: true, likedTweets: true, commentTweets: true },
     });
-    console.log(user, "user user");
     if (!user) {
       throw new Error("No user present.");
     }
@@ -83,7 +82,6 @@ const mutations = {
     { payload }: { payload: getCredAndSendOtpPayload },
     ctx: any
   ) => {
-    console.log(payload, "payload");
     const { firstName, lastName, dateOfBirth, email } = payload;
 
     if (!firstName || !email) {
@@ -115,11 +113,8 @@ const mutations = {
       expiryTime
     );
     const oldData = await redis.get(`unverifiedUser:${email}`);
-    console.log(oldData, "oldata");
 
     const otpsend = await sendOtp(email);
-
-    console.log(otpsend);
 
     return { email, next_page: "verifyotp" };
   },
@@ -147,12 +142,10 @@ const mutations = {
       );
     }
     const storedOtpCred = JSON.parse(storedOtp);
-    console.log(otp, "otp", " ", "stored otp", storedOtpCred.otp);
     if (storedOtpCred.otp !== Number(otp)) {
       throw new Error("Invalid otp!Please enter correct otp.");
     }
     const oldData = await redis.get(`unverifiedUser:${email}`);
-    console.log(oldData, "old data");
     if (!oldData) {
       throw new Error("error occured .Please again enter your creds.");
     }
@@ -219,7 +212,6 @@ const mutations = {
     });
 
     const token = await JWTService.generateTokenFromUser(newUser);
-    console.log(token, "token");
     return {
       token,
       message: "create account successful",
@@ -235,7 +227,6 @@ const mutations = {
       throw new Error("Provide required credentials.");
     }
     const sentotp = await sendOtp(email);
-    console.log(sentotp);
     return { email, next_page: "verifyotp" };
   },
   getLoginCreds: async (
@@ -287,7 +278,6 @@ const mutations = {
     }
 
     const token = await JWTService.generateTokenFromUser(user);
-    console.log(token);
 
     return { token, message: "login successful", next_page: "signin" };
   },
@@ -296,13 +286,14 @@ const mutations = {
 const extraResolvers = {
   User: {
     posts: async (parent: User) => {
-      console.log("elllo");
-      console.log(parent, "parent");
       if (!parent.id) {
         throw new Error("no id present");
       }
       const tweets = await prismaClient.tweet.findMany({
         where: { authorId: parent.id },
+        include: {
+          repostTweet: true,
+        },
       });
       return tweets;
     },
@@ -328,8 +319,6 @@ const extraResolvers = {
         include: { follower: true },
       });
 
-      console.log(followedUsers, "followed usrers");
-
       return followedUsers;
     },
     following: async (parent: User) => {
@@ -349,7 +338,6 @@ const extraResolvers = {
       const user = await prismaClient.user.findUnique({
         where: { id: parent.userId },
       });
-      console.log(user);
       return user;
     },
   },

@@ -1,5 +1,6 @@
 import { prismaClient } from "../../client/db";
 import { GraphqlContext } from "../../interfaces";
+import { initServer } from "../../app";
 
 interface LikeProps {
   id: string;
@@ -12,6 +13,7 @@ const mutations = {
     { payload }: { payload: { tweetId: string } },
     ctx: GraphqlContext
   ) => {
+    const { io } = await initServer();
     if (!ctx.user) {
       throw new Error("Unauthorized.Token not present.");
     }
@@ -19,6 +21,16 @@ const mutations = {
 
     if (!tweetId) {
       throw new Error("No tweetId present.");
+    }
+
+    const findTweet = await prismaClient.tweet.findUnique({
+      where: {
+        id: tweetId,
+      },
+    });
+
+    if (!findTweet) {
+      throw new Error("No tweetId with this tweet.");
     }
 
     const findLike = await prismaClient.like.findUnique({
@@ -47,6 +59,13 @@ const mutations = {
           tweetId: tweetId,
         },
       });
+      console.log("like this tweet");
+      console.log(findTweet.authorId, "tweet id");
+      io.to(findTweet.authorId).emit(
+        "likeTweet",
+        `${ctx.user.email} liked your post.`
+      );
+
       return like;
     }
   },
@@ -58,7 +77,6 @@ const mutations = {
     if (!ctx.user) {
       throw new Error("Unauthorized.Token not present.");
     }
-    console.log(payload, "paylaod");
     const { commentId } = payload;
 
     if (!commentId) {

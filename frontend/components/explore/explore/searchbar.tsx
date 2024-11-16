@@ -65,6 +65,10 @@ const SearchBar = ({
 
     console.log(existingArray, "array");
 
+    if (existingArray.includes(newItem)) {
+      return;
+    }
+
     existingArray.push(newItem);
 
     localStorage.setItem(key, JSON.stringify(existingArray));
@@ -111,9 +115,13 @@ const SearchBar = ({
               placeholder="search"
               className={` w-full
             
- rounded-full px-12 py-2 bg-[#262626c0] *: focus:bg-black  outline-none focus:outline-[#1d9bf0] outline-1 `}
+ rounded-full px-12 py-2 outline-0 ${
+   shouldFocus
+     ? "bg-black border-[#1d9bf0] border"
+     : "bg-[#262626c0] border-gray-700 "
+ }  `}
             />
-            {query && (
+            {query && shouldFocus && (
               <div
                 onClick={() => setQuery("")}
                 className="x-bgcolor  rounded-full cursor-pointer absolute right-3 top-[25%] w-fit"
@@ -121,12 +129,17 @@ const SearchBar = ({
                 <BiX className="text-black w-6 h-6" />
               </div>
             )}
-            <BiSearch className="absolute top-[30%] gray  left-4 text-[22px] peer-focus:text-[#1d9bf0]" />
+            <BiSearch
+              className={`absolute top-[30%]   left-4 text-[22px] ${
+                shouldFocus ? "x-textcolor " : "gray"
+              }`}
+            />
             {showPreviewPage && (
               <ShowSearchPreview
                 showSearchPreview={shouldFocus}
-                setIsSearchPreviewOpen={setShouldFocus}
+                setIsSearchPreviewOpen={setShowPreviewPage}
                 allSearchResult={allSearchResult}
+                setQuery={setQuery}
               />
             )}
           </div>

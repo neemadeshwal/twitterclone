@@ -44,6 +44,7 @@ type User{
     commentTweets:[Comment]
     coverImgUrl:String
     bio:String
+    
     followerId:String
     followingId:String
     followers:[Follows]

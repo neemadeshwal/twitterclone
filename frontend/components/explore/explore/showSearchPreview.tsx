@@ -1,7 +1,7 @@
 import { HashTag } from "@/graphql/types";
 import DivisionBar from "@/shared/divisionbar";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BiSearch, BiX } from "react-icons/bi";
 
 interface peopleProps {
@@ -16,9 +16,10 @@ const ShowSearchPreview = ({
   isSearchPreviewOpen,
   setIsSearchPreviewOpen,
   allSearchResult,
+  setQuery,
 }: any) => {
   const [recentSearch, setRecentSearch] = useState<string[]>([]);
-
+  const previewRef = useRef<HTMLDivElement>(null);
   const deleteAllRecentSearch = () => {
     const getRecentSearch = localStorage.getItem("recentSearch");
     if (!getRecentSearch) {
@@ -48,8 +49,25 @@ const ShowSearchPreview = ({
     }
     setRecentSearch(JSON.parse(getRecentSearch));
   }, []);
+
+  useEffect(() => {
+    const handleClosePreview = (event: MouseEvent) => {
+      if (
+        previewRef.current &&
+        !previewRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchPreviewOpen(false);
+      }
+      document.addEventListener("mousedown", handleClosePreview);
+
+      return () => {
+        document.removeEventListener("mousedown", handleClosePreview);
+      };
+    };
+  }, [setIsSearchPreviewOpen]);
   return (
     <div
+      ref={previewRef}
       style={{
         boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)",
       }}
@@ -146,6 +164,7 @@ const ShowSearchPreview = ({
             {recentSearch.map((item) => {
               return (
                 <div
+                  onClick={() => setQuery(item)}
                   key={item}
                   className="hover-bg flex px-4 items-center cursor-pointer py-3 justify-between"
                 >

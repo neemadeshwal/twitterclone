@@ -17,9 +17,13 @@ import { GraphQLUpload } from "graphql-upload";
 import FileUploadRouter from "./fileUpload";
 import { Repost } from "./repost";
 import { Search } from "./search";
+import { createServer } from "http";
+import { Server as SocketIoServer } from "socket.io";
+import { handleEvents } from "../services/socket/event";
 
 export async function initServer() {
   const app = express();
+  const httpserver = createServer(app);
 
   app.use(bodyParser.json({ limit: "50mb" }));
   app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
@@ -84,6 +88,7 @@ export async function initServer() {
                 req.headers.authorization.split("Bearer ")[1]
               )
             : undefined,
+          io,
         };
       },
     })
@@ -93,5 +98,15 @@ export async function initServer() {
   app.use("/api/auth", AuthRoute);
   app.use("/api/uploads", FileUploadRouter);
 
-  return app;
+  const io = new SocketIoServer(httpserver, {
+    cors: {
+      origin: "http://localhost:5000",
+      methods: ["GET", "POST"],
+    },
+  });
+  io.on("connection", (socket) => {
+    handleEvents(socket);
+  });
+
+  return { app, io, httpserver };
 }

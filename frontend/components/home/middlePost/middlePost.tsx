@@ -2,10 +2,12 @@
 import ComposePost from "@/components/post/compostPost";
 import PostList from "@/components/post/postlist";
 import DivisionBar from "@/shared/divisionbar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import io from "socket.io-client";
 
 const MiddlePost = () => {
   const [isForYou, setIsForYou] = useState(true);
+
   return (
     <div className="flex flex-col h-full">
       {/* Fixed Header Section */}

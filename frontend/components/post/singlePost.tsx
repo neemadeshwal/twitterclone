@@ -22,6 +22,8 @@ import Comment from "./comment";
 import { useRouter } from "next/navigation";
 import PostActivity from "@/shared/postActivity";
 import { repostTweet } from "@/graphql/mutation/repost";
+import { io } from "socket.io-client";
+import { useSocket } from "@/context/socketContext";
 
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
@@ -29,8 +31,8 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [isPostControlDialogOpen, setPostControlDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
-
   const { user } = useCurrentUser();
+  const socket = useSocket();
   useEffect(() => {
     queryClient.refetchQueries({ queryKey: ["all-tweet"] });
   }, []);

@@ -32,6 +32,24 @@ export const getUserByIdQuery = gql(`
     }
     posts {
       authorId
+      repostTweet{
+                userId
+                tweetId
+                id
+                tweet{
+                    id
+                    content
+                    photoArray
+                    videoArray
+                    author{
+                        id
+                        userName
+                        email
+                        firstName
+                        lastName
+                    }
+                }
+            }
       content
       commentAuthor{
                 id
@@ -102,6 +120,25 @@ export const getUserByIdQuery = gql(`
         content
         photoArray
         videoArray
+        repostTweet{
+                userId
+                tweetId
+                id
+                tweet{
+                    id
+                    content
+                    photoArray
+                    videoArray
+                    author{
+                        id
+                        userName
+                        email
+                        firstName
+                        lastName
+                    }
+                }
+            }
+            
       }
     }
     likedTweets {
@@ -114,6 +151,25 @@ export const getUserByIdQuery = gql(`
           email
         }
         authorId
+        repostTweet{
+                userId
+                tweetId
+                id
+                tweet{
+                    id
+                    content
+                    photoArray
+                    videoArray
+                    author{
+                        id
+                        userName
+                        email
+                        firstName
+                        lastName
+                    }
+                }
+            }
+            
         commentAuthor {
           tweetId
           id

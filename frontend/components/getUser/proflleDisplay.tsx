@@ -6,11 +6,13 @@ import { MdOutlineCalendarMonth } from "react-icons/md";
 import PostTab from "./postTab";
 import CommentTab from "./commentTab";
 import MediaTab from "./mediaTab";
+import EditProfileContainer from "@/shared/editProfileContainer";
 
 const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
   const [tabs, setTabs] = useState("post");
   console.log(user, "user tweet");
   console.log(user.likedTweets, "item liked");
+  const [editProfileDialog, setEditProfileDialog] = useState(false);
 
   const LikedTweet: Tweet[] = [];
   if (user.likedTweets.length !== 0) {
@@ -63,7 +65,10 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
           )}
         </div>
         <div className="flex justify-end w-full py-3 px-4">
-          <div className=" rounded-full py-2 px-4 border-[0.1px] capitalize border-white w-fit">
+          <div
+            onClick={() => setEditProfileDialog(true)}
+            className=" rounded-full py-2 px-4 border-[0.1px] capitalize border-white w-fit"
+          >
             <h4>edit profile</h4>
           </div>
         </div>
@@ -164,6 +169,9 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
           )}
         </div>
       </div>
+      {editProfileDialog && (
+        <EditProfileContainer setEditProfileDialog={setEditProfileDialog} />
+      )}
     </div>
   );
 };

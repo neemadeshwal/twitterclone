@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ApolloProviderWrapper } from "@/apolloClient/apolloClient";
 import { ReactQueryProvider } from "@/queryClient/queryClientWrapper";
+import { SocketProvider } from "@/context/socketContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,7 +32,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ApolloProviderWrapper>
-          <ReactQueryProvider>{children}</ReactQueryProvider>
+          <ReactQueryProvider>
+            <SocketProvider>{children}</SocketProvider>
+          </ReactQueryProvider>
         </ApolloProviderWrapper>
       </body>
     </html>

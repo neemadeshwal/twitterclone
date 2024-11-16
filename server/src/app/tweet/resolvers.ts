@@ -13,7 +13,6 @@ const queries = {
         hashtags: true,
       },
     });
-    console.log(tweets, "tweets....");
     return tweets;
   },
 
@@ -73,7 +72,6 @@ const mutations = {
     const hashtags = content.match(/#\w+/g) || [];
     const cleanContent = content.replace(/#\w+/g, "").trim();
 
-    console.log(hashtags, "hastags");
     if (hashtags.length == 0) {
       return;
     }
@@ -188,7 +186,6 @@ const extraResolvers = {
       return repost;
     },
     hashtags: async (parent: Tweet) => {
-      console.log("hashtag scheck");
       const hashtag = await prismaClient.hashtag.findMany({
         where: {
           tweets: {

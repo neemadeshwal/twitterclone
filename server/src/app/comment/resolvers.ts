@@ -111,30 +111,23 @@ const extraResolvers = {
       const users = await prismaClient.user.findUnique({
         where: { id: parent.userId },
       });
-      console.log(users, "users find");
-      console.log("user comment user");
       return users;
     },
     tweet: async (parent: CommentProps) => {
-      console.log("tweet check");
       if (!parent.tweetId) {
         return null;
       }
 
-      console.log("tweet eixsit");
       const tweet = await prismaClient.tweet.findUnique({
         where: { id: parent.tweetId },
       });
-      console.log("user comment user tweet");
 
       return tweet;
     },
     likes: async (parent: CommentProps) => {
-      console.log("lieks hey");
       const likes = await prismaClient.like.findMany({
         where: { commentId: parent.id },
       });
-      console.log(likes, "likes in comment");
       return likes;
     },
     replies: async (parent: CommentProps) => {
@@ -146,7 +139,6 @@ const extraResolvers = {
           createdAt: "desc",
         },
       });
-      console.log(comment, "checking replies");
       return comment;
     },
     repostComment: async (parent: CommentProps) => {
