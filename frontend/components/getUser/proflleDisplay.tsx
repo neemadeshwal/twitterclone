@@ -67,7 +67,7 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
         <div className="flex justify-end w-full py-3 px-4">
           <div
             onClick={() => setEditProfileDialog(true)}
-            className=" rounded-full py-2 px-4 border-[0.1px] capitalize border-white w-fit"
+            className=" rounded-full py-2 cursor-pointer px-4 border-[0.1px] capitalize border-white w-fit"
           >
             <h4>edit profile</h4>
           </div>
@@ -79,7 +79,7 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
             <h3 className="text-[20px] font-[800] capitalize">
               {user?.firstName} {user?.lastName}
             </h3>
-            <p className="gray font-[14px]">{user?.userName}</p>
+            <p className="gray font-[14px]">@{user?.userName}</p>
           </div>
           <div className="py-3 px-4">
             <p className="gray font-[14px] flex items-center gap-2">

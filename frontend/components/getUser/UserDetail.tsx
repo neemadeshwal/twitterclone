@@ -22,7 +22,9 @@ const UserDetail = () => {
             <h2 className="font-[600] text-[18px] capitalize">
               {user?.firstName} {user?.lastName}
             </h2>
-            <h4 className="font-[300] gray text-[14px]">5 posts</h4>
+            <h4 className="font-[300] gray text-[14px]">
+              {user?.posts.length} posts
+            </h4>
           </div>
         </div>
       </div>
