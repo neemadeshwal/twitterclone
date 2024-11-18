@@ -1,9 +1,11 @@
 "use client";
 import { deleteTweetMutate } from "@/graphql/mutation/tweet";
-import { Tweet } from "@/graphql/types";
+import { getCurrentUser, Tweet } from "@/graphql/types";
 import { useCurrentUser } from "@/hooks/user";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
+import { TbCameraPlus } from "react-icons/tb";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { BiX } from "react-icons/bi";
@@ -12,18 +14,57 @@ import { FiUserX } from "react-icons/fi";
 import { IoIosStats } from "react-icons/io";
 import { MdDelete, MdEditDocument } from "react-icons/md";
 import { PiSpeakerSimpleSlash } from "react-icons/pi";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+const formSchema = z.object({
+  firstName: z.string().min(2, "firstname should be at least 2 characters."),
+  lastName: z.string().optional(),
+  email: z
+    .string()
+    .email("Invalid email address")
+    .min(5, "Email must be at least 5 characters long"),
+  bio: z.string().optional(),
+  location: z.string().optional(),
+});
 const EditProfileContainer = ({
   setEditProfileDialog,
+  user,
+  editProfileDialog,
 }: {
   setEditProfileDialog: any;
+  user: getCurrentUser;
+  editProfileDialog: boolean;
 }) => {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      location: "",
+      bio: "",
+      email: "",
+    },
+  });
   const postRef = useRef<HTMLDivElement>(null);
-  const { user } = useCurrentUser();
   const [isUserPost, setIsUserPost] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
-
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+    const body = {
+      email: values.email,
+    };
+  }
   useEffect(() => {
     const handlePostDialog = (event: MouseEvent) => {
       if (postRef.current && !postRef.current.contains(event.target as Node)) {
@@ -36,6 +77,35 @@ const EditProfileContainer = ({
       document.removeEventListener("mousedown", handlePostDialog);
     };
   }, [setEditProfileDialog]);
+
+  useEffect(() => {
+    if (editProfileDialog) {
+      document.body.style.overflow = "hidden";
+      document.body.style.height = "100vh";
+    } else {
+      document.body.style.overflow = "auto";
+      document.body.style.height = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+      document.body.style.height = "auto";
+    };
+  }, [editProfileDialog]);
+
+  useEffect(() => {
+    if (user) {
+      if (user?.firstName) {
+        form.setValue("firstName", user?.firstName);
+      }
+      if (user?.lastName) {
+        form.setValue("lastName", user?.lastName);
+      }
+      if (user?.bio) {
+        form.setValue("bio", user?.bio);
+      }
+    }
+  }, []);
   return (
     <div
       ref={postRef}
@@ -44,31 +114,234 @@ const EditProfileContainer = ({
       }}
       className="absolute text-white py-8 left-0 dimBg top-0 z-[100] w-full h-full flex items-center justify-center "
     >
-      <div className="w-[45%] h-full bg-black rounded-[20px] px-4 py-3">
-        <div className="sticky top-0 z-[100000] ">
-          <div className="flex justify-between items-center backdrop-blur-sm z-[1000] bg-pink-900  ">
-            <div className="flex items-center gap-6">
-              <div
-                onClick={() => setEditProfileDialog(false)}
-                className="cursor-pointer"
-              >
-                <BiX className="w-6 h-6" />
+      <div className="w-[45%] h-full overflow-auto bg-black rounded-[20px]  py-3 ">
+        <div className="h-screen">
+          <div className="sticky top-0 z-[100000] px-4 ">
+            <div className="flex justify-between items-center backdrop-blur-sm z-[1000]   ">
+              <div className="flex items-center gap-6">
+                <div
+                  onClick={() => setEditProfileDialog(false)}
+                  className="cursor-pointer"
+                >
+                  <BiX className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-[18px] font-[600]">Edit profile</p>
+                </div>
               </div>
               <div>
-                <p className="text-[18px] font-[600]">Edit profile</p>
+                <button className="py-1 font-[600] px-4 rounded-full bg-white text-black capitalize">
+                  save
+                </button>
               </div>
             </div>
-            <div>
-              <button className="py-1 font-[600] px-4 rounded-full bg-white text-black capitalize">
-                save
-              </button>
+          </div>
+          <div className="w-full h-full py-4 px-1 ">
+            <div className="h-full">
+              <div style={{ height: "250px" }} className="relative h-[300px]">
+                {user?.coverImgUrl ? (
+                  <div className="">
+                    <Image
+                      src={user?.coverImgUrl}
+                      alt=""
+                      className="w-full "
+                      width={100}
+                      height={100}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    style={{ height: "170px" }}
+                    className="w-full  flex items-center justify-center relative "
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="cursor-pointer p-2">
+                        <label htmlFor="coverImg" className="cursor-pointer">
+                          <TbCameraPlus className="w-7 h-7 cursor-pointer " />
+                          <input
+                            type="file"
+                            id="coverImg"
+                            className="hidden cursor-pointer"
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className="absolute bottom-0 left-4">
+                  <div className="relative ">
+                    {user?.profileImgUrl ? (
+                      <div>
+                        {user?.profileImgUrl.startsWith("#") ? (
+                          <div
+                            className="rounded-full  w-[100px] text-[60px] border-4 border-black h-[100px] flex items-center justify-center capitalize"
+                            style={{
+                              backgroundColor: user?.profileImgUrl,
+                              width: "130px",
+                              height: "130px",
+                            }}
+                          >
+                            {user?.firstName.slice(0, 1)}
+                          </div>
+                        ) : (
+                          <Image
+                            className="rounded-full w-[100px] h-[100px] border-black border-4"
+                            src={user?.profileImgUrl}
+                            alt=""
+                            width={40}
+                            height={40}
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      <div className="rounded-full w-10 h-10 bg-purple-950 flex items-center justify-center capitalize">
+                        {user?.firstName.slice(0, 1)}
+                      </div>
+                    )}
+                    <div className="absolute top-[32%] bg-[#434343c7] rounded-full left-[32%] z-50">
+                      <div className="cursor-pointer p-2">
+                        <label htmlFor="profileImg">
+                          <TbCameraPlus className="w-7 h-7 cursor-pointer " />
+                          <input
+                            type="file"
+                            id="profileImg"
+                            className="hidden cursor-pointer"
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="px-4 py-6">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <div className="flex flex-col gap-6">
+                      <div className="flex flex-col gap-6">
+                        <FormField
+                          control={form.control}
+                          name="firstName"
+                          render={({ field }) => (
+                            <FormItem className="relative pt-[1rem] pb-1 border-gray-600  px-1 border rounded-[5px]  focus-within:border-[#1d9bf0]  focus-within:shadow-[0 1px 8px rgba(29, 155, 240, 0.5)] ">
+                              <FormControl>
+                                <Input
+                                  id="firstName"
+                                  className="block w-full px-4 text-[16px] border-0 focus:outline-none  bg-transparent peer "
+                                  placeholder=""
+                                  {...field}
+                                />
+                              </FormControl>
+
+                              <label
+                                htmlFor="firstName"
+                                className={`absolute text-[16px] ${
+                                  form.getValues("firstName")
+                                    ? "text-[11px] top-8 -translate-y-9 text-gray-500"
+                                    : "left-4 top-2 -translate-y-4"
+                                } left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] `}
+                              >
+                                Firstname
+                              </label>
+
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="lastName"
+                          render={({ field }) => (
+                            <FormItem className="relative pt-[1rem] pb-1 border-gray-600  px-1 border rounded-[5px]  focus-within:border-[#1d9bf0]  focus-within:shadow-[0 1px 8px rgba(29, 155, 240, 0.5)] ">
+                              <FormControl>
+                                <Input
+                                  id="lastName"
+                                  className="block w-full px-4 text-[16px] border-0 focus:outline-none  bg-transparent peer "
+                                  placeholder=""
+                                  {...field}
+                                />
+                              </FormControl>
+
+                              <label
+                                htmlFor="lastName"
+                                className={`absolute text-[16px] ${
+                                  form.getValues("lastName")
+                                    ? "text-[11px] top-8 -translate-y-9 text-gray-500"
+                                    : "left-4 top-2 -translate-y-4"
+                                } left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] `}
+                              >
+                                Lastname
+                              </label>
+
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="bio"
+                          render={({ field }) => (
+                            <FormItem className="relative pt-[1rem] pb-1 border-gray-600  px-1 border rounded-[5px]  focus-within:border-[#1d9bf0]  focus-within:shadow-[0 1px 8px rgba(29, 155, 240, 0.5)] ">
+                              <FormControl>
+                                <textarea
+                                  id="bio"
+                                  rows={3}
+                                  className="block w-full px-4 pt-[1rem] text-[16px] border-0 focus:outline-none  bg-transparent peer "
+                                  placeholder=""
+                                  {...field}
+                                ></textarea>
+                              </FormControl>
+
+                              <label
+                                htmlFor="bio"
+                                className={`absolute text-[16px] ${
+                                  form.getValues("bio")
+                                    ? "text-[11px] top-8 -translate-y-9 text-gray-500"
+                                    : "left-4 top-4 -translate-y-4"
+                                } left-4 top-0 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/4 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] `}
+                              >
+                                Bio
+                              </label>
+
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="location"
+                          render={({ field }) => (
+                            <FormItem className="relative pt-[1rem] pb-1 border-gray-600  px-1 border rounded-[5px]  focus-within:border-[#1d9bf0]  focus-within:shadow-[0 1px 8px rgba(29, 155, 240, 0.5)] ">
+                              <FormControl>
+                                <Input
+                                  id="location"
+                                  className="block w-full px-4 text-[16px] border-0 focus:outline-none  bg-transparent peer "
+                                  placeholder=""
+                                  {...field}
+                                />
+                              </FormControl>
+
+                              <label
+                                htmlFor="location"
+                                className={`absolute text-[16px] ${
+                                  form.getValues("firstName")
+                                    ? "text-[11px] top-8 -translate-y-9 text-gray-500"
+                                    : "left-4 top-2 -translate-y-4"
+                                } left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] `}
+                              >
+                                Location
+                              </label>
+
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </form>
+                </Form>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="w-full overflow-auto h-[200px]">
-          {" "}
-          hello dfkalj
-          <div className="w-full h-[500vh]">hello again</div>
         </div>
       </div>
     </div>

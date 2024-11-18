@@ -47,6 +47,20 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
       console.log(error);
     },
   });
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("likeTweet", (data) => {
+      console.log("just checning teh data");
+      if (data.tweetId === tweet.id) {
+        console.log(data.message); // Notify user when the tweet is liked (real-time)
+      }
+    });
+
+    return () => {
+      if (socket) socket.off("tweetLiked");
+    };
+  }, [socket, tweet.id]);
   const repostMutation = useMutation({
     mutationFn: repostTweet,
     onSuccess: (response: any) => {

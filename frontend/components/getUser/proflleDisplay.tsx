@@ -170,7 +170,11 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
         </div>
       </div>
       {editProfileDialog && (
-        <EditProfileContainer setEditProfileDialog={setEditProfileDialog} />
+        <EditProfileContainer
+          user={user}
+          editProfileDialog={editProfileDialog}
+          setEditProfileDialog={setEditProfileDialog}
+        />
       )}
     </div>
   );

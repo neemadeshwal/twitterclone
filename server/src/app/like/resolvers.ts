@@ -62,8 +62,12 @@ const mutations = {
       console.log("like this tweet");
       console.log(findTweet.authorId, "tweet id");
       io.to(findTweet.authorId).emit(
-        "likeTweet",
-        `${ctx.user.email} liked your post.`
+        "likeTweet", // The event name the client is listening for
+        `${ctx.user.email} liked your post.`,
+        (response: any) => {
+          console.log("Client acknowledgment:", response);
+          // Optionally handle acknowledgment from the client
+        }
       );
 
       return like;

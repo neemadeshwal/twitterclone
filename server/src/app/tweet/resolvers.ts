@@ -73,7 +73,15 @@ const mutations = {
     const cleanContent = content.replace(/#\w+/g, "").trim();
 
     if (hashtags.length == 0) {
-      return;
+      const tweet = await prismaClient.tweet.create({
+        data: {
+          content: content,
+          authorId: ctx.user.id,
+          photoArray,
+          videoArray,
+        },
+      });
+      return tweet;
     }
     const allHashtag = await Promise.all(
       hashtags.map(async (hashtag) => {

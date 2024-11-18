@@ -1,6 +1,7 @@
 // context/SocketContext.tsx
 "use client";
 
+import { useCurrentUser } from "@/hooks/user";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -16,42 +17,43 @@ export const useSocket = () => {
 // The provider component that initializes the socket and provides it globally
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
+  const { user } = useCurrentUser();
+  // const checkToken = document.cookie
+  //   .split(";")
+  //   .find((row) => row.startsWith("token="));
 
+  // const token = checkToken ? checkToken.split("=")[1] : "";
   useEffect(() => {
-    // Initialize socket only once
-    const socketInstance = io("http://localhost:8000", {
-      transports: ["websocket"], // Add transport option if needed
-      // Optionally disable auto-reconnect for more control
-      reconnection: false,
-    });
-
-    // Listen for the "connect" event
+    const socketInstance = io("http://localhost:8000", {});
     socketInstance.on("connect", () => {
-      console.log("Connected to Socket.IO server", socketInstance.id);
-      setSocket(socketInstance);
+      console.log("Connected to Socket.IO server", socketInstance);
     });
 
-    // Cleanup on unmount
-    return () => {
-      socketInstance.disconnect();
-      console.log("Socket disconnected");
-    };
+    if (socketInstance) {
+      setSocket(socketInstance);
+    }
   }, []);
 
   useEffect(() => {
     if (socket) {
-      console.log("socket is there");
-      socket.on("likeTweet", (data) => {
-        console.log(data, "like tweetio");
-        // Handle the event, e.g., update the UI or state
-      });
-      console.log("socket is there and everywhere");
-
+      const handleConnect = () =>
+        socket.on("connect", () => {
+          console.log("hello");
+          return socket.emit("connectedUser", user?.id, (response: any) => {
+            console.log("connecte the user in it/");
+            console.log("successfully connected the user.", response);
+          });
+        });
+      const handleDisconnect = () =>
+        socket.on("disconnect", () => {
+          return socket.emit("disconnectedUser", user?.id);
+        });
       return () => {
-        socket.off("likeTweet");
+        socket.off("connect", handleConnect);
+        socket.off("disconnect", handleDisconnect);
       };
     }
-  }, [socket]);
+  }, [socket, user]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>

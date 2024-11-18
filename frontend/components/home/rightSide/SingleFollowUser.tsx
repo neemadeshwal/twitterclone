@@ -92,7 +92,7 @@ const SingleFollowUser = ({
           </div>
           <div>
             <h3 className="text-[16px] font-[500] capitalize hover:underline underline-white cursor-pointer">
-              {singleUser?.firstName} {user?.lastName}
+              {singleUser?.firstName} {singleUser?.lastName}
             </h3>
             <p className="gray text-[14px] font-[300] break-all">
               @{singleUser?.userName}
