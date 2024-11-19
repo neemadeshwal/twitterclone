@@ -56,7 +56,6 @@ const EditProfileContainer = ({
       location: "",
       bio: "",
       email: "",
-      profileImgUrl: "",
     },
   });
   const postRef = useRef<HTMLDivElement>(null);
@@ -143,8 +142,11 @@ const EditProfileContainer = ({
       if (user?.coverImgUrl) {
         form.setValue("coverImgUrl", user?.coverImgUrl);
       }
+      if (user?.profileImgUrl) {
+        form.setValue("profileImgUrl", user?.profileImgUrl);
+      }
     }
-  }, []);
+  }, [user]);
   return (
     <div
       ref={postRef}
@@ -219,6 +221,7 @@ const EditProfileContainer = ({
                                         <input
                                           type="file"
                                           {...field}
+                                          name="coverImgUrl"
                                           id="coverImgUrl"
                                           onChange={handleImgUpload}
                                           className="hidden cursor-pointer"
@@ -237,13 +240,14 @@ const EditProfileContainer = ({
                     )}
                     <div className="absolute bottom-0 left-4">
                       <div className="relative ">
-                        {user?.profileImgUrl ? (
+                        {form.getValues("profileImgUrl") ? (
                           <div>
-                            {user?.profileImgUrl.startsWith("#") ? (
+                            {form.getValues("profileImgUrl").startsWith("#") ? (
                               <div
                                 className="rounded-full  w-[100px] text-[60px] border-4 border-black h-[100px] flex items-center justify-center capitalize"
                                 style={{
-                                  backgroundColor: user?.profileImgUrl,
+                                  backgroundColor:
+                                    form.getValues("profileImgUrl"),
                                   width: "130px",
                                   height: "130px",
                                 }}
@@ -253,7 +257,10 @@ const EditProfileContainer = ({
                             ) : (
                               <Image
                                 className="rounded-full w-[100px] h-[100px] border-black border-4"
-                                src={user?.profileImgUrl}
+                                src={
+                                  form.getValues("profileImgUrl") ??
+                                  "/defaultvalue.png"
+                                }
                                 alt=""
                                 width={40}
                                 height={40}
@@ -261,22 +268,42 @@ const EditProfileContainer = ({
                             )}
                           </div>
                         ) : (
-                          <div className="rounded-full w-10 h-10 bg-purple-950 flex items-center justify-center capitalize">
+                          <div
+                            className="rounded-full bg-purple-950  w-[100px] text-[60px] border-4 border-black h-[100px] flex items-center justify-center capitalize"
+                            style={{
+                              width: "130px",
+                              height: "130px",
+                            }}
+                          >
                             {user?.firstName.slice(0, 1)}
                           </div>
                         )}
-                        <div className="absolute top-[32%] bg-[#434343c7] rounded-full left-[32%] z-50">
-                          <div className="cursor-pointer p-2">
-                            <label htmlFor="profileImg">
-                              <TbCameraPlus className="w-7 h-7 cursor-pointer " />
-                              <input
-                                type="file"
-                                id="profileImg"
-                                className="hidden cursor-pointer"
-                              />
-                            </label>
-                          </div>
-                        </div>
+                        <FormField
+                          control={form.control}
+                          name="profileImgUrl"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <div className="absolute top-[32%] bg-[#434343c7] rounded-full left-[32%] z-50">
+                                  <div className="cursor-pointer p-2">
+                                    <label htmlFor="profileImgUrl">
+                                      <TbCameraPlus className="w-7 h-7 cursor-pointer " />
+                                      <input
+                                        type="file"
+                                        id="profileImgUrl"
+                                        {...field}
+                                        name="profileImgUrl"
+                                        onChange={handleImgUpload}
+                                        className="hidden cursor-pointer"
+                                      />
+                                    </label>
+                                  </div>
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
                     </div>
                   </div>
