@@ -23,7 +23,14 @@ interface createAccountPayload {
   email: string;
   password: string;
 }
-
+interface editProfileProps {
+  firstName: string;
+  lastName?: string;
+  bio?: string;
+  location?: string;
+  profileImgUrl: string;
+  coverImgUrl?: string;
+}
 const queries = {
   getCurrentUser: async (parent: any, payload: any, ctx: GraphqlContext) => {
     if (!ctx.user) {
@@ -280,6 +287,43 @@ const mutations = {
     const token = await JWTService.generateTokenFromUser(user);
 
     return { token, message: "login successful", next_page: "signin" };
+  },
+  editProfile: async (
+    parent: any,
+    { payload }: { payload: editProfileProps },
+    ctx: GraphqlContext
+  ) => {
+    if (!ctx.user) {
+      throw new Error("Unauthorized.");
+    }
+    const user = await prismaClient.user.findUnique({
+      where: {
+        id: ctx.user.id,
+      },
+    });
+    if (!user) {
+      throw new Error("No user exist with this id.");
+    }
+
+    const { firstName, lastName, profileImgUrl, coverImgUrl, bio, location } =
+      payload;
+    if (!firstName || !profileImgUrl) {
+      throw new Error("credential error.");
+    }
+    const edituser = await prismaClient.user.update({
+      where: {
+        id: ctx.user.id,
+      },
+      data: {
+        firstName,
+        lastName: lastName ?? user.lastName,
+        profileImgUrl,
+        coverImgUrl: coverImgUrl ?? user.coverImgUrl,
+        bio: bio ?? user.bio,
+        location: location ?? user.location,
+      },
+    });
+    return edituser;
   },
 };
 

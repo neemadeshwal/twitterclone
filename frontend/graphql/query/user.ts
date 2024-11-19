@@ -9,6 +9,9 @@ export const getCurrentUserQuery = gql(`
       lastName
       profileImgUrl
       userName
+      coverImgUrl 
+      location
+      bio
     }
   }
 `);
@@ -20,6 +23,9 @@ export const getUserByIdQuery = gql(`
     firstName
     lastName
     id
+    coverImgUrl
+    location
+    bio
     profileImgUrl
     userName
     followers{

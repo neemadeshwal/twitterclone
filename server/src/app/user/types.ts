@@ -38,6 +38,7 @@ type User{
     userName:String
     lastName:String
     profileImgUrl:String
+    location:String
     id:String
     posts:[Tweet]
     likedTweets:[Like]
@@ -51,6 +52,14 @@ type User{
     following:[Follows]
 
 
+}
+input editProfileInput{
+    firstName:String
+    lastName:String
+    bio:String
+    coverImgUrl:String
+    profileImgUrl:String
+    location:String
 }
 input GetUserByIdInput{
     id:String

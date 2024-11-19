@@ -2,7 +2,7 @@ import { getCurrentUser, Tweet } from "@/graphql/types";
 import DivisionBar from "@/shared/divisionbar";
 import Image from "next/image";
 import React, { useState } from "react";
-import { MdOutlineCalendarMonth } from "react-icons/md";
+import { MdLocationPin, MdOutlineCalendarMonth } from "react-icons/md";
 import PostTab from "./postTab";
 import CommentTab from "./commentTab";
 import MediaTab from "./mediaTab";
@@ -33,7 +33,13 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
       <div className="relative">
         {user?.coverImgUrl ? (
           <div>
-            <Image src={user.coverImgUrl} alt="" height="100" width="100" />
+            <Image
+              className="w-full h-[170px]"
+              src={user?.coverImgUrl}
+              alt=""
+              height="100"
+              width="100"
+            />
           </div>
         ) : (
           <div className="bg-[#3a3a3acd] w-full h-[170px]"></div>
@@ -81,14 +87,33 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
             </h3>
             <p className="gray font-[14px]">@{user?.userName}</p>
           </div>
-          <div className="py-3 px-4">
-            <p className="gray font-[14px] flex items-center gap-2">
-              <span>
-                <MdOutlineCalendarMonth />
-              </span>
-              Joined october 2024
-            </p>
+          {user?.bio && (
+            <div className="pt-4 pb-1 px-4">
+              <p className="text-[14px]">{user?.bio}</p>
+            </div>
+          )}
+          <div className="flex items-center justify-start gap-1">
+            {user?.location && (
+              <div className="py-3 px-4">
+                <p className="gray font-[14px] flex items-center gap-2">
+                  <span>
+                    <MdLocationPin />
+                  </span>
+                  {user?.location}
+                </p>
+              </div>
+            )}
+
+            <div className="py-3 px-4">
+              <p className="gray font-[14px] flex items-center gap-2">
+                <span>
+                  <MdOutlineCalendarMonth />
+                </span>
+                Joined october 2024
+              </p>
+            </div>
           </div>
+
           <div className="flex gap-4 text-[14px] gray capitalize px-4">
             <div>
               <span className="text-white">{user?.following.length}</span>{" "}

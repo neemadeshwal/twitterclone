@@ -3,6 +3,7 @@ import { gql, GraphQLClient } from "graphql-request";
 import {
   checkLoginPassProps,
   createAccountProps,
+  editProfileProps,
   getCredsData,
   getLoginCredsProps,
   verifyOtpProps,
@@ -53,6 +54,14 @@ const CHECK_LOGIN_PASSWORD = gql`
     }
   }
 `;
+
+const EDIT_PROFILE = gql`
+  mutation editProfile($payload: editProfileInput) {
+    editProfile(payload: $payload) {
+      id
+    }
+  }
+`;
 export const getCredAndSendOtp = async (payload: getCredsData) => {
   console.log(payload, "payload in use");
   const data = await graphqlClient.request(GET_CREDS_SENDOTP, { payload });
@@ -78,5 +87,10 @@ export const getLoginCreds = async (payload: getLoginCredsProps) => {
 export const checkLoginPassword = async (payload: checkLoginPassProps) => {
   console.log(payload);
   const data = await graphqlClient.request(CHECK_LOGIN_PASSWORD, { payload });
+  return data;
+};
+
+export const editProfile = async (payload: editProfileProps) => {
+  const data = await graphqlClient.request(EDIT_PROFILE, { payload });
   return data;
 };

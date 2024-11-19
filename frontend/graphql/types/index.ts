@@ -22,6 +22,14 @@ export interface checkLoginPassProps {
   email: string;
   password: string;
 }
+export interface editProfileProps {
+  firstName: string;
+  lastName?: string;
+  profileImgUrl: string;
+  coverImgUrl?: string;
+  bio?: string;
+  location?: string;
+}
 
 export interface getCurrentUserQueryProps {
   getCurrentUser: getCurrentUser;
@@ -36,6 +44,7 @@ export interface getCurrentUser {
   id: string;
   bio: string;
   coverImgUrl: string;
+  location: string;
   tweet: Tweet[];
   likedTweets: Like[];
   commentTweets: Comment[];
