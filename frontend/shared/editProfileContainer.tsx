@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { previewFile } from "@/lib/uploadFile";
 const formSchema = z.object({
   firstName: z.string().min(2, "firstname should be at least 2 characters."),
   lastName: z.string().optional(),
@@ -35,6 +36,8 @@ const formSchema = z.object({
     .min(5, "Email must be at least 5 characters long"),
   bio: z.string().optional(),
   location: z.string().optional(),
+  coverImgUrl: z.string().optional(),
+  profileImgUrl: z.string(),
 });
 const EditProfileContainer = ({
   setEditProfileDialog,
@@ -53,10 +56,14 @@ const EditProfileContainer = ({
       location: "",
       bio: "",
       email: "",
+      profileImgUrl: "",
     },
   });
   const postRef = useRef<HTMLDivElement>(null);
   const [isUserPost, setIsUserPost] = useState(false);
+  const [profileImgLoading, setProfileImgLoading] = useState(false);
+  const [coverImgLoading, setCoverImgLoading] = useState(false);
+
   const queryClient = useQueryClient();
   const router = useRouter();
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -77,7 +84,36 @@ const EditProfileContainer = ({
       document.removeEventListener("mousedown", handlePostDialog);
     };
   }, [setEditProfileDialog]);
+  async function handleImgUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    if (!event.target.files || event.target.files.length === 0) {
+      return;
+    }
+    if (event.target.name === "profileImgUrl") {
+      setProfileImgLoading(true);
+    } else {
+      setCoverImgLoading(true);
+    }
 
+    try {
+      const fileUrl = await previewFile(event.target.files);
+      console.log(fileUrl, "fileUrl");
+      if (fileUrl && fileUrl.length !== 0) {
+        if (event.target.name === "profileImgUrl") {
+          form.setValue("profileImgUrl", fileUrl[0]);
+        } else {
+          form.setValue("coverImgUrl", fileUrl[0]);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      if (event.target.name === "profileImgUrl") {
+        setProfileImgLoading(false);
+      } else {
+        setCoverImgLoading(false);
+      }
+    }
+  }
   useEffect(() => {
     if (editProfileDialog) {
       document.body.style.overflow = "hidden";
@@ -103,6 +139,9 @@ const EditProfileContainer = ({
       }
       if (user?.bio) {
         form.setValue("bio", user?.bio);
+      }
+      if (user?.coverImgUrl) {
+        form.setValue("coverImgUrl", user?.coverImgUrl);
       }
     }
   }, []);
@@ -137,85 +176,111 @@ const EditProfileContainer = ({
             </div>
           </div>
           <div className="w-full h-full py-4 px-1 ">
-            <div className="h-full">
-              <div style={{ height: "250px" }} className="relative h-[300px]">
-                {user?.coverImgUrl ? (
-                  <div className="">
-                    <Image
-                      src={user?.coverImgUrl}
-                      alt=""
-                      className="w-full "
-                      width={100}
-                      height={100}
-                    />
-                  </div>
-                ) : (
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div className="h-full">
                   <div
-                    style={{ height: "170px" }}
-                    className="w-full  flex items-center justify-center relative "
+                    style={{ height: "250px" }}
+                    className="relative h-[300px]"
                   >
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="cursor-pointer p-2">
-                        <label htmlFor="coverImg" className="cursor-pointer">
-                          <TbCameraPlus className="w-7 h-7 cursor-pointer " />
-                          <input
-                            type="file"
-                            id="coverImg"
-                            className="hidden cursor-pointer"
-                          />
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div className="absolute bottom-0 left-4">
-                  <div className="relative ">
-                    {user?.profileImgUrl ? (
-                      <div>
-                        {user?.profileImgUrl.startsWith("#") ? (
-                          <div
-                            className="rounded-full  w-[100px] text-[60px] border-4 border-black h-[100px] flex items-center justify-center capitalize"
-                            style={{
-                              backgroundColor: user?.profileImgUrl,
-                              width: "130px",
-                              height: "130px",
-                            }}
-                          >
-                            {user?.firstName.slice(0, 1)}
-                          </div>
-                        ) : (
-                          <Image
-                            className="rounded-full w-[100px] h-[100px] border-black border-4"
-                            src={user?.profileImgUrl}
-                            alt=""
-                            width={40}
-                            height={40}
-                          />
-                        )}
+                    {form.getValues("coverImgUrl") !== "" ? (
+                      <div className="">
+                        <Image
+                          src={
+                            form.getValues("coverImgUrl") ?? "/defaultvalue.png"
+                          }
+                          alt=""
+                          className="w-full h-[170px] "
+                          width={100}
+                          height={100}
+                        />
                       </div>
                     ) : (
-                      <div className="rounded-full w-10 h-10 bg-purple-950 flex items-center justify-center capitalize">
-                        {user?.firstName.slice(0, 1)}
+                      <div
+                        style={{ height: "170px" }}
+                        className="w-full  flex items-center justify-center relative "
+                      >
+                        <FormField
+                          control={form.control}
+                          name="coverImgUrl"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                {coverImgLoading ? (
+                                  <div>loading......</div>
+                                ) : (
+                                  <div className="flex items-center justify-center gap-2">
+                                    <div className="cursor-pointer p-2">
+                                      <label
+                                        htmlFor="coverImgUrl"
+                                        className="cursor-pointer"
+                                      >
+                                        <TbCameraPlus className="w-7 h-7 cursor-pointer " />
+                                        <input
+                                          type="file"
+                                          {...field}
+                                          id="coverImgUrl"
+                                          onChange={handleImgUpload}
+                                          className="hidden cursor-pointer"
+                                        />
+                                      </label>
+                                    </div>
+                                  </div>
+                                )}
+                              </FormControl>
+
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
                     )}
-                    <div className="absolute top-[32%] bg-[#434343c7] rounded-full left-[32%] z-50">
-                      <div className="cursor-pointer p-2">
-                        <label htmlFor="profileImg">
-                          <TbCameraPlus className="w-7 h-7 cursor-pointer " />
-                          <input
-                            type="file"
-                            id="profileImg"
-                            className="hidden cursor-pointer"
-                          />
-                        </label>
+                    <div className="absolute bottom-0 left-4">
+                      <div className="relative ">
+                        {user?.profileImgUrl ? (
+                          <div>
+                            {user?.profileImgUrl.startsWith("#") ? (
+                              <div
+                                className="rounded-full  w-[100px] text-[60px] border-4 border-black h-[100px] flex items-center justify-center capitalize"
+                                style={{
+                                  backgroundColor: user?.profileImgUrl,
+                                  width: "130px",
+                                  height: "130px",
+                                }}
+                              >
+                                {user?.firstName.slice(0, 1)}
+                              </div>
+                            ) : (
+                              <Image
+                                className="rounded-full w-[100px] h-[100px] border-black border-4"
+                                src={user?.profileImgUrl}
+                                alt=""
+                                width={40}
+                                height={40}
+                              />
+                            )}
+                          </div>
+                        ) : (
+                          <div className="rounded-full w-10 h-10 bg-purple-950 flex items-center justify-center capitalize">
+                            {user?.firstName.slice(0, 1)}
+                          </div>
+                        )}
+                        <div className="absolute top-[32%] bg-[#434343c7] rounded-full left-[32%] z-50">
+                          <div className="cursor-pointer p-2">
+                            <label htmlFor="profileImg">
+                              <TbCameraPlus className="w-7 h-7 cursor-pointer " />
+                              <input
+                                type="file"
+                                id="profileImg"
+                                className="hidden cursor-pointer"
+                              />
+                            </label>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="px-4 py-6">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)}>
+                  <div className="px-4 py-6">
                     <div className="flex flex-col gap-6">
                       <div className="flex flex-col gap-6">
                         <FormField
@@ -337,10 +402,10 @@ const EditProfileContainer = ({
                         />
                       </div>
                     </div>
-                  </form>
-                </Form>
-              </div>
-            </div>
+                  </div>
+                </div>
+              </form>
+            </Form>
           </div>
         </div>
       </div>
