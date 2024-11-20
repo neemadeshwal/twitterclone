@@ -41,11 +41,15 @@ const SingleFollowUser = ({
     }
   };
   useEffect(() => {
+    console.log(singleUser, "singleUser");
+    console.log(user, "user");
+    console.log(filterArray, "fiilterararay");
     if (!singleUser || !user || !filterArray) {
+      console.log("empty followers");
       return;
     }
 
-    console.log(singleUser.followers, "followers");
+    console.log(singleUser, "followers");
     const isFollowing = singleUser.followers.find(
       (item) => item.followerId === user.id
     );
@@ -55,7 +59,7 @@ const SingleFollowUser = ({
     } else {
       setIsAlreadyFollowing(false);
     }
-  }, [singleUser]);
+  }, [singleUser, user, filterArray]);
   return (
     <div className="w-full">
       <div className="flex justify-between w-full">
