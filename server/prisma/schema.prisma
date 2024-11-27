@@ -33,6 +33,7 @@ model User{
   followers Follows[] @relation("followers")
   followingList Follows[] @relation("following")
   repostList Repost[]
+  savedPost  SavedPost[]
 
 
   createdAt DateTime @default(now())
@@ -52,6 +53,7 @@ model Tweet{
   commentAuthor Comment[] @relation()
   repostTweet Repost[]
   hashtags Hashtag[] @relation("hashtag")
+  savedPost SavedPost[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -84,6 +86,7 @@ model Comment{
 
   replies Comment[] @relation("CommentReplies")
   likes Like[]
+  savedPost SavedPost[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -118,4 +121,19 @@ model Repost {
   // Ensuring a user can only repost a tweet or a comment (one of them must be set)
   @@unique([userId, tweetId])
   @@unique([userId, commentId])
+}
+
+model SavedPost{
+  id String  @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId],references: [id],onDelete:Cascade)
+  tweetId String?
+  tweet Tweet? @relation(fields: [tweetId],references: [id],onDelete:Cascade)
+  commentId String?
+  comment Comment?@relation(fields: [commentId],references: [id],onDelete:Cascade)
+
+   @@unique([userId, tweetId])
+  @@unique([userId, commentId])
+  
+ 
 }

@@ -35,4 +35,7 @@ input CreateTweetInput{
 input SingleTweetInput{
     id:String
 }
+input saveTweetInput{
+    tweetId:String
+}
 `;
