@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { GoHome } from "react-icons/go";
 import { MdHomeFilled } from "react-icons/md";
 import { IoSearch } from "react-icons/io5";
@@ -18,6 +18,7 @@ import { useCurrentUser } from "@/hooks/user";
 import CurrentUser from "@/shared/currentUser";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import MoreContainer from "@/shared/moreContainer";
 const sidebarIcons = [
   {
     title: "home",
@@ -53,6 +54,7 @@ const sidebarIcons = [
 
 const Sidebar = () => {
   const { user } = useCurrentUser();
+  const [moreContainer, setMoreContainer] = useState(false);
   const pathname = usePathname();
   return (
     <div>
@@ -82,8 +84,14 @@ const Sidebar = () => {
             );
           })}
         </div>
-        <div className="p-2 py-3 rounded-full hover:bg-[#1d1d1dbb] flex items-center justify-center cursor-pointer">
+        <div
+          onClick={() => setMoreContainer(true)}
+          className="p-2 py-3 rounded-full hover:bg-[#1d1d1dbb] flex items-center justify-center cursor-pointer"
+        >
           <HiOutlineDotsCircleHorizontal className="text-[28px]" />
+          {moreContainer && (
+            <MoreContainer setMoreContainer={setMoreContainer} />
+          )}
         </div>
         <div className="p-3 x-bgcolor rounded-full my-2 cursor-pointer">
           <BsFeather className="text-[28px]   " />

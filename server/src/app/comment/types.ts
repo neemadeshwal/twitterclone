@@ -13,6 +13,7 @@ type Comment{
     replies:[Comment]
     parentId:String
     repostComment:[Repost]
+    saveComment:[savedPost]
 
     
 }
@@ -32,4 +33,6 @@ input replyOnCommentInput{
 input getCommentByIdInput{
     commentId:String
 }
+
+
 `;

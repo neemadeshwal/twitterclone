@@ -12,6 +12,7 @@ type Tweet{
     commentAuthor:[Comment]
     repostTweet:[Repost]
     hashtags:[HashTag]
+    savedPost:[savedPost]
 
 
 
@@ -35,7 +36,5 @@ input CreateTweetInput{
 input SingleTweetInput{
     id:String
 }
-input saveTweetInput{
-    tweetId:String
-}
+
 `;

@@ -20,6 +20,7 @@ import { Search } from "./search";
 import { createServer } from "http";
 import { Server as SocketIoServer } from "socket.io";
 import { handleEvents } from "../services/socket/event";
+import { Bookmarks } from "./bookmarks";
 
 export async function initServer() {
   const app = express();
@@ -38,12 +39,14 @@ export async function initServer() {
     ${Follows.types}
     ${Repost.types}
     ${Search.types}
+    ${Bookmarks.types}
   
     type Query {
       ${User.queries}
       ${Tweet.queries}
       ${Comment.queries}
     ${Search.queries}
+    ${Bookmarks.queries}
 
     }
     type Mutation{
@@ -53,6 +56,7 @@ export async function initServer() {
     ${Comment.mutations}
     ${Follows.mutations}
     ${Repost.mutations}
+    ${Bookmarks.mutations}
     }
     `,
     resolvers: {
@@ -63,16 +67,19 @@ export async function initServer() {
         ...Comment.resolvers.mutations,
         ...Follows.resolvers.mutations,
         ...Repost.resolvers.mutations,
+        ...Bookmarks.resolvers.mutations,
       },
       Query: {
         ...User.resolvers.queries,
         ...Tweet.resolvers.queries,
         ...Comment.resolvers.queries,
         ...Search.resolvers.queries,
+        ...Bookmarks.resolvers.queries,
       },
       ...User.resolvers.extraResolvers,
       ...Tweet.resolvers.extraResolvers,
       ...Comment.resolvers.extraResolvers,
+      ...Bookmarks.resolvers.extraResolvers,
     },
   });
 
