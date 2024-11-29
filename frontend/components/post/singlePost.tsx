@@ -25,6 +25,7 @@ import { repostTweet } from "@/graphql/mutation/repost";
 import { io } from "socket.io-client";
 import { useSocket } from "@/context/socketContext";
 import SharePost from "@/shared/sharePost";
+import SavePost from "@/shared/savePost";
 
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
@@ -324,9 +325,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
             <SharePost
               link={`http://localhost:5000/${tweet.author.userName}/status/${tweet.id}`}
             />
-            <div className="flex gap-1 items-center gray text-[13px] font-[400]">
-              <CiBookmark className="text-[20px] " />
-            </div>
+            <SavePost singleTweet={tweet} user={user} />
           </div>
         </div>
       </div>

@@ -24,6 +24,7 @@ import SingleComment from "./singleComment";
 import { createComment } from "@/graphql/mutation/comment";
 import PostActivity from "@/shared/postActivity";
 import { repostTweet } from "@/graphql/mutation/repost";
+import SavePost from "@/shared/savePost";
 
 const PostDetail = () => {
   const pathname = usePathname();
@@ -294,9 +295,7 @@ const PostDetail = () => {
               <div className="flex gap-1 items-center gray text-[13px] font-[400]">
                 <IoShareOutline className="text-[20px] " />
               </div>
-              <div className="flex gap-1 items-center gray text-[13px] font-[400]">
-                <CiBookmark className="text-[20px] " />
-              </div>
+              <SavePost singleTweet={singleTweet} user={user} />
             </div>
           </div>
           <DivisionBar type="x" />

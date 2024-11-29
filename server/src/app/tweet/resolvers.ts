@@ -205,6 +205,14 @@ const extraResolvers = {
       });
       return hashtag;
     },
+    savedPost: async (parent: Tweet) => {
+      const savedPost = await prismaClient.savedPost.findMany({
+        where: {
+          tweetId: parent.id,
+        },
+      });
+      return savedPost;
+    },
   },
 };
 

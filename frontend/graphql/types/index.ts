@@ -65,6 +65,7 @@ export interface Tweet {
   LikedBy: Like[];
   commentAuthor: Comment[];
   authorId: string;
+  savedPost: Bookmarks[];
   photoArray: string[];
   videoArray: string[];
   repostTweet: Repost[];
@@ -85,6 +86,20 @@ export interface GetAllTweetProps {
 }
 export interface getAllHashTagsProps {
   getAllHashTags: HashTag[];
+}
+
+export interface Bookmarks {
+  id: string;
+  userId: string;
+  tweetId: string;
+  commentId: string;
+  user: [getCurrentUser];
+  tweet: [Tweet];
+  comment: [Comment];
+}
+
+export interface getAllBookmarksProps {
+  getAllBookmarks: Bookmarks[];
 }
 export interface Like {
   id: string;

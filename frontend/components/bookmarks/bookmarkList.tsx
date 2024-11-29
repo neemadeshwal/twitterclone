@@ -1,8 +1,12 @@
+"use client";
+import { useAllBookmark } from "@/hooks/bookmark";
 import React from "react";
 import { BiSearch } from "react-icons/bi";
 import { FaArrowLeft } from "react-icons/fa";
 
 const BookmarkList = () => {
+  const { allBookmark } = useAllBookmark();
+  console.log(allBookmark, "allbookmark");
   return (
     <div className="flex flex-col h-full ">
       <div className="sticky top-0 z-50 backdrop-blur-sm py-1 px-4 bg-black/60">

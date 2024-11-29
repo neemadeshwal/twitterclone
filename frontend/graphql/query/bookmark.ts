@@ -42,9 +42,8 @@ query getAllBookmarks{
             LikedBy{
                 id
             }
-            commentId{
+            commentAuthor{
                 id
-                commentId
             }
             repostTweet{
                 id

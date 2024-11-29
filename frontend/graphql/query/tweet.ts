@@ -7,6 +7,11 @@ export const getAllTweetQuery = gql(`
             content
             photoArray
             videoArray
+            savedPost{
+                id
+                userId
+                tweetId
+            }
             hashtags{
                 id 
                 text
@@ -74,6 +79,11 @@ export const getSingleTweetQuery = gql(`
             content
             photoArray
             videoArray
+            savedPost{
+                id
+                userId
+                tweetId
+            }
             hashtags{
                 id 
                 text
