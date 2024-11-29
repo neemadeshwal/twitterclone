@@ -22,6 +22,8 @@ import { useRouter } from "next/navigation";
 import ReplyComment from "@/components/postDetail/replyOnComment";
 import Link from "next/link";
 import SingleComment from "../postDetail/singleComment";
+import SavePost from "@/shared/savePost";
+import SaveComment from "@/shared/saveComment";
 
 const SingleCommentReply = ({
   comment,
@@ -154,9 +156,7 @@ const SingleCommentReply = ({
             <div className="flex gap-1 items-center gray text-[13px] font-[400]">
               <IoShareOutline className="text-[20px] " />
             </div>
-            <div className="flex gap-1 items-center gray text-[13px] font-[400]">
-              <CiBookmark className="text-[20px] " />
-            </div>
+            <SaveComment singleComment={SingleComment} user={user} />
           </div>
         </div>
       </div>
