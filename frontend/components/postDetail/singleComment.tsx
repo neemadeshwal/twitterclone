@@ -23,6 +23,7 @@ import ReplyComment from "./replyOnComment";
 import Link from "next/link";
 import { useGetCommentById } from "@/hooks/comment";
 import { repostComment } from "@/graphql/mutation/repost";
+import SaveComment from "@/shared/saveComment";
 
 const SingleComment = ({
   comment: singleComment,
@@ -205,9 +206,7 @@ const SingleComment = ({
             <div className="flex gap-1 items-center gray text-[13px] font-[400]">
               <IoShareOutline className="text-[20px] " />
             </div>
-            <div className="flex gap-1 items-center gray text-[13px] font-[400]">
-              <CiBookmark className="text-[20px] " />
-            </div>
+            <SaveComment singleComment={comment} user={user} />
           </div>
         </div>
       </div>

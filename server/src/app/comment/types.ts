@@ -13,7 +13,7 @@ type Comment{
     replies:[Comment]
     parentId:String
     repostComment:[Repost]
-    saveComment:[savedPost]
+    savedPost:[savedPost]
 
     
 }

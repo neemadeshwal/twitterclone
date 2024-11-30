@@ -156,7 +156,7 @@ const SingleCommentReply = ({
             <div className="flex gap-1 items-center gray text-[13px] font-[400]">
               <IoShareOutline className="text-[20px] " />
             </div>
-            <SaveComment singleComment={SingleComment} user={user} />
+            <SaveComment singleComment={comment} user={user} />
           </div>
         </div>
       </div>

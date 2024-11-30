@@ -49,9 +49,12 @@ const mutations = {
       },
     });
     if (isTweetSaved) {
-      const deleteTweet = await prismaClient.tweet.delete({
+      const deleteTweet = await prismaClient.savedPost.delete({
         where: {
-          id: tweetId,
+          userId_tweetId: {
+            userId: ctx.user.id,
+            tweetId,
+          },
         },
       });
       return deleteTweet;
@@ -94,10 +97,15 @@ const mutations = {
         },
       },
     });
+
+    console.log(isCommentSaved, "iscommentsaved");
     if (isCommentSaved) {
       const deleteSavedComment = await prismaClient.savedPost.delete({
         where: {
-          id: commentId,
+          userId_commentId: {
+            userId: ctx.user.id,
+            commentId,
+          },
         },
       });
       return deleteSavedComment;

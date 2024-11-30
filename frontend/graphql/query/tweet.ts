@@ -117,6 +117,10 @@ export const getSingleTweetQuery = gql(`
                     userId
                     tweetId
                     parentId
+                    savedPost{
+                        id
+                        commentId
+                    }
                     replies{
                         comment
                         userId

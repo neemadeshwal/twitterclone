@@ -153,7 +153,7 @@ const extraResolvers = {
       });
       return repostComment;
     },
-    saveComment: async (parent: CommentProps) => {
+    savedPost: async (parent: CommentProps) => {
       const saveComment = await prismaClient.savedPost.findMany({
         where: {
           commentId: parent.id,

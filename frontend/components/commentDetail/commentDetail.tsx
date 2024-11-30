@@ -28,6 +28,7 @@ import SingleComment from "../postDetail/singleComment";
 import SingleCommentReply from "./singleCommentReply";
 import ReplyComment from "../postDetail/replyOnComment";
 import { comment } from "postcss";
+import SaveComment from "@/shared/saveComment";
 
 const CommentDetail = ({ id }: { id: string }) => {
   const pathname = usePathname();
@@ -244,9 +245,7 @@ const CommentDetail = ({ id }: { id: string }) => {
               <div className="flex gap-1 items-center gray text-[13px] font-[400]">
                 <IoShareOutline className="text-[20px] " />
               </div>
-              <div className="flex gap-1 items-center gray text-[13px] font-[400]">
-                <CiBookmark className="text-[20px] " />
-              </div>
+              <SaveComment singleComment={singleComment} user={user} />
             </div>
           </div>
           <DivisionBar type="x" />

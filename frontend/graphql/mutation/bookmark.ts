@@ -21,7 +21,7 @@ export const toggleBookmarkTweet = async (payload: { tweetId: string }) => {
   return data;
 };
 
-export const toggleBookmarkComment = async (payload: { tweetId: string }) => {
+export const toggleBookmarkComment = async (payload: { commentId: string }) => {
   const data = await graphqlClient.request(TOGGLE_BOOKMARK_COMMENT, {
     payload,
   });

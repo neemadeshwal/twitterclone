@@ -15,7 +15,7 @@ const SaveComment = ({ singleComment, user }: any) => {
     mutationFn: toggleBookmarkComment,
     onSuccess: (response: any) => {
       console.log(response);
-      queryClient.invalidateQueries({ queryKey: ["all-bookmark"] });
+      queryClient.invalidateQueries({ queryKey: ["single-comment"] });
     },
     onError: (error) => {
       console.log(error);
@@ -30,7 +30,7 @@ const SaveComment = ({ singleComment, user }: any) => {
     }
     console.log("he hey");
     const body = {
-      tweetId: singleComment.id,
+      commentId: singleComment.id,
     };
     try {
       await saveBookmarkMutation.mutateAsync(body);
@@ -40,13 +40,18 @@ const SaveComment = ({ singleComment, user }: any) => {
   }
 
   useEffect(() => {
+    console.log("hello");
     if (!singleComment) {
+      console.log("commentexist");
       return;
     }
+    console.log("just checkiang");
+    console.log(singleComment, "savedpost arr");
+
     if (singleComment.savedPost && user) {
       setSaveBookmark(
         singleComment.savedPost.some(
-          (post: Bookmarks) => post.tweetId === singleComment.id
+          (comment: Bookmarks) => comment.commentId === singleComment.id
         )
       );
     }
