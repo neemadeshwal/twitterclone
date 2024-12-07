@@ -17,7 +17,7 @@ import { Tweet } from "@/graphql/types";
 import { getRandomDarkHexColor } from "@/lib/randomColor";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleLikeTweet } from "@/graphql/mutation/like";
-import { useCurrentUser } from "@/hooks/user";
+import { useCurrentUser, useGetUserById } from "@/hooks/user";
 import Comment from "./comment";
 import { useRouter } from "next/navigation";
 import PostActivity from "@/shared/postActivity";
@@ -26,6 +26,7 @@ import { io } from "socket.io-client";
 import { useSocket } from "@/context/socketContext";
 import SharePost from "@/shared/sharePost";
 import SavePost from "@/shared/savePost";
+import HoverProfileDetail from "@/shared/HoverProfileDetail";
 
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
@@ -34,6 +35,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { user } = useCurrentUser();
+  const [isHoveredOnProfileImgId, setIsHoveredOnProfileImgId] = useState("");
   const socket = useSocket();
   useEffect(() => {
     queryClient.refetchQueries({ queryKey: ["all-tweet"] });
@@ -107,14 +109,38 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const handlePostClick = (id: string) => {
     router.push(`/${tweet.author.userName}/status/${id}`);
   };
+  const handlePostPhotoClick = (id: string, photoId: number) => {
+    router.push(`/${tweet.author.userName}/status/${id}/photos/${photoId}`);
+  };
   console.log(tweet.author, "twwet-author");
+  const [hoveredUserId, setHoveredUserId] = useState("");
+  const { user: hoveredUser } = useGetUserById(isHoveredOnProfileImgId); // Assuming `useGetUserById` returns user data, loading, and error states
+  const { user: currentUser } = useCurrentUser();
+
+  const [hoverUser, setHoverUser] = useState<any>(null);
+  useEffect(() => {
+    setHoveredUserId(isHoveredOnProfileImgId);
+  }, [isHoveredOnProfileImgId]);
+  // Refetch when hoveredUserId changes useEffect(() => { if (hoveredUser) { setUser(hoveredUser); // Set the user data when it's loaded } }, [hoveredUser]);
+
+  useEffect(() => {
+    if (hoveredUser) {
+      setHoverUser(hoveredUser); // Set the user data when it's loaded
+    }
+  }, [hoveredUser, isHoveredOnProfileImgId, hoveredUserId]);
 
   return (
     <div className="w-full cursor-pointer py-3 ">
       <div className="flex gap-4 w-full px-2">
         <div>
           {tweet.author?.profileImgUrl ? (
-            <div>
+            <div
+              onMouseEnter={() => setIsHoveredOnProfileImgId(tweet.author.id)}
+              onMouseLeave={() => setIsHoveredOnProfileImgId("")}
+            >
+              {isHoveredOnProfileImgId && (
+                <div>{<HoverProfileDetail user={hoveredUser} />}</div>
+              )}
               {tweet.author?.profileImgUrl.startsWith("#") ? (
                 <div
                   style={{ backgroundColor: tweet.author?.profileImgUrl }}
@@ -189,7 +215,6 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
           {(tweet?.photoArray?.length !== 0 ||
             tweet?.videoArray?.length !== 0) && (
             <div
-              onClick={() => handlePostClick(tweet.id)}
               className={`my-2 grid w-full border border-gray-600 z-50 overflow-hidden rounded-[20px] gap-x-[2px] gap-y-[2px] grid-flow-row ${
                 tweet?.photoArray?.length + tweet?.videoArray?.length > 2
                   ? "grid-cols-2 h-[500px]"
@@ -199,8 +224,12 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               }`}
             >
               {tweet?.photoArray?.length !== 0 &&
-                tweet?.photoArray.map((url) => (
-                  <div key={url} className="relative overflow-hidden">
+                tweet?.photoArray.map((url, index) => (
+                  <div
+                    onClick={() => handlePostPhotoClick(tweet.id, index + 1)}
+                    key={url}
+                    className="relative overflow-hidden"
+                  >
                     <Image
                       src={url}
                       alt=""
