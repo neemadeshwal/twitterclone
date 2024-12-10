@@ -1,10 +1,14 @@
 import { Socket } from "socket.io";
 import { joinRoom, leaveRoom } from "./room";
 
+export let users:any={}
 export const handleEvents = (socket: Socket) => {
   console.log("hey event function");
-  socket.on("connectedUser", (userId: string) => {
-    console.log(userId);
+
+  socket.on("connectedUser", (userId: string,socketId:string) => {
+    console.log(userId,"user id");
+    users[userId]=socketId
+    console.log(socketId,"socketid ")
     joinRoom(socket, userId);
   });
 

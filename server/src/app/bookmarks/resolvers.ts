@@ -5,15 +5,22 @@ import { printSchema } from "graphql";
 
 const queries = {
   getAllBookmarks: async (parent: any, payload: any, ctx: GraphqlContext) => {
+    console.log(ctx,"ctx usreer")
     if (!ctx.user) {
-      throw new Error("unauthoziedf.");
+      throw new Error("unauthozied.");
     }
 
     const allBookMarks = await prismaClient.savedPost.findMany({
       where: {
         userId: ctx.user.id,
       },
+      include:{
+        tweet:true,
+        comment:true,
+        user:true
+      }
     });
+    console.log(allBookMarks,"allbookmaarks")
     return allBookMarks;
   },
 };
@@ -154,6 +161,7 @@ const extraResolvers = {
           id: parent.commentId,
         },
       });
+      return comment
     },
   },
 };

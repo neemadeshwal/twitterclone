@@ -3,9 +3,9 @@ export const types = `#graphql
 type savedPost{
     id:String 
   userId:String
-  user:[User] 
+  user:User
   tweetId:String
-  tweet:[Tweet] 
+  tweet:Tweet
   commentId:String
   comment:Comment
 }

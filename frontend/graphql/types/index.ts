@@ -93,9 +93,9 @@ export interface Bookmarks {
   userId: string;
   tweetId: string;
   commentId: string;
-  user: [getCurrentUser];
-  tweet: [Tweet];
-  comment: [Comment];
+  user: getCurrentUser[];
+  tweet: Tweet[];
+  comment: Comment[];
 }
 
 export interface getAllBookmarksProps {

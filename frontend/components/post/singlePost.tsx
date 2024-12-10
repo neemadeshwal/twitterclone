@@ -51,20 +51,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
       console.log(error);
     },
   });
-  useEffect(() => {
-    if (!socket) return;
 
-    socket.on("likeTweet", (data) => {
-      console.log("just checning teh data");
-      if (data.tweetId === tweet.id) {
-        console.log(data.message); // Notify user when the tweet is liked (real-time)
-      }
-    });
-
-    return () => {
-      if (socket) socket.off("tweetLiked");
-    };
-  }, [socket, tweet.id]);
   const repostMutation = useMutation({
     mutationFn: repostTweet,
     onSuccess: (response: any) => {
@@ -112,7 +99,6 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const handlePostPhotoClick = (id: string, photoId: number) => {
     router.push(`/${tweet.author.userName}/status/${id}/photos/${photoId}`);
   };
-  console.log(tweet.author, "twwet-author");
   const [hoveredUserId, setHoveredUserId] = useState("");
   const { user: hoveredUser } = useGetUserById(isHoveredOnProfileImgId); // Assuming `useGetUserById` returns user data, loading, and error states
   const { user: currentUser } = useCurrentUser();
@@ -128,6 +114,47 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
       setHoverUser(hoveredUser); // Set the user data when it's loaded
     }
   }, [hoveredUser, isHoveredOnProfileImgId, hoveredUserId]);
+
+
+  // useEffect(() => {
+  //   if (!socket) return;
+
+  //   socket.on("likeTweet", (data) => {
+  //     console.log(data,"data checking")
+  //     console.log("just checning teh data");
+  //     if (data.tweetId === tweet.id) {
+  //       console.log(data.message); // Notify user when the tweet is liked (real-time)
+  //     }
+  //   });
+
+  //   return () => {
+  //     if (socket) socket.off("tweetLiked");
+  //   };
+  // }, [socket, tweet.id]);
+
+  useEffect(() => {
+    if (socket) {
+      console.log("Socket initialized, setting up event listener...");
+      
+      // Listen for new like notifications from the server
+      socket.on("newLikeNotification", (data) => {
+        console.log("Received newLikeNotification:", data);
+        
+        // You can replace this with your custom notification component
+        alert(data.message);  // Show an alert for demonstration
+      });
+    } else {
+      console.log("Socket not initialized");
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (socket) {
+        socket.off("newLikeNotification");
+        console.log("Event listener removed");
+      }
+    };
+  }, [socket]);  
 
   return (
     <div className="w-full cursor-pointer py-3 ">
@@ -212,7 +239,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               </div>
             )}
           </div>
-          {(tweet?.photoArray?.length !== 0 ||
+          {(tweet?.photoArray||tweet?.videoArray)&&(tweet?.photoArray?.length !== 0 ||
             tweet?.videoArray?.length !== 0) && (
             <div
               className={`my-2 grid w-full border border-gray-600 z-50 overflow-hidden rounded-[20px] gap-x-[2px] gap-y-[2px] grid-flow-row ${
@@ -224,7 +251,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               }`}
             >
               {tweet?.photoArray?.length !== 0 &&
-                tweet?.photoArray.map((url, index) => (
+                tweet?.photoArray?.map((url, index) => (
                   <div
                     onClick={() => handlePostPhotoClick(tweet.id, index + 1)}
                     key={url}
@@ -241,7 +268,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
                 ))}
 
               {tweet?.videoArray?.length !== 0 &&
-                tweet?.videoArray.map((url) => (
+                tweet?.videoArray?.map((url) => (
                   <div key={url} className="relative overflow-hidden">
                     <video
                       controls

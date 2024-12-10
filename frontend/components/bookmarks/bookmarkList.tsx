@@ -3,6 +3,7 @@ import { useAllBookmark } from "@/hooks/bookmark";
 import React from "react";
 import { BiSearch } from "react-icons/bi";
 import { FaArrowLeft } from "react-icons/fa";
+import SingleBookmark from "./SingleBookmark";
 
 const BookmarkList = () => {
   const { allBookmark } = useAllBookmark();
@@ -20,7 +21,7 @@ const BookmarkList = () => {
         </div>
       </div>
       {
-        <div className=" h-[200vh] py-2 px-6 ">
+        <div className="  py-2 px-6 ">
           <div>
             <div className="relative">
               <input
@@ -31,6 +32,16 @@ const BookmarkList = () => {
             </div>
           </div>
         </div>
+      }
+      {
+        allBookmark&&allBookmark.length!==0&&allBookmark.map(singleBookmark=>{
+           console.log("check bookmark")
+          return(
+<div key={singleBookmark.id}>
+  <SingleBookmark bookmark={singleBookmark}/>
+  </div>
+          )
+        })
       }
     </div>
   );
