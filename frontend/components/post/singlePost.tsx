@@ -46,6 +46,16 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
     onSuccess: (response: any) => {
       console.log(response);
       queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
+     if(socket&&user){
+      console.log("send notification from frontend......")
+      socket.emit("sendLikeNotification",{
+
+        senderId:user.id,
+        receiverId:tweet.author.id,
+
+      },()=>{console.log("tweet like notification send ")})
+     }
+      
     },
     onError: (error) => {
       console.log(error);
@@ -137,12 +147,13 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
       console.log("Socket initialized, setting up event listener...");
       
       // Listen for new like notifications from the server
-      socket.on("newLikeNotification", (data) => {
-        console.log("Received newLikeNotification:", data);
+     socket.on("getLikeNotification", (data) => {
+      console.log("last notificaiton check")
+        console.log("Received newLikeNotification:", data)
         
         // You can replace this with your custom notification component
-        alert(data.message);  // Show an alert for demonstration
-      });
+         // Show an alert for demonstration
+      })
     } else {
       console.log("Socket not initialized");
     }
@@ -150,11 +161,11 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
     // Cleanup on unmount
     return () => {
       if (socket) {
-        socket.off("newLikeNotification");
+        socket.off("getLikeNotification");
         console.log("Event listener removed");
       }
     };
-  }, [socket]);  
+  }, [socket,liked]);  
 
   return (
     <div className="w-full cursor-pointer py-3 ">

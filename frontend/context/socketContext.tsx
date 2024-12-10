@@ -31,10 +31,13 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (socket && user) {
       socket.on("connect", () => {
+        console.log("connected to socket io ")
         return socket.emit("connectedUser", user.id,socket.id);
       });
       socket.on("disconnect", () => {
-        return socket.emit("disConnectedUser", user?.id,socket.id);
+        console.log("disconnected from socket io")
+
+        return socket.emit("disConnectedUser");
       });
 
       return () => {

@@ -112,8 +112,11 @@ export async function initServer() {
     },
   });
   io.on("connection", (socket) => {
+
+
     handleEvents(socket);
   });
+
 
   return { app, io, httpserver };
 }

@@ -1,7 +1,7 @@
 import { prismaClient } from "../../client/db";
 import { GraphqlContext } from "../../interfaces";
 import { initServer } from "../../app";
-import { users } from "../../services/socket/event";
+// import { users } from "../../services/socket/event";
 
 interface LikeProps {
   id: string;
@@ -63,14 +63,14 @@ const mutations = {
       console.log("like this tweet");
       console.log(findTweet.authorId, "tweet id");
 
-      if (users[findTweet.authorId]) {
-        const authorSocketId = users[findTweet.authorId];  // Get the socket ID of the author
-        io.to(authorSocketId).emit("newLikeNotification", {
-          message: `${ctx.user.id} liked your tweet!`,
-          tweetId,
-        },()=>console.log("conversation id",authorSocketId));
-        console.log(`Notification sent to ${findTweet.authorId} about like on tweet ${tweetId}`);
-      }
+      // if (users[findTweet.authorId]) {
+      //   const authorSocketId = users[findTweet.authorId];  // Get the socket ID of the author
+      //   io.to(authorSocketId).emit("newLikeNotification", {
+      //     message: `${ctx.user.id} liked your tweet!`,
+      //     tweetId,
+      //   },()=>console.log("conversation id",authorSocketId));
+      //   console.log(`Notification sent to ${findTweet.authorId} about like on tweet ${tweetId}`);
+      // }
 
       // io.to(findTweet.authorId).emit(
       //   "likeTweet", // The event name the client is listening for

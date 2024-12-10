@@ -1,36 +1,48 @@
 import { Socket } from "socket.io";
 import { joinRoom, leaveRoom } from "./room";
 
-export let users:any={}
+
+export let onlineUsers:any=[]
+
+export const addNewUser=(userId:string,socketId:string)=>{
+ !onlineUsers.some((user:{userId:string,socketId:string})=>user.userId===userId)&&onlineUsers.push({userId,socketId})
+}
+
+export const removeUser=(socketId:string)=>{
+  onlineUsers=onlineUsers.filter((user:{userId:string,socketId:string})=>user.socketId!==socketId)
+}
+
+export const getUser=(userId:string)=>{
+  return onlineUsers.find((user:{userId:string,socketId:string})=>user.userId===userId)
+}
 export const handleEvents = (socket: Socket) => {
-  console.log("hey event function");
+  console.log("hellow neema")
 
   socket.on("connectedUser", (userId: string,socketId:string) => {
-    console.log(userId,"user id");
-    users[userId]=socketId
-    console.log(socketId,"socketid ")
-    joinRoom(socket, userId);
+    console.log("user got connencted...")
+    addNewUser(userId,socketId)
+    console.log(onlineUsers,"onlineUsersList")
   });
 
-  socket.on("disconnectedUser", (userId: string) => {
-    leaveRoom(socket, userId);
+  socket.on("disconnectedUser", () => {
+    console.log("user log disconnected")
+    removeUser(socket.id)
   });
-  // const users = {};
 
-  // socket.on(
-  //   "likeTweet",
-  //   (tweetId: string, userId: string, authorId: string) => {
-  //     console.log("User liked tweet", tweetId);
-  //     console.log(`User ID: ${userId} liked tweet ${tweetId}`);
+  socket.on("sendLikeNotification",({senderId,receiverId})=>{
+    console.log(receiverId,"recieverid check")
+    console.log(senderId," : senderID")
+    const receiver=getUser(receiverId)
+    console.log("receiver : ",receiver)
+    if(!receiver){
+      return
+      
+    }
+    socket.to(receiver.socketId).emit("getLikeNotification",{
+      senderId,
+      msg:"user liked your post"
+    })
+  })
 
-  //     // Here you can implement other logic related to liking the tweet if needed.
-  //     // For example, you might check if the user is authorized, if the tweet exists, etc.
 
-  //     // Example: emit notification to the author of the tweet
-  //     socket.to(authorId).emit("tweetLiked", {
-  //       message: `${userId} liked your tweet!`,
-  //       tweetId,
-  //     });
-  //   }
-  // );
 };
