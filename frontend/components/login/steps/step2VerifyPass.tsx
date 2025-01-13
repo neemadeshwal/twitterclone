@@ -25,11 +25,12 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { useMutation } from "@tanstack/react-query";
 import { checkLoginPassword } from "@/graphql/mutation/user";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const formSchema = z.object({
   password: z
     .string()
-    .min(2, { message: "firstname should be atleast 2 characters." })
+    .min(5, { message: "password should be atleast 5 characters." })
     .max(50),
 });
 
@@ -81,7 +82,7 @@ const Step2VerifyPass = ({ setAuthData, authData, setIsCreateOpen }: any) => {
               <div className="flex flex-col h-[37vh]  gap-6">
                 <div className="rounded-[5px] bg-[#161616c1] p-2 text-[#444444c1] font-[300]">
                   <p className="text-[13px]">Email</p>
-                  <p>neema@gmail.com</p>
+                  <p>{authData.email}</p>
                 </div>
                 <div>
                   <FormField
@@ -105,7 +106,7 @@ const Step2VerifyPass = ({ setAuthData, authData, setIsCreateOpen }: any) => {
                           className={`absolute text-[16px] ${
                             form.getValues("password")
                               ? "text-[11px] top-8 -translate-y-9 text-gray-500"
-                              : "left-4 top-2 -translate-y-4"
+                              : "left-4 top-5 -translate-y-4"
                           } left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] `}
                         >
                           Password
@@ -125,11 +126,13 @@ const Step2VerifyPass = ({ setAuthData, authData, setIsCreateOpen }: any) => {
                       </FormItem>
                     )}
                   />
+                  <Link href="/password_reset">
                   <div>
                     <p className=" text-[12px] pl-2 leading-[24px] text-[#1d9bf0] ">
                       Forgot password?
                     </p>
                   </div>
+                  </Link>
                 </div>
               </div>
               <div className=" items-center flex justify-center  w-full">

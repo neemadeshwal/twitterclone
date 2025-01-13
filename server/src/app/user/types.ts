@@ -26,6 +26,17 @@ type getLoginCreds{
     email:String
 next_page:String
 
+
+}
+
+input resetPasswordInput{
+    email:String
+    password:String
+}
+type resetPassword{
+    token:String
+    next_page:String
+    message:String
 }
 type checkLoginPassword{
     token:String
@@ -74,6 +85,7 @@ input getCredAndSendOtpInput{
 input verifyOtpInput{
     email:String
     otp:String
+    authType:String
 }
 
 input resendOtpInput{
@@ -89,5 +101,14 @@ input checkLoginPasswordInput{
 }
 input getLoginCredsInput{
     email:String
+    authType:String
+}
+
+input confirmedMailInput{
+    email:String
+}
+type confirmedMail{
+    email:String
+    next_page:String
 }
 `;

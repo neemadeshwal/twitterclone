@@ -28,7 +28,7 @@ export async function initServer() {
 
   app.use(bodyParser.json({ limit: "50mb" }));
   app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
-  app.use(cors({ origin: "http://localhost:5000" }));
+  app.use(cors({ origin: ["http://localhost:5000","http://192.168.29.194:8000" ]}));
 
   const graphqlServer = new ApolloServer<GraphqlContext>({
     typeDefs: `

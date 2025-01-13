@@ -9,9 +9,9 @@ import SigninAccountbtn from "./signinbtn";
 
 const Login = () => {
   return (
-    <div>
+    <div className="">
       {" "}
-      <div className="p-[40px] sm:pl-[100px] md:pl-[140px] lg:p-[80px] lg:flex lg:justify-center ">
+      <div className="p-[40px]   sm:pl-[100px] md:pl-[140px] lg:p-[80px] lg:flex lg:justify-center ">
         <div className="flex  flex-col w-[70vw] sm:w-[50vw] md:w-[40vw] lg:flex-row lg:items-start lg:w-full lg:justify-between lg:max-w-[1000px]  ">
           <div className="flex  lg:justify-center lg:items-center lg:w-[40%]  my-auto lg:mb-[250px]  ">
             <BsTwitterX className="lg:text-[290px] text-[60px]" />
@@ -56,7 +56,7 @@ const Login = () => {
                     <div className="">
                       <Link href="/signup">
                         <button className="border hover:text-blue-500 hover:bg-gray-950 border-px border-[#4949498e] rounded-full w-full py-2 text-center text-[#1d9bf0]">
-                          Sign in
+                          Signup
                         </button>
                       </Link>
                     </div>

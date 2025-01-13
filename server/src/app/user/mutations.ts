@@ -7,4 +7,6 @@ resendOtp(payload:resendOtpInput!):resendOtp
 getLoginCreds(payload:getLoginCredsInput!):getLoginCreds
 checkLoginPassword(payload:checkLoginPasswordInput!):checkLoginPassword
 editProfile(payload:editProfileInput):User
+confirmedMail(payload:confirmedMailInput):confirmedMail
+resetPassword(payload:resetPasswordInput):resetPassword
 `;

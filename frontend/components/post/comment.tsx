@@ -15,7 +15,7 @@ import { LuDot, LuFolderClock } from "react-icons/lu";
 import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
 
-const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
+const Comment = ({ tweet, user,iconColor }: { tweet: Tweet; user: getCurrentUser,iconColor?:string }) => {
   const [showDialogBox, setShowDialogBox] = useState(false);
   const [tweetComment, setTweetComment] = useState("");
   const queryClient = useQueryClient();
@@ -55,7 +55,7 @@ const Comment = ({ tweet, user }: { tweet: Tweet; user: getCurrentUser }) => {
     <div>
       <div
         onClick={() => setShowDialogBox(true)}
-        className="flex gap-1 items-center gray text-[13px] font-[400] cursor-pointer"
+        className={`flex gap-1 items-center ${iconColor=="white"?"white":"gray"}  text-[13px] font-[400] cursor-pointer`}
       >
         <BsChat className="text-[20px]" />
         <p>{tweet?.commentAuthor.length}</p>

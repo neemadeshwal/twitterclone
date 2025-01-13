@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 
-const SavePost = ({ singleTweet, user }: any) => {
+const SavePost = ({ singleTweet, user,iconColor }:{iconColor?:string,user:any,singleTweet:any}) => {
   const queryClient = useQueryClient();
   const [saveBookmark, setSaveBookmark] = useState(false);
   const saveBookmarkMutation = useMutation({
@@ -18,6 +18,8 @@ const SavePost = ({ singleTweet, user }: any) => {
       console.log(error);
     },
   });
+
+  console.log(iconColor,"iconColor")
   async function handleSaveBookmark() {
     console.log("heello");
     console.log(singleTweet, "singletweet");
@@ -49,15 +51,15 @@ const SavePost = ({ singleTweet, user }: any) => {
     }
   }, [singleTweet, user]);
   return (
-    <div className="flex gap-1 items-center gray text-[13px] font-[400]">
+    <div className="flex gap-1 items-center  text-[13px] font-[400]">
       <div
         onClick={handleSaveBookmark}
-        className="flex gap-1 items-center cursor-pointer gray text-[13px] font-[400]"
+        className={`flex gap-1 items-center cursor-pointer  text-[13px] ${iconColor=="white"?"white":"gray"} font-[400]`}
       >
         {saveBookmark ? (
           <FaBookmark className="text-[20px] text-blue-500" />
         ) : (
-          <FaRegBookmark className="text-[20px] gray hover:text-blue-500" />
+          <FaRegBookmark className={`text-[20px] ${iconColor=="white"?"white":"gray"} hover:text-blue-500`} />
         )}
       </div>
     </div>

@@ -300,7 +300,7 @@ const Step1Creds = ({
                               return (
                                 <SelectItem
                                   value={item.toString()}
-                                  key={item + index}
+                                  key={item + index+item+"year"}
                                 >
                                   {item}
                                 </SelectItem>

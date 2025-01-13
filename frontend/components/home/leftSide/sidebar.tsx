@@ -8,7 +8,7 @@ import {
   IoMdNotifications,
   IoMdMail,
 } from "react-icons/io";
-import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
+import { HiOutlineDotsCircleHorizontal, HiOutlineDotsHorizontal } from "react-icons/hi";
 import { FaSearch, FaRegUser, FaUser } from "react-icons/fa";
 import { CiMail } from "react-icons/ci";
 import { PiDotsThreeCircleFill } from "react-icons/pi";
@@ -19,7 +19,9 @@ import CurrentUser from "@/shared/currentUser";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MoreContainer from "@/shared/moreContainer";
-const sidebarIcons = [
+import { FaEllipsisVertical } from "react-icons/fa6";
+import LogOutContainer from "@/shared/logoutContainer";
+export const sidebarIcons = [
   {
     title: "home",
     icon: <GoHome />,
@@ -56,15 +58,21 @@ const Sidebar = () => {
   const { user } = useCurrentUser();
   const [moreContainer, setMoreContainer] = useState(false);
   const pathname = usePathname();
+  const[logoutContainer,setLogoutContainer]=useState(false);
+
   return (
-    <div>
-      <div className="py-2 ">
-        <div className=" p-3 hover:bg-[#2a2a2abb] rounded-full">
-          <BsTwitterX className="text-[28px]" />
-        </div>
-        <div className="flex flex-col ">
-          {sidebarIcons.map((item, index) => {
-            return (
+    <div className="flex flex-col h-full justify-between">
+      {/* Main content section */}
+      <div className="flex-1">
+        <div className="py-2">
+          {/* Logo */}
+          <div className="p-3 width hover:bg-[#2a2a2abb] rounded-full">
+            <BsTwitterX className="text-[28px]" />
+          </div>
+
+          {/* Navigation Icons */}
+          <div className="flex flex-col gap">
+            {sidebarIcons.map((item, index) => (
               <Link
                 key={item.title + index}
                 href={
@@ -73,35 +81,73 @@ const Sidebar = () => {
                     : item.activePathname
                 }
               >
-                <div className=" p-2 py-3 hover:bg-[#1d1d1dbb] cursor-pointer rounded-full flex items-center justify-center">
+                <div className="p-2 py-3 hover:bg-[#1d1d1dbb] cursor-pointer rounded-full flex items-center justify-center fixPosition px-width">
                   {pathname === item.activePathname ? (
                     <p className="text-[28px]">{item.iconActive}</p>
                   ) : (
                     <p className="text-[28px]">{item.icon}</p>
                   )}
+                  <span className="hidden showIcon capitalize text-[18px]">{item.title}</span>
                 </div>
               </Link>
-            );
-          })}
-        </div>
-        <div
-          onClick={() => setMoreContainer(true)}
-          className="p-2 py-3 rounded-full hover:bg-[#1d1d1dbb] flex items-center justify-center cursor-pointer"
-        >
-          <HiOutlineDotsCircleHorizontal className="text-[28px]" />
-          {moreContainer && (
-            <MoreContainer setMoreContainer={setMoreContainer} />
-          )}
-        </div>
-        <div className="p-3 x-bgcolor rounded-full my-2 cursor-pointer">
-          <BsFeather className="text-[28px]   " />
-        </div>
-        <div className="fixed bottom-8 ">
-          <CurrentUser />
+            ))}
+          </div>
+
+          {/* More Button */}
+          <div
+            onClick={() => setMoreContainer(true)}
+            className="p-2 more-bottom-height py-3 rounded-full hover:bg-[#1d1d1dbb] flex items-center justify-center cursor-pointer fixPosition px-width"
+          >
+            <HiOutlineDotsCircleHorizontal className="text-[28px]" />
+            {moreContainer && (
+              <MoreContainer setMoreContainer={setMoreContainer} />
+            )}
+            <span className="hidden showIcon capitalize">more</span>
+          </div>
+
+          {/* Post Button */}
+          <div className="p-3 bg-white text-black rounded-full my-2 cursor-pointer">
+            <div className="show-feather">
+              <BsFeather className="text-[28px]" />
+            </div>
+            <p className="text-center hide w-full flex justify-center items-center font-[700] text-[18px] showPost">
+              Post
+            </p>
+          </div>
         </div>
       </div>
+
+      {/* Current User Section - Sticky */}
+      <div onClick={()=>setLogoutContainer(true)} className="sticky bottom-8 bg-black p-3  hover:bg-[#1d1d1dbb] rounded-full cursor-pointer">
+        <div className="flex justify-between w-full relative  items-center">
+          <div className="flex items-center gap-2">
+            <CurrentUser />
+            <div className="flex flex-col justify-center items-start">
+              <div className="font-[700] text-[14px]">
+                {user?.firstName} {user?.lastName}
+              </div>
+              <div className="gray text-[14px]">@{user?.userName}</div>
+            </div>
+          </div>
+          <div className=""> 
+            <HiOutlineDotsHorizontal />
+          </div>
+          
+          
+        </div>
+      </div>
+      <div>
+      {
+ 
+ logoutContainer&&
+ <LogOutContainer setLogoutContainer={setLogoutContainer} userName={user?.userName}/>
+}
+      </div>
+    
+     
     </div>
   );
 };
 
 export default Sidebar;
+

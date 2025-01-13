@@ -267,7 +267,7 @@ const ComposePost = () => {
 
   return (
     <div className="w-full relative">
-      <div className="w-full p-6 px-4 pb-4">
+      <div className="w-full p-6 px-0 sm:px-4 pb-4">
         <div className="flex gap-2 w-full">
           <CurrentUser />
           <div className="w-full mt-2 px-2">

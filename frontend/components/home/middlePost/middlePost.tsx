@@ -1,8 +1,10 @@
 "use client";
 import ComposePost from "@/components/post/compostPost";
 import PostList from "@/components/post/postlist";
+import CurrentUser from "@/shared/currentUser";
 import DivisionBar from "@/shared/divisionbar";
 import React, { useEffect, useState } from "react";
+import { BsTwitterX } from "react-icons/bs";
 import io from "socket.io-client";
 
 const MiddlePost = () => {
@@ -11,7 +13,12 @@ const MiddlePost = () => {
   return (
     <div className="flex flex-col h-full">
       {/* Fixed Header Section */}
-      <div className="sticky top-0 z-50 backdrop-blur-sm">
+      <div className="flex sm:hidden w-[50%] pl-4 py-2 justify-between items-center ">
+          <CurrentUser/>
+          <BsTwitterX className="lg:text-[290px] text-[30px]" />
+          
+        </div>
+      <div className="relative sm:sticky  top-0 z-50 backdrop-blur-sm">
         <div className="flex">
           <div
             onClick={() => setIsForYou(true)}
@@ -48,8 +55,9 @@ const MiddlePost = () => {
       </div>
 
       {/* Scrollable Content Section */}
-      <div className=" w-full overflow-auto">
-        <div className="w-full">
+      <div className=" w-full overflow-hidden">
+       
+        <div className="w-full md:inline-block hidden">
           <ComposePost />
         </div>
         <PostList />

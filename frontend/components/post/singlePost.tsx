@@ -47,11 +47,13 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
       console.log(response);
       queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
      if(socket&&user){
+      console.log(socket.id,"socket..")
       console.log("send notification from frontend......")
       socket.emit("sendLikeNotification",{
 
         senderId:user.id,
         receiverId:tweet.author.id,
+        socketId:socket.id
 
       },()=>{console.log("tweet like notification send ")})
      }
@@ -145,7 +147,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   useEffect(() => {
     if (socket) {
       console.log("Socket initialized, setting up event listener...");
-      
+      console.log(socket,"socket")
       // Listen for new like notifications from the server
      socket.on("getLikeNotification", (data) => {
       console.log("last notificaiton check")
@@ -167,9 +169,21 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
     };
   }, [socket,liked]);  
 
+  useEffect(()=>{
+    if(socket){
+      socket.on("notify",(data)=>{
+        console.log(data.msg)
+      })
+    }
+    return ()=>{
+      socket.off("notify");
+    }
+  },[socket,liked])
+
+
   return (
     <div className="w-full cursor-pointer py-3 ">
-      <div className="flex gap-4 w-full px-2">
+      <div className="flex gap-4 w-full px-4 sm:px-2">
         <div>
           {tweet.author?.profileImgUrl ? (
             <div
@@ -255,10 +269,10 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
             <div
               className={`my-2 grid w-full border border-gray-600 z-50 overflow-hidden rounded-[20px] gap-x-[2px] gap-y-[2px] grid-flow-row ${
                 tweet?.photoArray?.length + tweet?.videoArray?.length > 2
-                  ? "grid-cols-2 h-[500px]"
+                  ? "grid-cols-2 h-[300px] sm:h-[400px] md:h-[500px]"
                   : tweet?.photoArray?.length + tweet?.videoArray?.length === 2
-                  ? "grid-cols-2 h-[350px] gap-x-[2px]"
-                  : "grid-cols-1 h-[500px]"
+                  ? "grid-cols-2 h-[250px] sm:h-[350px] gap-x-[2px]"
+                  : "grid-cols-1 h-[250px]  sm:h-[500px]"
               }`}
             >
               {tweet?.photoArray?.length !== 0 &&
@@ -362,7 +376,10 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
             </div>
           )} */}
           <div className="flex justify-between py-2 pt-3 pb-4">
+            <div className="flex items-center justify-center">
             <Comment tweet={tweet} user={user!} />
+
+            </div>
             <div
               onClick={handleRepostTweet}
               className="flex gap-1 items-center gray text-[13px] font-[400]"

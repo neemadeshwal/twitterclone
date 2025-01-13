@@ -16,33 +16,57 @@ export const getUser=(userId:string)=>{
   return onlineUsers.find((user:{userId:string,socketId:string})=>user.userId===userId)
 }
 export const handleEvents = (socket: Socket) => {
-  console.log("hellow neema")
+
+  socket.on("connectUserToServer", (userId: string) => {
+
+    joinRoom(socket, userId)
+  socket.emit("notify",{msg:"hello neema from backend"})
+
+})
 
   socket.on("connectedUser", (userId: string,socketId:string) => {
     console.log("user got connencted...")
-    addNewUser(userId,socketId)
-    console.log(onlineUsers,"onlineUsersList")
+    joinRoom(socket,userId)
+    
   });
 
-  socket.on("disconnectedUser", () => {
-    console.log("user log disconnected")
-    removeUser(socket.id)
+  socket.on("disconnectedUser", (userId:string) => {
+    leaveRoom(socket,userId)
   });
 
-  socket.on("sendLikeNotification",({senderId,receiverId})=>{
-    console.log(receiverId,"recieverid check")
-    console.log(senderId," : senderID")
-    const receiver=getUser(receiverId)
-    console.log("receiver : ",receiver)
-    if(!receiver){
-      return
-      
-    }
-    socket.to(receiver.socketId).emit("getLikeNotification",{
-      senderId,
-      msg:"user liked your post"
-    })
-  })
+
+ 
 
 
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// socket.on("sendLikeNotification",({senderId,receiverId,socketId})=>{
+//   console.log(receiverId,"recieverid check")
+//   console.log(senderId," : senderID")
+//   const receiver=getUser(receiverId)
+//   console.log("receiver : ",receiver)
+//   if(!receiver){
+//     return
+    
+//   }
+//   console.log(socketId,"socket id id")
+//   console.log(receiver.socketId,"reciever socket id check..")
+//   socket.emit("getLikeNotification",{
+//     senderId,
+//     receiverId,
+//     msg:"user liked your post"
+//   })
+// })

@@ -2,7 +2,7 @@
 import DivisionBar from "@/shared/divisionbar";
 import PostActivity from "@/shared/postActivity";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoEllipsisHorizontal, IoShareOutline } from "react-icons/io5";
 import Comment from "../comment";
 import { LuRepeat2 } from "react-icons/lu";
@@ -101,9 +101,17 @@ const PostDetail = ({tweet:singleTweet}:any) => {
       console.log(error);
     }
   }
+  useEffect(() => {
+    if (singleTweet?.LikedBy && user) {
+      setLiked(singleTweet.LikedBy.some((like:any) => like.userId === user.id));
+    }
+    if (singleTweet?.repostTweet && user) {
+      setRepost(singleTweet.repostTweet.some((repost:any) => repost.userId === user.id));
+    }
+  }, [singleTweet, user]);
 
   
-  return <div className=" w-[34%] px-4 py-2 pr-1">
+  return <div className=" w-[34%] overflow-y-auto h-screen px-4 py-2 pr-1">
 
     <div>
 
@@ -184,7 +192,7 @@ const PostDetail = ({tweet:singleTweet}:any) => {
       <DivisionBar type="x"/>
       <div>
             <div className="flex justify-between py-2 pt-3 pb-4">
-              <Comment tweet={singleTweet} user={user!} />
+              <Comment  tweet={singleTweet} user={user!} />
               <div
                 onClick={handleRepostTweet}
                 className="flex gap-1 items-center cursor-pointer gray text-[13px] font-[400]"
@@ -235,16 +243,14 @@ const PostDetail = ({tweet:singleTweet}:any) => {
                   className="text-[20px] bg-transparent resize-none outline-none border-0 w-full placeholder:text-gray-600"
                   placeholder="Post your reply"
                 ></textarea>
-                <div className="flex justify-between w-full ">
                   
-                  <div className="">
+                  <div className="flex items-center justify-center">
                     <button
                       onClick={handleReplyComment}
                       className="py-2 rounded-full x-bgcolor px-4"
                     >
                       Reply
                     </button>
-                  </div>
                 </div>
               </div>
               <div className="py-3">
@@ -254,13 +260,14 @@ const PostDetail = ({tweet:singleTweet}:any) => {
             </div>
             <div>
         <DivisionBar type="x" />
-
-          {singleTweet?.commentAuthor.map((item:any) => {
+        {singleTweet?.commentAuthor.map((item:any) => {
             return <SingleComment key={item.id} comment={item} />;
           })}
         </div>
+
+         
+        </div>
           </div>
-    </div>
   </div>;
 };
 

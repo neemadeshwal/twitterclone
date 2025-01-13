@@ -18,6 +18,16 @@ const GET_CREDS_SENDOTP = gql`
   }
 `;
 
+const RESET_PASSWORD=gql`
+mutation resetPassword($payload:resetPasswordInput){
+  resetPassword(payload:$payload){
+    next_page
+    token
+    message
+  }
+}
+`
+
 const VERIFY_OTP = gql`
   mutation VerifyOtp($payload: verifyOtpInput!) {
     verifyOtp(payload: $payload) {
@@ -40,6 +50,15 @@ const CREATE_ACCOUNT = gql`
 const GET_LOGIN_CREDS = gql`
   mutation getLoginCreds($payload: getLoginCredsInput!) {
     getLoginCreds(payload: $payload) {
+      email
+      next_page
+    }
+  }
+`;
+
+const CONFIRM_YOU = gql`
+  mutation confirmedMail($payload: confirmedMailInput) {
+    confirmedMail(payload: $payload) {
       email
       next_page
     }
@@ -79,10 +98,22 @@ export const createAccount = async (payload: createAccountProps) => {
   return data;
 };
 
+export const resetPassword=async(payload:{email:string,password:string})=>{
+  const data=await graphqlClient.request(RESET_PASSWORD,{payload})
+  return data
+}
+
+
 export const getLoginCreds = async (payload: getLoginCredsProps) => {
   const data = await graphqlClient.request(GET_LOGIN_CREDS, { payload });
   return data;
 };
+
+export const confirmYou = async (payload: {email:string}) => {
+  const data = await graphqlClient.request(CONFIRM_YOU, { payload });
+  return data;
+};
+
 
 export const checkLoginPassword = async (payload: checkLoginPassProps) => {
   console.log(payload);
@@ -94,3 +125,4 @@ export const editProfile = async (payload: editProfileProps) => {
   const data = await graphqlClient.request(EDIT_PROFILE, { payload });
   return data;
 };
+

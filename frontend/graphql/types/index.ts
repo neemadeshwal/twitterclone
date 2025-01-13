@@ -16,6 +16,7 @@ export interface createAccountProps {
 
 export interface getLoginCredsProps {
   email: string;
+  authType:string;
 }
 
 export interface checkLoginPassProps {

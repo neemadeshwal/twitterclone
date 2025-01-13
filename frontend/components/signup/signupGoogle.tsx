@@ -1,4 +1,5 @@
 "use client";
+import { SERVER_URL } from "@/lib/constants";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 
@@ -8,7 +9,7 @@ const SignupGoogle = ({ signupType }: { signupType: "login" | "signup" }) => {
       <div>
         <button
           onClick={() =>
-            (window.location.href = "http://localhost:8000/api/auth/google")
+            (window.location.href = `${process.env.NEXT_PUBLIC_SERVER_URL_API}/api/auth/google`)
           }
           className="bg-white hover:bg-[#ffffffed] text-black py-2 w-full items-center rounded-full flex justify-center gap-2 "
         >

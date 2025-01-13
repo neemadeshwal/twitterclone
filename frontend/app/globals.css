@@ -6,6 +6,8 @@
 body {
   background-color: black;
   color: white;
+  padding: auto auto;
+
   font-family: "Open Sans", sans-serif;
 }
 
@@ -77,4 +79,50 @@ p {
 
 .hover-bg:hover {
   background-color: #262626c0;
+}
+.show-feather {
+  display: inline-block;
+}
+@media (min-width: 1300px) {
+  .right-width {
+    width: 20%;
+  }
+  .middle-width {
+    width: 55%;
+  }
+  .left-width {
+    width: 25%;
+  }
+  .showIcon {
+    display: inline-block;
+  }
+  .fixPosition {
+    gap: 10px;
+    justify-content: left;
+  }
+  .px-width {
+    padding: 0.9rem 0.7rem;
+  }
+  .width {
+    width: fit-content;
+  }
+  .show-feather {
+    display: none;
+  }
+  .showPost {
+    display: inline-block;
+  }
+  .gap {
+    gap: 5px;
+  }
+  .more-bottom-height {
+    margin-bottom: 1rem;
+  }
+  .mainPadding {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+  .left {
+    left: 6%;
+  }
 }

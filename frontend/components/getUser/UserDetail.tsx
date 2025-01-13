@@ -13,7 +13,7 @@ const UserDetail = () => {
   //   }
   return (
     <div className="flex flex-col h-full ">
-      <div className="sticky top-0 z-50 backdrop-blur-sm py-1 px-4 bg-black/60">
+      <div className="sticky top-0 z-50 backdrop-blur-sm py-1 px-0 sm:px-4 bg-black/60">
         <div className="flex gap-9 items-center ">
           <div>
             <FaArrowLeft />

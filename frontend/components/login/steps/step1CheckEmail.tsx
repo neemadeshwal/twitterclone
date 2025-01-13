@@ -23,6 +23,7 @@ import {
 import { days, months, years } from "@/lib/functions";
 import { useMutation } from "@tanstack/react-query";
 import { getLoginCreds } from "@/graphql/mutation/user";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z
@@ -31,7 +32,7 @@ const formSchema = z.object({
     .min(5, "Email must be at least 5 characters long"),
 });
 
-const Step1CheckEmail = ({ setAuthData }: any) => {
+const Step1CheckEmail = ({ setAuthData,forgotpass }: any) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,6 +55,7 @@ const Step1CheckEmail = ({ setAuthData }: any) => {
     console.log(values);
     const body = {
       email: values.email,
+      authType:forgotpass?"confirmyou":"login"
     };
     try {
       await mutation.mutateAsync(body);
@@ -65,7 +67,7 @@ const Step1CheckEmail = ({ setAuthData }: any) => {
     <div>
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form id="checkemail" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-6">
                 <FormField
@@ -88,7 +90,7 @@ const Step1CheckEmail = ({ setAuthData }: any) => {
                         className={`absolute text-[16px] ${
                           form.getValues("email")
                             ? "text-[11px] top-8 -translate-y-9 text-gray-500"
-                            : "left-4 top-2 -translate-y-4"
+                            : "left-4 top-5 -translate-y-4"
                         } left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] `}
                       >
                         email, or username
@@ -98,7 +100,9 @@ const Step1CheckEmail = ({ setAuthData }: any) => {
                     </FormItem>
                   )}
                 />
-                <div className=" items-center flex justify-center  w-full">
+                {
+                  !forgotpass&&
+                  <div className=" items-center flex justify-center  w-full">
                   <button
                     type="submit"
                     className="bg-white  text-black items-center w-full py-[0.6rem] font-[700] rounded-full"
@@ -106,11 +110,19 @@ const Step1CheckEmail = ({ setAuthData }: any) => {
                     Next
                   </button>
                 </div>
-                <div className=" items-center flex justify-center  w-full">
-                  <button className="text-white  bg-black items-center w-full py-[0.6rem] font-[700] rounded-full border border-gray-500">
-                    Forgot password ?
-                  </button>
-                </div>
+                }
+               
+                {
+                  !forgotpass&&
+                  <div className=" items-center flex justify-center  w-full">
+                  <Link href="/password_reset" className="w-full ">
+                   <button  className="text-white  bg-black items-center w-full py-[0.6rem] font-[700] rounded-full border border-gray-500">
+                     Forgot password ?
+                   </button>
+                   </Link>
+                 </div>
+                }
+               
               </div>
             </div>
           </form>

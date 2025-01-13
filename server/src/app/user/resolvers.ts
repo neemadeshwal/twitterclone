@@ -17,6 +17,7 @@ interface getCredAndSendOtpPayload {
 interface verifyOtpPayload {
   email: string;
   otp: string;
+  authType:string;
 }
 
 interface createAccountPayload {
@@ -125,12 +126,50 @@ const mutations = {
 
     return { email, next_page: "verifyotp" };
   },
+  confirmedMail: async (
+    parent: any,
+    { payload }: { payload:{email:string} },
+    ctx: any
+  ) => {
+
+   const{email}=payload;
+    
+      const user = await prismaClient.user.findUnique({
+        where: { email: email },
+      });
+      if (!user) {
+        throw new Error("User doesnot  exist.Please create account first");
+      }
+    
+
+    const data = {
+      email,
+      firstName:user.firstName,
+      lastName:user.lastName,
+      dateOfBirth:user.dateOfBirth,
+    };
+    const expiryTime = 60 * 60 * 24;
+
+    await redis.set(
+      `unverifiedUser:${email}`,
+      JSON.stringify(data),
+      "EX",
+      expiryTime
+    );
+    const oldData = await redis.get(`unverifiedUser:${email}`);
+
+    const otpsend = await sendOtp(email);
+
+    return { email, next_page: "verifyotp" };
+  }
+  
+  ,
   verifyOtp: async (
     parent: any,
     { payload }: { payload: verifyOtpPayload },
     ctx: any
   ) => {
-    const { email, otp } = payload;
+    const { email, otp,authType } = payload;
 
     if (!email || !otp) {
       throw new Error("Please provide required creds");
@@ -138,7 +177,8 @@ const mutations = {
     const user = await prismaClient.user.findUnique({
       where: { email: email },
     });
-    if (user) {
+    if (user&&authType=="createaccount") {
+
       throw new Error("User already exist.Please login");
     }
     const storedOtp = await redis.get(`Otp/:${email}`);
@@ -158,7 +198,8 @@ const mutations = {
     }
     const newData = JSON.stringify({ ...JSON.parse(oldData), verified: true });
     await redis.set(`verifiedUser:${email}`, newData);
-    return { email, next_page: "password" };
+    const nextPage=authType=="forgotpass"?"newpass":"password"
+    return { email, next_page: nextPage };
   },
   createAccount: async (
     parent: any,
@@ -238,11 +279,11 @@ const mutations = {
   },
   getLoginCreds: async (
     parent: any,
-    { payload }: { payload: { email: string } },
+    { payload }: { payload: { email: string,authType:string } },
     ctx: any
   ) => {
-    const { email } = payload;
-    if (!email) {
+    const { email,authType } = payload;
+    if (!email||!authType) {
       throw new Error("provide required credentials.");
     }
     const user = await prismaClient.user.findUnique({ where: { email } });
@@ -257,7 +298,8 @@ const mutations = {
 
       return { email: queryByUserName.email };
     }
-    return { email, next_page: "verifypassword" };
+    const nextPage=authType==="login"?"verifypassword":"confirmyou"
+    return { email, next_page: nextPage };
   },
   checkLoginPassword: async (
     parent: any,
@@ -325,6 +367,43 @@ const mutations = {
     });
     return edituser;
   },
+  resetPassword:async(parent:any,{payload}:{payload:{email:string,password:string}},ctx:any)=>{
+
+    const{email,password}=payload;
+    console.log("passsword reseted succesfuly 1")
+
+    if(!email||!password) throw new Error("No email password found.")
+
+
+    const user=await prismaClient.user.findUnique({
+      where:{email}
+    })
+  console.log("passsword reseted succesfuly 2")
+
+
+    if(!user){
+      throw new Error("No user found.")
+    }
+    const hashedPassword = await hashPassword(password);
+
+    const resetUserPassword=await prismaClient.user.update({
+      where:{email}
+    ,
+  
+    data:{
+
+      password:hashedPassword
+    }
+  })
+  console.log("passsword reseted succesfuly 3")
+  const token = await JWTService.generateTokenFromUser(resetUserPassword);
+  return {
+    token,
+    message: "password reset successful",
+    next_page: "signin",
+  };
+   
+  }
 };
 
 const extraResolvers = {

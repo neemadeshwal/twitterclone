@@ -36,7 +36,7 @@ router.get(
     if (exisitingUser) {
       const token = await JWTService.generateTokenFromUser(exisitingUser);
       res.cookie("token", token, { httpOnly: false });
-      res.redirect("http://localhost:5000");
+      res.redirect("http://192.168.29.194:5000");
     } else {
       const firstName = req.user.name.givenName;
       const lastName = req.user.name.lastName ?? "";
@@ -71,7 +71,7 @@ router.get(
       console.log(token, "token");
       res.cookie("token", token, { httpOnly: false });
 
-      res.redirect("http://localhost:5000");
+      res.redirect("http://192.168.29.194:5000");
     }
   }
 );
