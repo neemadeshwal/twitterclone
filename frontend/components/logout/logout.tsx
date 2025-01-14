@@ -15,6 +15,12 @@ const Logout = () => {
     });
 
   const router=useRouter()
+
+  function handleLogout(){
+    console.log("hello  ")
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+    router.push("/login")
+  }
   return (
     <div>
       
@@ -66,7 +72,7 @@ const Logout = () => {
                 >
                   <button
                   
-
+                  onClick={handleLogout}
                     className="bg-white  text-black items-center w-full py-[0.8rem] font-[700] rounded-full"
                   >
                  Logout

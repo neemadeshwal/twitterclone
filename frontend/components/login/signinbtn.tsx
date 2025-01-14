@@ -17,7 +17,7 @@ const SigninAccountbtn = ({ authType }: { authType: "login" | "signup" }) => {
         <div>
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="text-white hover:bg-[#1c8bd5] rounded-full py-2 w-full x-bgcolor font-[600]"
+            className="text-white hover:bg-[#1c8bd5] md rounded-full py-2 w-full x-bgcolor font-[600]"
           >
             {authType === "login" ? "Sign in to account" : "Create account"}
           </button>
@@ -39,8 +39,8 @@ const SigninAccountbtn = ({ authType }: { authType: "login" | "signup" }) => {
                   <BsTwitterX className="text-[30px]" />
                 </div>
               </div>
-              <div className="flex  flex-col w-full h-full">
-                <div className="p-4 px-8 sm:px-[10vw] md:px-20 h-full py-10 overflow-auto ">
+              <div className="flex  flex-col w-full ">
+                <div className="p-4 px-8 sm:px-[10vw] md:px-20   ">
                   <div>
                     <div>
                       <h4 className="font-[700] text-[31px] leading-[36px]">

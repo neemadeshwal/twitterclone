@@ -79,7 +79,7 @@ const Step2VerifyPass = ({ setAuthData, authData, setIsCreateOpen }: any) => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
-              <div className="flex flex-col h-[37vh]  gap-6">
+              <div className="flex flex-col     gap-6">
                 <div className="rounded-[5px] bg-[#161616c1] p-2 text-[#444444c1] font-[300]">
                   <p className="text-[13px]">Email</p>
                   <p>{authData.email}</p>
