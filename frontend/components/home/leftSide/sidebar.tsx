@@ -24,6 +24,7 @@ import { usePathname } from "next/navigation";
 import MoreContainer from "@/shared/moreContainer";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import LogOutContainer from "@/shared/logoutContainer";
+import PostContainer from "@/shared/postContainer";
 export const sidebarIcons = [
   {
     title: "home",
@@ -69,7 +70,7 @@ const Sidebar = () => {
       <div className="flex-1">
         <div className="py-2">
           {/* Logo */}
-          <div className="p-2 w-fit fullWidth hover:bg-[#2a2a2abb] rounded-full">
+          <div className="p-3 w-fit  hover:bg-[#2a2a2abb] rounded-full">
             <BsTwitterX className="text-[28px]" />
           </div>
 
@@ -111,21 +112,15 @@ const Sidebar = () => {
           </div>
 
           {/* Post Button */}
-          <div className="p-2 bg-white padding text-black w-fit flex justify-center items-center fullWidth rounded-full my-2 cursor-pointer">
-            <div className="show-feather">
-              <BsFeather className="text-[28px]" />
-            </div>
-            <p className="text-center hidden showPostName w-full justify-center items-center font-[700] text-[18px] showPost">
-              Post
-            </p>
-          </div>
+          <PostContainer/>
+        
         </div>
       </div>
 
       {/* Current User Section - Sticky */}
       <div
         onClick={() => setLogoutContainer(true)}
-        className="sticky bottom-8 bg-black p-3  hover:bg-[#1d1d1dbb] rounded-full cursor-pointer"
+        className="sticky bottom-8 bg-black p-3 w-fit fullWidth hover:bg-[#1d1d1dbb] rounded-full cursor-pointer"
       >
         <div className="flex justify-between w-full relative  items-center">
           <div className="flex items-center gap-2">
@@ -142,7 +137,7 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
-      <div>
+      <div className="relative"> 
         {logoutContainer && (
           <LogOutContainer
             setLogoutContainer={setLogoutContainer}
@@ -150,6 +145,7 @@ const Sidebar = () => {
           />
         )}
       </div>
+      
     </div>
   );
 };

@@ -13,8 +13,8 @@ const Home = ({ pathType }: { pathType: string }) => {
       {/* Main content wrapper with padding */}
       <div className="flex-1 flex flex-col sm:flex-row px-0 lg:px-[100px] md:px-[100px]">
         {/* Left Sidebar - Desktop */}
-        <div className="hidden sm:flex flex-col w-[7%] justify-center items-center left-width sticky top-0 h-screen">
-          <div className="flex gap-3 h-full">
+        <div className="hidden sm:flex flex-col w-[7%] justify-center  left-width sticky top-0 h-screen">
+          <div className="flex h-full">
             <div className="flex-grow">
               <Sidebar />
             </div>

@@ -136,7 +136,7 @@ p {
     left: 6%;
   }
   .fullWidth {
-    width: full;
+    width: 100%;
     padding-top: 0.75rem;
     padding-bottom: 0.75rem;
   }

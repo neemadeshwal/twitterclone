@@ -9,10 +9,10 @@ const LogOutContainer = ({ setLogoutContainer ,userName}: any) => {
   useOutsideClick(logOutContainerRef, () => setLogoutContainer(false));
 
   return (
-    <div className="absolute z-[1000000] bg-black">
+    <div className="absolute top-[-12rem] left-[-5rem]  z-[1000000]  bg-black">
       <div
         ref={logOutContainerRef}
-        className="absolute z-50 top-[-14rem] bg-black"
+        className="absolute z-50  bg-black"
       >
         <div
           style={{
