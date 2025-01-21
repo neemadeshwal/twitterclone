@@ -112,8 +112,7 @@ const Sidebar = () => {
           </div>
 
           {/* Post Button */}
-          <PostContainer/>
-        
+          <PostContainer />
         </div>
       </div>
 
@@ -137,7 +136,7 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
-      <div className="relative"> 
+      <div className="relative">
         {logoutContainer && (
           <LogOutContainer
             setLogoutContainer={setLogoutContainer}
@@ -145,7 +144,6 @@ const Sidebar = () => {
           />
         )}
       </div>
-      
     </div>
   );
 };
