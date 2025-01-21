@@ -1,114 +1,181 @@
-"use client";
 import { useEffect, useState } from "react";
 import { useCurrentUser, useGetUserById } from "@/hooks/user";
 import Image from "next/image";
+import { useMutation } from "@tanstack/react-query";
+import { followUser } from "@/graphql/mutation/follows";
 
-const HoverProfileDetail = ({ user }: any) => {
-  const [isFollowingCommon, setIsFollowingCommon] = useState<any>([]);
-
-  // Correctly using the hook inside the component body
-  const [hoveredUserId, setHoveredUserId] = useState<string>("");
-
+const HoverProfileDetail = ({ hoverId,hoverOnName }: { hoverId: string,hoverOnName:boolean }) => {
+  const [commonFollowers, setCommonFollowers] = useState<any>([]);
+  const [isVisible, setIsVisible] = useState(false);
+  const { user: hoveredUser, isLoading } = useGetUserById(hoverId);
   const { user: currentUser } = useCurrentUser();
-
-  // Refetch when hoveredUserId changes useEffect(() => { if (hoveredUser) { setUser(hoveredUser); // Set the user data when it's loaded } }, [hoveredUser]);
+  const [isAlreadyFollowing, setIsAlreadyFollowing] = useState(false);
+  const[onhoverFollowing,setOnhoverFollowing]=useState(false);
+  // Set visibility after a short delay when hoverId changes
+  useEffect(() => {
+    if (hoverId) {
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 200); // Slight delay before showing
+      return () => clearTimeout(timer);
+    } else {
+      setIsVisible(false);
+    }
+  }, [hoverId]);
 
   useEffect(() => {
-    if (!user || !currentUser) {
-      return;
-    }
+    if (!hoveredUser || !currentUser) return;
 
-    const userFollowers = user?.followers || [];
-    const currentUserFollowing = currentUser?.following || [];
-
-    if (userFollowers.length === 0 || currentUserFollowing.length === 0) {
-      return;
-    }
-
-    const commonItem = currentUserFollowing.filter((item) =>
-      userFollowers.includes(item)
+    const userFollowers = hoveredUser.followers || [];
+    const currentUserFollowing = currentUser.following || [];
+    const common = currentUserFollowing.filter(follower => 
+      userFollowers.includes(follower)
     );
+    setCommonFollowers(common);
+  }, [hoveredUser, currentUser]);
+  const mutation = useMutation({
+    mutationFn: followUser,
+    onSuccess: (response: any) => {
+      console.log(response);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
-    if (commonItem.length === 0) {
+  const handleFollowUser = async () => {
+    if (!hoveredUser?.id) {
+      return;
+    }
+    const body = {
+      userToFollowId: hoveredUser.id,
+    };
+    try {
+      await mutation.mutateAsync(body);
+      setIsAlreadyFollowing(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (!hoveredUser || !currentUser) {
       return;
     }
 
-    setIsFollowingCommon(commonItem);
-  }, [user, currentUser]);
+    const isFollowing = hoveredUser.followers.find(
+      (item) => item.followerId === currentUser.id
+    );
+    console.log(isFollowing, "following");
+    if (isFollowing) {
+      setIsAlreadyFollowing(true);
+    } else {
+      setIsAlreadyFollowing(false);
+    }
+  }, [hoveredUser, currentUser]);
 
-  if (!user) {
-    return; // Fallback UI when user data is missing or id is invalid
-  }
+  if (isLoading || !hoveredUser) return null;
 
   return (
-    <div className="relative z-50">
-      <div className="absolute z-50 top-12 left-[-4px]">
+    <div className={`
+      transform transition-all duration-300 ease-in-out
+      ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}
+    `}>
+      <div className={`absolute z-50 ${hoverOnName?"top-4 left-8":"top-10 left-[-4px]"} `}>
         <div
           style={{
             boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)",
           }}
-          className="rounded-[15px] w-[290px] min-h-[100px] h-auto bg-black"
+          className={`
+            rounded-[15px] w-[290px] min-h-[100px] h-auto bg-black
+            transform transition-all duration-300 ease-in-out
+            ${isVisible ? 'scale-100' : 'scale-95'}
+          `}
         >
           <div className="p-4">
+            {/* Rest of your component content remains the same */}
+            {/* Profile Header */}
             <div className="justify-between flex">
               <div>
-                {user?.profileImgUrl ? (
-                  <div>
-                    {user?.profileImgUrl.startsWith("#") ? (
-                      <div
-                        style={{ backgroundColor: user?.profileImgUrl }}
-                        className="rounded-full w-12 h-12 flex items-center justify-center capitalize"
-                      >
-                        {user.firstName.slice(0, 1)}
-                      </div>
-                    ) : (
-                      <Image
-                        src={user.profileImgUrl}
-                        alt="style one"
-                        width={40}
-                        height={40}
-                        className="rounded-full w-12 h-12"
-                      />
-                    )}
-                  </div>
+                {hoveredUser.profileImgUrl ? (
+                  hoveredUser.profileImgUrl.startsWith("#") ? (
+                    <div
+                      style={{ backgroundColor: hoveredUser.profileImgUrl }}
+                      className="rounded-full w-12 h-12 flex items-center justify-center capitalize"
+                    >
+                      {hoveredUser.firstName.slice(0, 1)}
+                    </div>
+                  ) : (
+                    <Image
+                      src={hoveredUser.profileImgUrl}
+                      alt={`${hoveredUser.firstName}'s profile`}
+                      width={40}
+                      height={40}
+                      className="rounded-full w-12 h-12"
+                    />
+                  )
                 ) : (
                   <div className="rounded-full w-12 h-12 bg-blue-900 flex items-center justify-center capitalize">
-                    {user?.firstName.slice(0, 1)}
+                    {hoveredUser.firstName.slice(0, 1)}
                   </div>
                 )}
               </div>
-              <button className="bg-white text-black px-4 py-[0.4rem] h-fit font-[600] capitalize rounded-full">
-                follow
-              </button>
+              {
+                currentUser?.id!==hoveredUser?.id&&
+                <div>
+          {isAlreadyFollowing ? (
+            
+            <button  onMouseEnter={()=>setOnhoverFollowing(true)} onMouseLeave={()=>setOnhoverFollowing(false)} className={` ${onhoverFollowing?"border-red-500 text-red-500 bg-[#38131385]":"border-gray-600 text-white"} px-4 py-1 rounded-full border  capitalize font-[600]`}>
+             {onhoverFollowing?"unfollow":"following"}
+            </button>
+          ) : (
+            <button
+              onClick={handleFollowUser}
+              className="px-4 py-1 rounded-full bg-white text-black capitalize font-[600]"
+            >
+              follow
+            </button>
+          )}
+        </div>
+              }
+             
             </div>
-            <div>
+
+            {/* Profile Info */}
+            <div className="mt-2">
               <div>
-                <h4>
-                  {user?.firstName} {user?.lastName}
+                <h4 className="font-semibold text-lg">
+                  {hoveredUser.firstName} {hoveredUser.lastName}
                 </h4>
               </div>
 
-              <div className="gray text-[14px]">@{user?.userName}</div>
-              <div className="py-2">{user?.bio}</div>
-              <div className="flex gap-3 items-center">
+              <div className="gray text-[14px]">@{hoveredUser.userName}</div>
+              
+              {hoveredUser.bio && (
+                <div className="py-2 text-sm">{hoveredUser.bio}</div>
+              )}
+
+              {/* Stats */}
+              <div className="flex gap-3 items-center mt-2">
                 <div>
-                  {user?.following?.length}{" "}
+                  <span className="font-medium">{hoveredUser.following?.length}</span>{" "}
                   <span className="gray text-[14px]">Following</span>
                 </div>
                 <div>
-                  {user?.followers?.length}{" "}
+                  <span className="font-medium">{hoveredUser.followers?.length}</span>{" "}
                   <span className="text-[14px] gray">Followers</span>
                 </div>
               </div>
-              {isFollowingCommon.length > 0 && (
-                <div>
+
+              {/* Common Followers */}
+              {commonFollowers.length > 0 && (
+                <div className="mt-3">
                   <div className="gray text-[14px]">Followed by</div>
-                  <div>
-                    {isFollowingCommon.map((item: any, index: number) => (
-                      <div key={index}>
-                        {item.firstName} {item?.lastName}
-                        {index < isFollowingCommon.length - 1 && ","}
-                      </div>
+                  <div className="text-sm mt-1">
+                    {commonFollowers.map((follower:any, index:number) => (
+                      <span key={follower}>
+                        {follower}
+                        {index < commonFollowers.length - 1 ? ", " : ""}
+                      </span>
                     ))}
                   </div>
                 </div>
