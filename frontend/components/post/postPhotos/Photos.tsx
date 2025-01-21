@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { BiX } from "react-icons/bi";
@@ -14,14 +14,29 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { repostTweet } from "@/graphql/mutation/repost";
 import { toggleLikeTweet } from "@/graphql/mutation/like";
 import Link from "next/link";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
-const Photos = ({photoNum, tweet, setShowFullPhoto, showFullPhoto, currentUrl}: any) => {
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(Number(photoNum) - 1);
+const Photos = ({
+  photoNum,
+  tweet,
+  setShowFullPhoto,
+  showFullPhoto,
+  currentUrl,
+}: any) => {
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(
+    Number(photoNum) - 1
+  );
   const [showPhoto, setShowPhoto] = useState("");
   const [isSliding, setIsSliding] = useState(false);
   const [liked, setLiked] = useState(false);
   const [repost, setRepost] = useState(false);
-  
+
   const queryClient = useQueryClient();
   const { user } = useCurrentUser();
 
@@ -29,14 +44,14 @@ const Photos = ({photoNum, tweet, setShowFullPhoto, showFullPhoto, currentUrl}: 
     mutationFn: toggleLikeTweet,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
-    }
+    },
   });
 
   const repostMutation = useMutation({
     mutationFn: repostTweet,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
-    }
+    },
   });
 
   useEffect(() => {
@@ -44,7 +59,9 @@ const Photos = ({photoNum, tweet, setShowFullPhoto, showFullPhoto, currentUrl}: 
       setLiked(tweet.LikedBy.some((like: any) => like.userId === user.id));
     }
     if (tweet?.repostTweet && user) {
-      setRepost(tweet.repostTweet.some((repost: any) => repost.userId === user.id));
+      setRepost(
+        tweet.repostTweet.some((repost: any) => repost.userId === user.id)
+      );
     }
   }, [tweet, user]);
 
@@ -55,14 +72,15 @@ const Photos = ({photoNum, tweet, setShowFullPhoto, showFullPhoto, currentUrl}: 
     }
   }, [photoNum, tweet]);
 
-  const handleNavigation = (direction: 'prev' | 'next') => {
+  const handleNavigation = (direction: "prev" | "next") => {
     if (isSliding) return; // Prevent multiple clicks during transition
-    
+
     setIsSliding(true);
-    const newIndex = direction === 'prev' 
-      ? Math.max(0, currentPhotoIndex - 1)
-      : Math.min(tweet.photoArray.length - 1, currentPhotoIndex + 1);
-    
+    const newIndex =
+      direction === "prev"
+        ? Math.max(0, currentPhotoIndex - 1)
+        : Math.min(tweet.photoArray.length - 1, currentPhotoIndex + 1);
+
     setCurrentPhotoIndex(newIndex);
     setShowPhoto(tweet.photoArray[newIndex]);
   };
@@ -70,12 +88,12 @@ const Photos = ({photoNum, tweet, setShowFullPhoto, showFullPhoto, currentUrl}: 
   const handleTransitionEnd = () => {
     setIsSliding(false);
     const newUrl = `${currentUrl}${currentPhotoIndex + 1}`;
-    window.history.replaceState({ ...window.history.state }, '', newUrl);
+    window.history.replaceState({ ...window.history.state }, "", newUrl);
   };
 
   const handleTweetLike = async () => {
     if (!tweet?.id) return;
-    setLiked(prev => !prev);
+    setLiked((prev) => !prev);
     try {
       await mutation.mutateAsync({ tweetId: tweet.id });
     } catch (error) {
@@ -95,24 +113,41 @@ const Photos = ({photoNum, tweet, setShowFullPhoto, showFullPhoto, currentUrl}: 
   if (!showPhoto) return null;
 
   return (
-    <div className={`${showFullPhoto ? "w-[100%]" : "w-[64%]"} overflow-hidden flex justify-center items-start relative`}>
-      <div className="flex w-full h-full bg-black">
-        {tweet?.photoArray.map((image: string) => (
-          <Image
-            key={image}
-            style={{
-              transform: `translateX(-${currentPhotoIndex * 100 }%)`,
-            }}
-            onTransitionEnd={handleTransitionEnd}
-            src={image}
-            alt=""
-            width={1000}
-            height={1000}
-            className={`w-full ${isSliding ? "transform" : ""} transition-transform duration-500 ease-in-out ${
-              showFullPhoto ? "h-[92vh]" : "h-[93%] max-h-[90vh]"
-            } object-cover`}
-          />
-        ))}
+    <div
+      className={`${
+        showFullPhoto ? "w-[100%]" : "w-[64%]"
+      } overflow-hidden flex justify-center items-start relative`}
+    >
+      <div className="flex w-screen  h-screen bg-black">
+        <Carousel>
+          <CarouselContent>
+            {tweet?.photoArray.map((image: string) => (
+              <CarouselItem key={image}>
+                <div className=" ">
+                  <Image
+                    style={{
+                      transform: `translateX(-${currentPhotoIndex * 100}%)`,
+                    }}
+                    onTransitionEnd={handleTransitionEnd}
+                    src={image}
+                    alt=""
+                    width={1000}
+                    height={1000}
+                    className={`  ${
+                      isSliding ? "transform" : ""
+                    } transition-transform duration-500 ease-in-out ${
+                      showFullPhoto
+                        ? "h-[90vh] w-screen object-contain"
+                        : "h-[90vh]  object-contain"
+                    } `}
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
 
       <div className="absolute top-5 left-5 text-[30px]">
@@ -131,7 +166,7 @@ const Photos = ({photoNum, tweet, setShowFullPhoto, showFullPhoto, currentUrl}: 
       <div className="">
         {currentPhotoIndex > 0 && (
           <div
-            onClick={() => handleNavigation('prev')}
+            onClick={() => handleNavigation("prev")}
             className="absolute bg-black/50 rounded-full cursor-pointer p-2 left-10 top-[50%]"
           >
             <FaArrowLeft />
@@ -139,7 +174,7 @@ const Photos = ({photoNum, tweet, setShowFullPhoto, showFullPhoto, currentUrl}: 
         )}
         {currentPhotoIndex < tweet.photoArray.length - 1 && (
           <div
-            onClick={() => handleNavigation('next')}
+            onClick={() => handleNavigation("next")}
             className="absolute right-10 bg-black/50 rounded-full cursor-pointer p-2 top-[50%]"
           >
             <FaArrowRight />

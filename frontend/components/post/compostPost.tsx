@@ -18,6 +18,13 @@ import Image from "next/image";
 import { BiChevronLeft, BiChevronRight, BiX } from "react-icons/bi";
 import GifContainer from "@/shared/GifContainer";
 import HashtagContainer from "@/shared/HashtagContainer";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
 const ComposePost = () => {
   const queryClient = useQueryClient();
   const [showRightChevron, setShowRightChevron] = useState(false);
@@ -290,82 +297,73 @@ const ComposePost = () => {
             )}
 
             {loading && <div>Loading....</div>}
+
             {files && typeof files !== "undefined" && files.length !== 0 && (
-              <div
-                ref={scrollRef}
-                className={`${
-                  files.length === 1 ? "col-span-2" : "col-span-1"
-                } grid grid-rows-1 gap-3 grid-flow-col overflow-auto`}
-              >
-                {showLeftChevron && (
-                  <div className="absolute left-6 top-[30%] rounded-full p-2 bg-gray-800">
-                    <BiChevronLeft onClick={() => handleScroll("left")} />
-                  </div>
-                )}
-                {showRightChevron && (
-                  <div className="absolute right-6 top-[30%] rounded-full p-2 bg-gray-800">
-                    <BiChevronRight onClick={() => handleScroll("right")} />
-                  </div>
-                )}
+              <div ref={scrollRef}>
+                <Carousel
+                  opts={{
+                    align: "start",
+                  }}
+                  className="w-full"
+                >
+                  <CarouselContent>
+                    {files.map((url: string) => {
+                      return (
+                        <CarouselItem
+                          key={url}
+                          className="relative   basis-1/2"
+                        >
+                          <div className="rounded-[20px] py-3 flex aspect-square items-center justify-center  ">
+                            {url.endsWith(".mp4") ? (
+                              <div className="rounded-[20px] relative">
+                                <video
+                                  controls
+                                  width="250"
+                                  height="250"
+                                  loop
+                                  className="w-full h-full rounded-[20px] object-contain"
+                                  muted
+                                >
+                                  <source src={url} type="video/mp4" />
+                                </video>
 
-                {files.length !== 0 &&
-                  files.map((url: string) => {
-                    console.log(url, "check url");
-                    console.log(url.endsWith("mp4"), "mpv video check");
-                    return (
-                      <div key={url} className=" rounded-[20px] py-3">
-                        {url.endsWith(".mp4") ? (
-                          <div
-                            className={`${
-                              files.length === 1
-                                ? "w-full h-[350px]"
-                                : "w-[240px] h-[350px]"
-                            }  rounded-[20px] relative    `}
-                          >
-                            <video
-                              controls
-                              width="250"
-                              height="250"
-                              loop
-                              className="w-full h-full rounded-[20px] object-contain"
-                              muted
-                            >
-                              <source src={url} type="video/mp4" />
-                            </video>
+                                <BiX
+                                  onClick={() => deletePreviewPhotos(url)}
+                                  className="absolute bg-black/40 text-white w-7 h-7 hover:bg-black/50 cursor-pointer rounded-full right-3 top-3"
+                                />
+                              </div>
+                            ) : (
+                              <div className="rounded-[20px] relative">
+                                <Image
+                                  src={url}
+                                  alt=""
+                                  width={500}
+                                  height={500}
+                                  className="w-full h-full rounded-[20px] object-contain"
+                                />
+                                <div>
+                                  <BiX
+                                    onClick={() => deletePreviewPhotos(url)}
+                                    className="absolute bg-[#232323b5] hover:bg-[#2323237d] text-white w-7 h-7 cursor-pointer rounded-full right-3 top-3"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </CarouselItem>
+                      );
+                    })}
+                  </CarouselContent>
 
-                            <BiX
-                              onClick={() => deletePreviewPhotos(url)}
-                              className="absolute  bg-black/40 text-white w-7 h-7 hover:bg-black/50 cursor-pointer rounded-full right-3 top-3"
-                            />
-                          </div>
-                        ) : (
-                          <div
-                            className={`${
-                              files.length === 1
-                                ? "w-full h-[350px]"
-                                : "w-[240px] h-[350px]"
-                            }  rounded-[20px] relative    `}
-                          >
-                            <Image
-                              src={url}
-                              alt=""
-                              width={500}
-                              height={500}
-                              className="w-full h-full rounded-[20px] object-contain"
-                            />
-                            <div className=" ">
-                              <BiX
-                                onClick={() => deletePreviewPhotos(url)}
-                                className="absolute  bg-black/40 text-white w-7 h-7 hover:bg-black/50 cursor-pointer rounded-full right-3 top-3"
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {/* Previous button */}
+                  <CarouselPrevious className="absolute bg-[#232323b5] hover:bg-[#2323237d] hover:text-white rounded-full border-0 cursor-pointer p-2 left-0 top-[50%]" />
+
+                  {/* Next button */}
+                  <CarouselNext className="absolute bg-[#232323b5] hover:bg-[#2323237d] hover:text-white border-0 rounded-full cursor-pointer p-2 right-0 top-[50%]" />
+                </Carousel>
               </div>
             )}
+
             <DivisionBar type="x" />
           </div>
         </div>
