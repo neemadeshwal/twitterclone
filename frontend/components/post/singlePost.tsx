@@ -30,6 +30,7 @@ import HoverProfileDetail from "@/shared/HoverProfileDetail";
 
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
+  const[hoverOnName,setHoverOnName]=useState(false);
   const [repost, setRepost] = useState(false);
   const [isPostControlDialogOpen, setPostControlDialogOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -112,49 +113,24 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
     router.push(`/${tweet.author.userName}/status/${id}/photos/${photoId}`);
   };
   const [hoveredUserId, setHoveredUserId] = useState("");
-  const { user: hoveredUser } = useGetUserById(isHoveredOnProfileImgId); // Assuming `useGetUserById` returns user data, loading, and error states
   const { user: currentUser } = useCurrentUser();
 
+
   const [hoverUser, setHoverUser] = useState<any>(null);
-  useEffect(() => {
-    setHoveredUserId(isHoveredOnProfileImgId);
-  }, [isHoveredOnProfileImgId]);
-  // Refetch when hoveredUserId changes useEffect(() => { if (hoveredUser) { setUser(hoveredUser); // Set the user data when it's loaded } }, [hoveredUser]);
-
-  useEffect(() => {
-    if (hoveredUser) {
-      setHoverUser(hoveredUser); // Set the user data when it's loaded
-    }
-  }, [hoveredUser, isHoveredOnProfileImgId, hoveredUserId]);
 
 
-  // useEffect(() => {
-  //   if (!socket) return;
-
-  //   socket.on("likeTweet", (data) => {
-  //     console.log(data,"data checking")
-  //     console.log("just checning teh data");
-  //     if (data.tweetId === tweet.id) {
-  //       console.log(data.message); // Notify user when the tweet is liked (real-time)
-  //     }
-  //   });
-
-  //   return () => {
-  //     if (socket) socket.off("tweetLiked");
-  //   };
-  // }, [socket, tweet.id]);
+ 
+ 
 
   useEffect(() => {
     if (socket) {
       console.log("Socket initialized, setting up event listener...");
       console.log(socket,"socket")
-      // Listen for new like notifications from the server
      socket.on("getLikeNotification", (data) => {
       console.log("last notificaiton check")
         console.log("Received newLikeNotification:", data)
         
-        // You can replace this with your custom notification component
-         // Show an alert for demonstration
+        
       })
     } else {
       console.log("Socket not initialized");
@@ -184,14 +160,16 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   return (
     <div className="w-full cursor-pointer py-3 ">
       <div className="flex gap-4 w-full px-4 sm:px-2">
-        <div>
+        <div 
+              onMouseEnter={() => {setIsHoveredOnProfileImgId(tweet.author.id);setHoveredUserId(tweet.author.id);}}
+              onMouseLeave={() => {setIsHoveredOnProfileImgId(""); setHoveredUserId(""); setHoverUser(null)}}
+        
+        >
           {tweet.author?.profileImgUrl ? (
             <div
-              onMouseEnter={() => setIsHoveredOnProfileImgId(tweet.author.id)}
-              onMouseLeave={() => setIsHoveredOnProfileImgId("")}
             >
               {isHoveredOnProfileImgId && (
-                <div>{<HoverProfileDetail user={hoveredUser} />}</div>
+                <div className="">{<HoverProfileDetail hoverOnName={hoverOnName}  hoverId={isHoveredOnProfileImgId} />}</div>
               )}
               {tweet.author?.profileImgUrl.startsWith("#") ? (
                 <div
@@ -216,13 +194,22 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
             </div>
           )}
         </div>
-        <div className="w-full px-4">
+        <div className="w-full pl-0 px-4">
           <div className="flex justify-between w-full ">
-            <div className="flex gap-1 items-center">
+            <div
+             onMouseEnter={() => {setIsHoveredOnProfileImgId(tweet.author.id);setHoveredUserId(tweet.author.id);setHoverOnName(true)}}
+             onMouseLeave={() => {setIsHoveredOnProfileImgId(""); setHoveredUserId(""); setHoverUser(null);setHoverOnName(false)}}
+            className="flex gap-1 items-center">
+             <div 
+             className="flex items-center"
+             
+             
+             >
               <p className="capitalize font-[600] text-[17px]">
                 {tweet.author?.firstName}
               </p>
               <p className="gray font-[300]">@{tweet.author?.userName}</p>
+              </div>
               <p>
                 <LuDot className="gray font-[300]" />
               </p>
@@ -239,14 +226,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
                   setPostControlDialogOpen={setPostControlDialogOpen}
                 />
               )}
-              {/* <div
-                style={{
-                  boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)",
-                }}
-                className="absolute p-4 right-0 top-0 z-[100] w-[350px] h-[380px] bg-black rounded-[15px]"
-              >
-                hello
-              </div> */}
+              
             </div>
           </div>
           <div onClick={() => handlePostClick(tweet.id)}>
@@ -309,72 +289,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
             </div>
           )}
 
-          {/* <div onClick={() => handlePostClick(tweet.id)}>{tweet?.content}</div>
-          {(tweet?.photoArray?.length !== 0 ||
-            tweet?.videoArray?.length !== 0) && (
-            <div
-              onClick={() => handlePostClick(tweet.id)}
-              className={`my-2 py-2 grid w-full   border border-gray-600 z-50 overflow-cover rounded-[20px]  gap-x-[1.6rem] gap-y-[1.50rem] grid-flow-row ${
-                tweet?.photoArray?.length + tweet?.videoArray?.length > 2
-                  ? "h-[500px] grid-cols-2"
-                  : tweet?.photoArray?.length + tweet?.videoArray?.length == 2
-                  ? "grid-cols-2 h-[350px] gap-x-[14px]"
-                  : "grid-cols-1 h-[500px]"
-              }  `}
-            >
-              {tweet?.photoArray.length !== 0 &&
-                tweet?.photoArray.map((url) => {
-                  return (
-                    <div
-                      key={url}
-                      className={` flex items-center justify-center ${
-                        tweet?.photoArray?.length + tweet?.videoArray?.length >
-                        2
-                          ? " scale-110 h-[80%]"
-                          : tweet?.photoArray?.length +
-                              tweet?.videoArray?.length ==
-                            2
-                          ? " scale-105 h-[80%]"
-                          : "scale-105 w-full h-full"
-                      }`}
-                    >
-                      <Image
-                        src={url}
-                        alt=""
-                        width={400}
-                        height={500}
-                        className={`w-full  h-full`}
-                      />
-                    </div>
-                  );
-                })}
-              {tweet?.videoArray.length !== 0 &&
-                tweet?.videoArray.map((url) => {
-                  return (
-                    <div
-                      key={url}
-                      className={` ${
-                        tweet?.photoArray?.length + tweet?.videoArray?.length >
-                        2
-                          ? "h-[200px] scale-110"
-                          : "h-[400px] scale-105"
-                      }`}
-                    >
-                      <video
-                        controls
-                        width="250"
-                        height="250"
-                        loop
-                        autoPlay
-                        className="w-full h-full"
-                        muted
-                      />
-                      <source src={url} type="video/mp4" />
-                    </div>
-                  );
-                })}
-            </div>
-          )} */}
+         
           <div className="flex justify-between py-2 pt-3 pb-4">
             <div className="flex items-center justify-center">
             <Comment tweet={tweet} user={user!} />
