@@ -13,6 +13,7 @@ const queries = {
         hashtags: true,
       },
     });
+    console.log(tweets, "tweets");
     return tweets;
   },
 

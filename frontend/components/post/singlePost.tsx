@@ -27,10 +27,11 @@ import { useSocket } from "@/context/socketContext";
 import SharePost from "@/shared/sharePost";
 import SavePost from "@/shared/savePost";
 import HoverProfileDetail from "@/shared/HoverProfileDetail";
+import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
 
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
-  const[hoverOnName,setHoverOnName]=useState(false);
+  const [hoverOnName, setHoverOnName] = useState(false);
   const [repost, setRepost] = useState(false);
   const [isPostControlDialogOpen, setPostControlDialogOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -47,18 +48,21 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
     onSuccess: (response: any) => {
       console.log(response);
       queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
-     if(socket&&user){
-      console.log(socket.id,"socket..")
-      console.log("send notification from frontend......")
-      socket.emit("sendLikeNotification",{
-
-        senderId:user.id,
-        receiverId:tweet.author.id,
-        socketId:socket.id
-
-      },()=>{console.log("tweet like notification send ")})
-     }
-      
+      if (socket && user) {
+        console.log(socket.id, "socket..");
+        console.log("send notification from frontend......");
+        socket.emit(
+          "sendLikeNotification",
+          {
+            senderId: user.id,
+            receiverId: tweet.author.id,
+            socketId: socket.id,
+          },
+          () => {
+            console.log("tweet like notification send ");
+          }
+        );
+      }
     },
     onError: (error) => {
       console.log(error);
@@ -115,23 +119,16 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [hoveredUserId, setHoveredUserId] = useState("");
   const { user: currentUser } = useCurrentUser();
 
-
   const [hoverUser, setHoverUser] = useState<any>(null);
-
-
- 
- 
 
   useEffect(() => {
     if (socket) {
       console.log("Socket initialized, setting up event listener...");
-      console.log(socket,"socket")
-     socket.on("getLikeNotification", (data) => {
-      console.log("last notificaiton check")
-        console.log("Received newLikeNotification:", data)
-        
-        
-      })
+      console.log(socket, "socket");
+      socket.on("getLikeNotification", (data) => {
+        console.log("last notificaiton check");
+        console.log("Received newLikeNotification:", data);
+      });
     } else {
       console.log("Socket not initialized");
     }
@@ -143,33 +140,44 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
         console.log("Event listener removed");
       }
     };
-  }, [socket,liked]);  
+  }, [socket, liked]);
 
-  useEffect(()=>{
-    if(socket){
-      socket.on("notify",(data)=>{
-        console.log(data.msg)
-      })
+  useEffect(() => {
+    if (socket) {
+      socket.on("notify", (data) => {
+        console.log(data.msg);
+      });
     }
-    return ()=>{
+    return () => {
       socket.off("notify");
-    }
-  },[socket,liked])
-
+    };
+  }, [socket, liked]);
 
   return (
     <div className="w-full cursor-pointer py-3 ">
       <div className="flex gap-4 w-full px-4 sm:px-2">
-        <div 
-              onMouseEnter={() => {setIsHoveredOnProfileImgId(tweet.author.id);setHoveredUserId(tweet.author.id);}}
-              onMouseLeave={() => {setIsHoveredOnProfileImgId(""); setHoveredUserId(""); setHoverUser(null)}}
-        
+        <div
+          onMouseEnter={() => {
+            setIsHoveredOnProfileImgId(tweet.author.id);
+            setHoveredUserId(tweet.author.id);
+          }}
+          onMouseLeave={() => {
+            setIsHoveredOnProfileImgId("");
+            setHoveredUserId("");
+            setHoverUser(null);
+          }}
         >
           {tweet.author?.profileImgUrl ? (
-            <div
-            >
+            <div>
               {isHoveredOnProfileImgId && (
-                <div className="">{<HoverProfileDetail hoverOnName={hoverOnName}  hoverId={isHoveredOnProfileImgId} />}</div>
+                <div className="">
+                  {
+                    <HoverProfileDetail
+                      hoverOnName={hoverOnName}
+                      hoverId={isHoveredOnProfileImgId}
+                    />
+                  }
+                </div>
               )}
               {tweet.author?.profileImgUrl.startsWith("#") ? (
                 <div
@@ -197,23 +205,31 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
         <div className="w-full pl-0 px-4">
           <div className="flex justify-between w-full ">
             <div
-             onMouseEnter={() => {setIsHoveredOnProfileImgId(tweet.author.id);setHoveredUserId(tweet.author.id);setHoverOnName(true)}}
-             onMouseLeave={() => {setIsHoveredOnProfileImgId(""); setHoveredUserId(""); setHoverUser(null);setHoverOnName(false)}}
-            className="flex gap-1 items-center">
-             <div 
-             className="flex items-center"
-             
-             
-             >
-              <p className="capitalize font-[600] text-[17px]">
-                {tweet.author?.firstName}
-              </p>
-              <p className="gray font-[300]">@{tweet.author?.userName}</p>
+              onMouseEnter={() => {
+                setIsHoveredOnProfileImgId(tweet.author.id);
+                setHoveredUserId(tweet.author.id);
+                setHoverOnName(true);
+              }}
+              onMouseLeave={() => {
+                setIsHoveredOnProfileImgId("");
+                setHoveredUserId("");
+                setHoverUser(null);
+                setHoverOnName(false);
+              }}
+              className="flex gap-1 items-center"
+            >
+              <div className="flex items-center">
+                <p className="capitalize font-[600] text-[17px]">
+                  {tweet.author?.firstName}
+                </p>
+                <p className="gray font-[300]">@{tweet.author?.userName}</p>
               </div>
               <p>
                 <LuDot className="gray font-[300]" />
               </p>
-              <p className="gray font-[300]">5h</p>
+              <p className="gray font-[300]">
+                {formatTimeAgo(getDateTime(tweet?.createdAt))}
+              </p>
             </div>
             <div
               className="relative"
@@ -226,7 +242,6 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
                   setPostControlDialogOpen={setPostControlDialogOpen}
                 />
               )}
-              
             </div>
           </div>
           <div onClick={() => handlePostClick(tweet.id)}>
@@ -244,56 +259,56 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               </div>
             )}
           </div>
-          {(tweet?.photoArray||tweet?.videoArray)&&(tweet?.photoArray?.length !== 0 ||
-            tweet?.videoArray?.length !== 0) && (
-            <div
-              className={`my-2 grid w-full border border-gray-600 z-50 overflow-hidden rounded-[20px] gap-x-[2px] gap-y-[2px] grid-flow-row ${
-                tweet?.photoArray?.length + tweet?.videoArray?.length > 2
-                  ? "grid-cols-2 h-[300px] sm:h-[400px] md:h-[500px]"
-                  : tweet?.photoArray?.length + tweet?.videoArray?.length === 2
-                  ? "grid-cols-2 h-[250px] sm:h-[350px] gap-x-[2px]"
-                  : "grid-cols-1 h-[250px]  sm:h-[500px]"
-              }`}
-            >
-              {tweet?.photoArray?.length !== 0 &&
-                tweet?.photoArray?.map((url, index) => (
-                  <div
-                    onClick={() => handlePostPhotoClick(tweet.id, index + 1)}
-                    key={url}
-                    className="relative overflow-hidden"
-                  >
-                    <Image
-                      src={url}
-                      alt=""
-                      width={400}
-                      height={500}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-
-              {tweet?.videoArray?.length !== 0 &&
-                tweet?.videoArray?.map((url) => (
-                  <div key={url} className="relative overflow-hidden">
-                    <video
-                      controls
-                      loop
-                      autoPlay
-                      className="w-full h-full object-cover"
-                      muted
+          {(tweet?.photoArray || tweet?.videoArray) &&
+            (tweet?.photoArray?.length !== 0 ||
+              tweet?.videoArray?.length !== 0) && (
+              <div
+                className={`my-2 grid w-full border border-gray-600 z-50 overflow-hidden rounded-[20px] gap-x-[2px] gap-y-[2px] grid-flow-row ${
+                  tweet?.photoArray?.length + tweet?.videoArray?.length > 2
+                    ? "grid-cols-2 h-[300px] sm:h-[400px] md:h-[500px]"
+                    : tweet?.photoArray?.length + tweet?.videoArray?.length ===
+                      2
+                    ? "grid-cols-2 h-[250px] sm:h-[350px] gap-x-[2px]"
+                    : "grid-cols-1 h-[250px]  sm:h-[500px]"
+                }`}
+              >
+                {tweet?.photoArray?.length !== 0 &&
+                  tweet?.photoArray?.map((url, index) => (
+                    <div
+                      onClick={() => handlePostPhotoClick(tweet.id, index + 1)}
+                      key={url}
+                      className="relative overflow-hidden"
                     >
-                      <source src={url} type="video/mp4" />
-                    </video>
-                  </div>
-                ))}
-            </div>
-          )}
+                      <Image
+                        src={url}
+                        alt=""
+                        width={400}
+                        height={500}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
 
-         
+                {tweet?.videoArray?.length !== 0 &&
+                  tweet?.videoArray?.map((url) => (
+                    <div key={url} className="relative overflow-hidden">
+                      <video
+                        controls
+                        loop
+                        autoPlay
+                        className="w-full h-full object-cover"
+                        muted
+                      >
+                        <source src={url} type="video/mp4" />
+                      </video>
+                    </div>
+                  ))}
+              </div>
+            )}
+
           <div className="flex justify-between py-2 pt-3 pb-4">
             <div className="flex items-center justify-center">
-            <Comment tweet={tweet} user={user!} />
-
+              <Comment tweet={tweet} user={user!} />
             </div>
             <div
               onClick={handleRepostTweet}

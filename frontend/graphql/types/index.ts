@@ -16,7 +16,7 @@ export interface createAccountProps {
 
 export interface getLoginCredsProps {
   email: string;
-  authType:string;
+  authType: string;
 }
 
 export interface checkLoginPassProps {
@@ -71,6 +71,8 @@ export interface Tweet {
   videoArray: string[];
   repostTweet: Repost[];
   hashtags: HashTag[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface HashTag {

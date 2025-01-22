@@ -7,6 +7,8 @@ export const getAllTweetQuery = gql(`
             content
             photoArray
             videoArray
+            createdAt
+            updatedAt
             savedPost{
                 id
                 userId

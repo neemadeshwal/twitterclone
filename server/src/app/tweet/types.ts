@@ -1,5 +1,6 @@
 export const types = `#graphql
 
+scalar DateTime
 
 type Tweet{
     content:String
@@ -13,6 +14,9 @@ type Tweet{
     repostTweet:[Repost]
     hashtags:[HashTag]
     savedPost:[savedPost]
+    createdAt:DateTime
+    updatedAt:DateTime
+    
 
 
 
