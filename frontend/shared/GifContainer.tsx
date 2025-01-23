@@ -8,8 +8,10 @@ import GridGifContainer from "./gridGifContainer";
 
 const GifContainer = ({
   setOpenGifContainer,
+  setFiles
 }: {
   setOpenGifContainer: any;
+  setFiles:any
 }) => {
   const [fetched, setFetched] = useState(false);
   const [searchGif, setSearchGif] = useState("");
@@ -47,7 +49,7 @@ const GifContainer = ({
   }, [searchGif, fetch]);
   return (
     <div className="fixed top-0 left-0 w-full h-full z-[1000] dimBg flex items-center justify-center">
-      <div className="bg-black rounded-[20px] z-50 w-[45%] min-h-[65%] h-[90%] relative">
+      <div className="bg-black rounded-[20px] z-50 w-[45%] min-h-[65%] h-[90vh] relative">
         <div className="sticky top-0 z-[1000] backdrop-blur-sm rounded-[20px]">
           <div
             className="absolute top-2 left-2 rounded-full cursor-pointer p-2"
@@ -74,7 +76,7 @@ const GifContainer = ({
           </div>
         </div>
         <div className="px-4 ">
-          <GridGifContainer searchGif={searchGif} fetched={fetched} />
+          <GridGifContainer searchGif={searchGif} fetched={fetched} setOpenGifContainer={setOpenGifContainer} setFiles={setFiles}/>
           {/* {gifContainer?.length !== 0 &&
             gifContainer?.map((item: any) => {
               return (

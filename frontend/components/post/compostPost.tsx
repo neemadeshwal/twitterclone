@@ -313,7 +313,7 @@ const ComposePost = () => {
                           key={url}
                           className="relative   basis-1/2"
                         >
-                          <div className="rounded-[20px] py-3 flex aspect-square items-center justify-center  ">
+                          <div className="rounded-[20px] py-3 flex aspect-square  items-center justify-center  ">
                             {url.endsWith(".mp4") ? (
                               <div className="rounded-[20px] relative">
                                 <video
@@ -321,7 +321,7 @@ const ComposePost = () => {
                                   width="250"
                                   height="250"
                                   loop
-                                  className="w-full h-full rounded-[20px] object-contain"
+                                  className="w-full h-full rounded-[20px] object-cover"
                                   muted
                                 >
                                   <source src={url} type="video/mp4" />
@@ -333,13 +333,13 @@ const ComposePost = () => {
                                 />
                               </div>
                             ) : (
-                              <div className="rounded-[20px] relative">
+                              <div className="rounded-[20px] relative h-full">
                                 <Image
                                   src={url}
                                   alt=""
                                   width={500}
                                   height={500}
-                                  className="w-full h-full rounded-[20px] object-contain"
+                                  className="w-full h-full rounded-[20px] object-cover"
                                 />
                                 <div>
                                   <BiX
@@ -432,7 +432,7 @@ const ComposePost = () => {
         </div>
       )}
       {openGifContainer && (
-        <GifContainer setOpenGifContainer={setOpenGifContainer} />
+        <GifContainer setOpenGifContainer={setOpenGifContainer} setFiles={setFiles}/>
       )}
     </div>
   );
