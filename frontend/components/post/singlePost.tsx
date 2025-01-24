@@ -268,7 +268,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
                     ? "grid-cols-2 h-[300px] sm:h-[400px] md:h-[500px]"
                     : tweet?.photoArray?.length + tweet?.videoArray?.length ===
                       2
-                    ? "grid-cols-2 h-[250px] sm:h-[350px] gap-x-[2px]"
+                    ? "grid-cols-2 h-[250px] sm:h-[350px] gap-x-[2px] "
                     : "grid-cols-1 h-[250px]  sm:h-[500px]"
                 }`}
               >

@@ -18,6 +18,7 @@ export const uploadOnCloudinary = async (localFiles: any) => {
       const response = await cloudinary.uploader.upload(file.path, {
         timeout: 60000,
         resource_type: "auto",
+        transformation: [{ background: "white" }],
       });
       console.log("response", response);
       fs.unlinkSync(file.path);

@@ -420,7 +420,10 @@ const ComposePost = () => {
       </div>
       <DivisionBar type="x" />
       {isEmojiTableOpen && (
-        <div ref={emojiCloseRef} className="absolute px-[10%] z-[1000]">
+        <div
+          ref={emojiCloseRef}
+          className="absolute border rounded-[8px] border-gray-400  mx-[10%] z-[1000]"
+        >
           <div>
             <Picker
               data={data}
@@ -432,7 +435,10 @@ const ComposePost = () => {
         </div>
       )}
       {openGifContainer && (
-        <GifContainer setOpenGifContainer={setOpenGifContainer} setFiles={setFiles}/>
+        <GifContainer
+          setOpenGifContainer={setOpenGifContainer}
+          setFiles={setFiles}
+        />
       )}
     </div>
   );
