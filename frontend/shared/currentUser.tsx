@@ -4,11 +4,10 @@ import { getRandomDarkHexColor } from "@/lib/randomColor";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-const CurrentUser = () => {
+const CurrentUser = ({customSize}:{customSize?:boolean}) => {
   const { user } = useCurrentUser();
   console.log(user, "user");
 
-  console.log(user?.profileImgUrl, "profileimg");
 
   return (
     <div className=" ">
@@ -17,7 +16,7 @@ const CurrentUser = () => {
           <div>
             {user?.profileImgUrl.startsWith("#") ? (
               <div
-                className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
+                className={`rounded-full ${customSize?"w-8 h-8":"w-10 h-10"}  flex items-center justify-center capitalize`}
                 style={{ backgroundColor: user?.profileImgUrl }}
               >
                 {user?.firstName.slice(0, 1)}

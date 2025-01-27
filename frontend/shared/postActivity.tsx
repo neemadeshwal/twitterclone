@@ -11,6 +11,7 @@ import { FiUserX } from "react-icons/fi";
 import { IoIosStats } from "react-icons/io";
 import { MdDelete, MdEditDocument } from "react-icons/md";
 import { PiSpeakerSimpleSlash } from "react-icons/pi";
+import PostContainer from "./postContainer";
 
 const PostActivity = ({
   setPostControlDialogOpen,
@@ -25,6 +26,7 @@ const PostActivity = ({
   const [isUserPost, setIsUserPost] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
+  const[editPost,setEditPost]=useState(false);
   const mutation = useMutation({
     mutationFn: deleteTweetMutate,
     onSuccess: (response: any) => {
@@ -93,10 +95,7 @@ const PostActivity = ({
               <MdDelete className="font-[600] text-[20px]" />
               Delete
             </button>
-            <button className="flex gap-3 items-center font-[600]">
-              <MdEditDocument className="font-[600] text-[17px]" />
-              Edit
-            </button>
+           <PostContainer isEdit={true} editTweet={singleTweet}/>
           </div>
         ) : (
           <div className=" flex flex-col gap-6">
@@ -120,6 +119,9 @@ const PostActivity = ({
           View post engagements
         </button>
       </div>
+      {
+        editPost&&<PostContainer isEdit={true} editTweet={singleTweet}/>
+      }
     </div>
   );
 };

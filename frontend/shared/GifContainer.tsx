@@ -11,7 +11,7 @@ const GifContainer = ({
   setFiles
 }: {
   setOpenGifContainer: any;
-  setFiles:any
+  setFiles?:any
 }) => {
   const [fetched, setFetched] = useState(false);
   const [searchGif, setSearchGif] = useState("");

@@ -121,37 +121,37 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
 
   const [hoverUser, setHoverUser] = useState<any>(null);
 
-  useEffect(() => {
-    if (socket) {
-      console.log("Socket initialized, setting up event listener...");
-      console.log(socket, "socket");
-      socket.on("getLikeNotification", (data) => {
-        console.log("last notificaiton check");
-        console.log("Received newLikeNotification:", data);
-      });
-    } else {
-      console.log("Socket not initialized");
-    }
+  // useEffect(() => {
+  //   if (socket) {
+  //     console.log("Socket initialized, setting up event listener...");
+  //     console.log(socket, "socket");
+  //     socket.on("getLikeNotification", (data) => {
+  //       console.log("last notificaiton check");
+  //       console.log("Received newLikeNotification:", data);
+  //     });
+  //   } else {
+  //     console.log("Socket not initialized");
+  //   }
 
-    // Cleanup on unmount
-    return () => {
-      if (socket) {
-        socket.off("getLikeNotification");
-        console.log("Event listener removed");
-      }
-    };
-  }, [socket, liked]);
+  //   // Cleanup on unmount
+  //   return () => {
+  //     if (socket) {
+  //       socket.off("getLikeNotification");
+  //       console.log("Event listener removed");
+  //     }
+  //   };
+  // }, [socket, liked]);
 
-  useEffect(() => {
-    if (socket) {
-      socket.on("notify", (data) => {
-        console.log(data.msg);
-      });
-    }
-    return () => {
-      socket.off("notify");
-    };
-  }, [socket, liked]);
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on("notify", (data) => {
+  //       console.log(data.msg);
+  //     });
+  //   }
+  //   return () => {
+  //     socket.off("notify");
+  //   };
+  // }, [socket, liked]);
 
   return (
     <div className="w-full cursor-pointer py-3 ">
@@ -216,21 +216,27 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
                 setHoverUser(null);
                 setHoverOnName(false);
               }}
-              className="flex gap-1 items-center"
+              className="flex flex-col sm:flex-row items-start sm:gap-1 sm:items-center"
             >
               <div className="flex items-center">
-                <p className="capitalize font-[600] text-[17px]">
+                <p className="capitalize font-[600] md:text-[17px] text-[15px] leading-[20px]">
                   {tweet.author?.firstName}
                 </p>
-                <p className="gray font-[300]">@{tweet.author?.userName}</p>
+                <p className="hidden sm:inline-block gray font-[300]">@{tweet.author?.userName}</p>
               </div>
+              <div className="flex items-center sm:items-start ">
+                <p className="sm:hidden gray text-[15px] leading-[19px] font-[400]">@{tweet.author?.userName}</p>
+
               <p>
                 <LuDot className="gray font-[300]" />
               </p>
-              <p className="gray font-[300]">
+              
+              <p className="gray text-[14px] md:text-[16px] leading-[19px] font-[300]">
                 {formatTimeAgo(getDateTime(tweet?.createdAt))}
               </p>
             </div>
+            </div>
+
             <div
               className="relative"
               onClick={() => setPostControlDialogOpen(true)}
@@ -244,7 +250,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               )}
             </div>
           </div>
-          <div onClick={() => handlePostClick(tweet.id)}>
+          <div className="mt-1" onClick={() => handlePostClick(tweet.id)}>
             {tweet?.content}
 
             {tweet?.hashtags?.length !== 0 && (
@@ -265,11 +271,11 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               <div
                 className={`my-2 grid w-full border border-gray-600 z-50 overflow-hidden rounded-[20px] gap-x-[2px] gap-y-[2px] grid-flow-row ${
                   tweet?.photoArray?.length + tweet?.videoArray?.length > 2
-                    ? "grid-cols-2 h-[300px] sm:h-[400px] md:h-[500px]"
+                    ? "grid-cols-2 h-[250px] sm:h-[400px] md:h-[500px]"
                     : tweet?.photoArray?.length + tweet?.videoArray?.length ===
                       2
-                    ? "grid-cols-2 h-[250px] sm:h-[350px] gap-x-[2px] "
-                    : "grid-cols-1 h-[250px]  sm:h-[500px]"
+                    ? "grid-cols-2 h-[180px] sm:h-[350px] gap-x-[2px] "
+                    : "grid-cols-1 h-[180px]  sm:h-[500px]"
                 }`}
               >
                 {tweet?.photoArray?.length !== 0 &&

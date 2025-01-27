@@ -57,7 +57,7 @@ const HashtagContainer = ({
   return (
     <div
       ref={hashtagRef}
-      className="absolute top-[10%] left-[10%] w-full h-full z-[1000]"
+      className="absolute top-[10%] left-0 w-full h-full z-[1000]"
     >
       <div
         style={{

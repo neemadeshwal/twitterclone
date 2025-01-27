@@ -48,15 +48,7 @@ const ComposePost = () => {
       console.log(error);
     },
   });
-  // const uploadFileMutation = useMutation({
-  //   mutationFn: uploadFile,
-  //   onSuccess: (response: any) => {
-  //     console.log(response);
-  //   },
-  //   onError: (error) => {
-  //     console.log(error);
-  //   },
-  // });
+ 
   async function onSubmit() {
     let photoArray: string[] = [];
     let videoArray: string[] = [];
@@ -80,45 +72,7 @@ const ComposePost = () => {
       console.log(error);
     }
   }
-  // async function handleImgUpload(event: any) {
-  //   const files = Array.from(event.target.files);
-
-  //   const fileReaders = files.map((file) => {
-  //     return new Promise<string>((resolve, reject) => {
-  //       const reader = new FileReader();
-  //       reader.onload = () => resolve(reader.result as string);
-  //       reader.onerror = () => reject;
-  //       reader.readAsDataURL(file as Blob);
-  //     });
-  //   });
-  //   Promise.all(fileReaders).then((base64files) => setFiles(base64files));
-
-  //   try {
-  //     const base64files = await Promise.all(fileReaders);
-  //     const body = {
-  //       files: base64files,
-  //     };
-
-  //     await uploadFileMutation.mutateAsync(body);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
-  // async function handleImgUpload(event: React.ChangeEvent<HTMLInputElement>) {
-  //   const files = event.target.files;
-  //   const body = {
-  //     files: files,
-  //   };
-  //   if (!files) {
-  //     return;
-  //   }
-  //   try {
-  //     await uploadFileMutation.mutateAsync({ files });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
+ 
 
   async function handleImgUpload(event: React.ChangeEvent<HTMLInputElement>) {
     if (!event.target.files || event.target.files.length === 0) {
@@ -235,16 +189,25 @@ const ComposePost = () => {
   };
   const renderContent = (content: string) => {
     const parts = content.split(/(#\w+)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith("#")) {
-        return (
-          <span key={index} className="text-blue-500">
-            {part}
+    return (
+      <div className="flex ">
+        {parts.map((part, index) => {
+          if (part.startsWith("#")) {
+            return (
+              <span key={index} className="text-blue-500">
+                {part}
+              </span>
+            );
+          }
+          return <span key={index}>{part}</span>;
+        })}
+        {isBlinking && (
+          <span className="h-full border-l-2 border-white animate-pulse">
+            &nbsp;
           </span>
-        );
-      }
-      return <span key={index}>{part}</span>;
-    });
+        )}
+      </div>
+    );
   };
 
   function handleContentChange(content: string) {
@@ -272,21 +235,43 @@ const ComposePost = () => {
     }
   }, [tweetContent]);
 
+  
+  const [isBlinking, setIsBlinking] = useState(true);
+
+  // useEffect(() => {
+  //   const blinkInterval = setInterval(() => {
+  //     setIsBlinking(prev => !prev);
+  //   }, 500); // Blink every 500ms
+
+  //   return () => clearInterval(blinkInterval);
+  // }, []);
+
   return (
     <div className="w-full relative">
       <div className="w-full p-6 px-0 sm:px-4 pb-4">
         <div className="flex  gap-2 w-full">
           <CurrentUser />
           <div className="w-full mt-2 px-2">
+            <div className="relative">
+
+          
             <textarea
               value={tweetContent}
               onChange={(e) => handleContentChange(e.target.value)}
               rows={2}
-              className={`text-[20px] bg-transparent    outline-none border-0 w-full placeholder:text-gray-600`}
+              className={`text-[20px] bg-transparent   outline-none border-0 w-full placeholder:text-gray-600`}
               placeholder="What is happening?!"
             ></textarea>
+            {/* <div className="absolute top-0 flex gap-0 left-0 z-[10000] text-[20px]">
+            
+              {renderContent(tweetContent)}
+              
+              </div> */}
+
+</div>
+
             {isHashTagDialogOpen && (
-              <div className="mt-2">
+              <div className="relative">
                 <HashtagContainer
                   content={hashtagPart}
                   tweetContent={tweetContent}
