@@ -59,15 +59,15 @@ const mutations = {
     {
       payload,
     }: {
-      payload: { content: string; photoArray: string[]; videoArray: string[] };
+      payload: { content: string; mediaArray: string[] };
     },
     ctx: GraphqlContext
   ) => {
     if (!ctx.user) {
       throw new Error("Unauthorized.No token present");
     }
-    const { content, photoArray, videoArray } = payload;
-    if (!content) {
+    const { content, mediaArray } = payload;
+    if (!content && !mediaArray) {
       throw new Error("No content .Please provide content first.");
     }
     const hashtags = content.match(/#\w+/g) || [];
@@ -78,8 +78,7 @@ const mutations = {
         data: {
           content: content,
           authorId: ctx.user.id,
-          photoArray,
-          videoArray,
+          mediaArray,
         },
       });
       return tweet;
@@ -107,8 +106,7 @@ const mutations = {
       data: {
         content: cleanContent,
         authorId: ctx.user.id,
-        photoArray,
-        videoArray,
+        mediaArray,
         hashtags: {
           connect:
             allHashtag.length !== 0

@@ -5,8 +5,7 @@ export const getAllTweetQuery = gql(`
             getAllTweet{
             id 
             content
-            photoArray
-            videoArray
+            mediaArray
             createdAt
             updatedAt
             savedPost{
@@ -28,8 +27,7 @@ export const getAllTweetQuery = gql(`
                 tweet{
                     id
                     content
-                    photoArray
-                    videoArray
+                    mediaArray
                     author{
                         id
                         userName
@@ -79,8 +77,7 @@ export const getSingleTweetQuery = gql(`
                 
                 id 
             content
-            photoArray
-            videoArray
+            mediaArray
             savedPost{
                 id
                 userId
@@ -100,8 +97,7 @@ export const getSingleTweetQuery = gql(`
                 tweet{
                     id
                     content
-                    photoArray
-                    videoArray
+                    mediaArray
                     author{
                         id
                         userName

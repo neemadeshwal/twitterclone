@@ -48,23 +48,11 @@ const ComposePost = () => {
       console.log(error);
     },
   });
- 
+
   async function onSubmit() {
-    let photoArray: string[] = [];
-    let videoArray: string[] = [];
-    if (files.length !== 0) {
-      files.map((url) => {
-        if (url.endsWith("mp4")) {
-          videoArray.push(url);
-        } else {
-          photoArray.push(url);
-        }
-      });
-    }
     const body = {
       content: tweetContent,
-      photoArray,
-      videoArray,
+      mediaArray: files,
     };
     try {
       await mutation.mutateAsync(body);
@@ -72,7 +60,6 @@ const ComposePost = () => {
       console.log(error);
     }
   }
- 
 
   async function handleImgUpload(event: React.ChangeEvent<HTMLInputElement>) {
     if (!event.target.files || event.target.files.length === 0) {
@@ -235,7 +222,6 @@ const ComposePost = () => {
     }
   }, [tweetContent]);
 
-  
   const [isBlinking, setIsBlinking] = useState(true);
 
   // useEffect(() => {
@@ -253,22 +239,19 @@ const ComposePost = () => {
           <CurrentUser />
           <div className="w-full mt-2 px-2">
             <div className="relative">
-
-          
-            <textarea
-              value={tweetContent}
-              onChange={(e) => handleContentChange(e.target.value)}
-              rows={2}
-              className={`text-[20px] bg-transparent   outline-none border-0 w-full placeholder:text-gray-600`}
-              placeholder="What is happening?!"
-            ></textarea>
-            {/* <div className="absolute top-0 flex gap-0 left-0 z-[10000] text-[20px]">
+              <textarea
+                value={tweetContent}
+                onChange={(e) => handleContentChange(e.target.value)}
+                rows={2}
+                className={`text-[20px] bg-transparent   outline-none border-0 w-full placeholder:text-gray-600`}
+                placeholder="What is happening?!"
+              ></textarea>
+              {/* <div className="absolute top-0 flex gap-0 left-0 z-[10000] text-[20px]">
             
               {renderContent(tweetContent)}
               
               </div> */}
-
-</div>
+            </div>
 
             {isHashTagDialogOpen && (
               <div className="relative">

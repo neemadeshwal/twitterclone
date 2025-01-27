@@ -7,8 +7,7 @@ type Tweet{
     id:String
     authorId:String
     author:User
-    photoArray:[String]
-    videoArray:[String]
+    mediaArray:[String]
     LikedBy:[Like]
     commentAuthor:[Comment]
     repostTweet:[Repost]
@@ -33,8 +32,7 @@ input DeleteTweetInput{
 
 input CreateTweetInput{
     content:String!
-    photoArray:[String]
-    videoArray:[String]
+    mediaArray:[String]
     
 }
 input SingleTweetInput{

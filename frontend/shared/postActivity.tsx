@@ -15,10 +15,12 @@ import PostContainer from "./postContainer";
 
 const PostActivity = ({
   setPostControlDialogOpen,
+  isDrawer,
   singleTweet,
 }: {
   setPostControlDialogOpen: any;
   singleTweet: Tweet;
+  isDrawer?: boolean;
 }) => {
   const postRef = useRef<HTMLDivElement>(null);
   const { user } = useCurrentUser();
@@ -26,7 +28,7 @@ const PostActivity = ({
   const [isUserPost, setIsUserPost] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
-  const[editPost,setEditPost]=useState(false);
+  const [editPost, setEditPost] = useState(false);
   const mutation = useMutation({
     mutationFn: deleteTweetMutate,
     onSuccess: (response: any) => {
@@ -81,9 +83,11 @@ const PostActivity = ({
     <div
       ref={postRef}
       style={{
-        boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)",
+        boxShadow: !isDrawer ? "0 0 6px rgba(255, 255, 255, 0.6)" : "",
       }}
-      className="absolute text-white p-4 py-8 right-0 top-0 z-[100] w-[350px] h-auto bg-black rounded-[15px]"
+      className={` ${
+        !isDrawer ? "absolute w-[350px]" : "w-full"
+      } text-white p-4 py-8 right-0 top-0 z-[100]  h-auto bg-black rounded-[15px]`}
     >
       <div className="flex flex-col gap-6">
         {isUserPost ? (
@@ -95,7 +99,7 @@ const PostActivity = ({
               <MdDelete className="font-[600] text-[20px]" />
               Delete
             </button>
-           <PostContainer isEdit={true} editTweet={singleTweet}/>
+            <PostContainer isEdit={true} editTweet={singleTweet} />
           </div>
         ) : (
           <div className=" flex flex-col gap-6">
@@ -119,9 +123,7 @@ const PostActivity = ({
           View post engagements
         </button>
       </div>
-      {
-        editPost&&<PostContainer isEdit={true} editTweet={singleTweet}/>
-      }
+      {editPost && <PostContainer isEdit={true} editTweet={singleTweet} />}
     </div>
   );
 };
