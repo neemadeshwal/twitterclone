@@ -29,6 +29,7 @@ const PostActivity = ({
   const queryClient = useQueryClient();
   const router = useRouter();
   const [editPost, setEditPost] = useState(false);
+  const[deleteDialog,setDeleteDialog]=useState(false);
   const mutation = useMutation({
     mutationFn: deleteTweetMutate,
     onSuccess: (response: any) => {
@@ -93,7 +94,7 @@ const PostActivity = ({
         {isUserPost ? (
           <div className=" flex flex-col gap-6">
             <button
-              onClick={() => handleDeletePost(singleTweet.id)}
+              onClick={() => setDeleteDialog(true)}
               className="flex gap-3 items-center font-[600] text-red-500"
             >
               <MdDelete className="font-[600] text-[20px]" />
@@ -124,6 +125,21 @@ const PostActivity = ({
         </button>
       </div>
       {editPost && <PostContainer isEdit={true} editTweet={singleTweet} />}
+      {
+        deleteDialog&&
+        <div className="z-[1000000] flex justify-center items-center w-screen h-screen fixed gray top-0 left-0">
+
+      <div className="h-auto z-[1000] w-auto rounded-[15px] bg-black">
+        
+        <h2>delete post?</h2>
+        <p>This can’t be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from search results. </p>
+        
+        <button onClick={()=>handleDeletePost("34")}>delete</button>
+        <button onClick={()=>setDeleteDialog(false)}>cancel</button>
+                
+      </div>
+        </div>
+      }
     </div>
   );
 };

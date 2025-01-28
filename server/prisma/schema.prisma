@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,132 +5,114 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL")
 }
 
-
-model User{
-  id String @default(cuid()) @id
-  firstName String
-  lastName  String?
-  email String @unique
-  password String?
+model User {
+  id            String      @id @default(cuid())
+  firstName     String
+  lastName      String?
+  email         String      @unique
+  password      String?
   profileImgUrl String?
-  coverImgUrl String?
-  bio String?
-  dateOfBirth String?
-  location String?
-  userName String @unique
-  posts Tweet[] 
-  likedTweets Like[] @relation()
-  commentTweets Comment[] @relation()
-  followers Follows[] @relation("followers")
-  followingList Follows[] @relation("following")
-  repostList Repost[]
-  savedPost  SavedPost[]
-
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-
+  coverImgUrl   String?
+  bio           String?
+  dateOfBirth   String?
+  location      String?
+  userName      String      @unique
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  commentTweets Comment[]
+  followers     Follows[]   @relation("followers")
+  followingList Follows[]   @relation("following")
+  likedTweets   Like[]
+  repostList    Repost[]
+  savedPost     SavedPost[]
+  posts         Tweet[]
 }
 
-model Tweet{
-  id String @id @default(cuid())
-  content String 
-  mediaArray String[]
-  authorId String
-  author User @relation(fields: [authorId],references: [id],onDelete:Cascade,onUpdate:Cascade)
-  LikedBy Like[] @relation()
-  commentAuthor Comment[] @relation()
-  repostTweet Repost[]
-  hashtags Hashtag[] @relation("hashtag")
-  savedPost SavedPost[]
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Tweet {
+  id            String      @id @default(cuid())
+  content       String
+  authorId      String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  mediaArray    String[]
+  commentAuthor Comment[]
+  LikedBy       Like[]
+  repostTweet   Repost[]
+  savedPost     SavedPost[]
+  author        User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  hashtags      Hashtag[]   @relation("hashtag")
 }
 
-model Like{
-  id String @id @default(cuid())
-  userId String
-  tweetId String?
-  commentId String? 
-  comment Comment? @relation(fields: [commentId], references: [id],onDelete:Cascade)
-  user User @relation(fields: [userId],references: [id],onDelete:Cascade)
-  tweet Tweet? @relation(fields: [tweetId],references: [id],onDelete:Cascade)
-
-  @@unique([userId,tweetId])
-  @@unique([userId,commentId])
-}
-
-model Comment{
-  id String @id @default(cuid())
-  comment String
-  mediaArray String[]
-  tweetId String?
-  userId String
-  repostComment Repost[]
-  tweet Tweet? @relation(fields: [tweetId],references: [id],onDelete:Cascade)
-  user User @relation(fields: [userId],references: [id],onDelete:Cascade)
-  parentId String?
-  parent Comment? @relation("CommentReplies",fields: [parentId],references: [id],onDelete:Cascade)
-
-  replies Comment[] @relation("CommentReplies")
-  likes Like[]
-  savedPost SavedPost[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
- 
-}
-
-model Follows{
-followerId String
-follower User @relation("followers",fields: [followerId],references: [id],onDelete:Cascade,onUpdate:Cascade)
-followingId String
-following User @relation("following",fields: [followingId],references: [id],onDelete:Cascade)
-@@id([followerId,followingId])
-
-}
-model Hashtag{
-  id String @id @default(cuid())
-  text String @unique
-  tweets Tweet[] @relation("hashtag")
-}
-
-model Repost {
-  id String   @id @default(cuid())
-  userId String
-  tweetId String?
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  tweetId   String?
   commentId String?
-  
-  // Relationships
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tweet Tweet? @relation(fields: [tweetId], references: [id], onDelete: Cascade)
-  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  tweet     Tweet?   @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Ensuring a user can only repost a tweet or a comment (one of them must be set)
   @@unique([userId, tweetId])
   @@unique([userId, commentId])
 }
 
-model SavedPost{
-  id String  @id @default(cuid())
-  userId String
-  user User @relation(fields: [userId],references: [id],onDelete:Cascade)
-  tweetId String?
-  tweet Tweet? @relation(fields: [tweetId],references: [id],onDelete:Cascade)
-  commentId String?
-  comment Comment?@relation(fields: [commentId],references: [id],onDelete:Cascade)
-
-   @@unique([userId, tweetId])
-  @@unique([userId, commentId])
-  
- 
+model Comment {
+  id            String      @id @default(cuid())
+  comment       String
+  tweetId       String?
+  userId        String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  parentId      String?
+  mediaArray    String[]
+  parent        Comment?    @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       Comment[]   @relation("CommentReplies")
+  tweet         Tweet?      @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes         Like[]
+  repostComment Repost[]
+  savedPost     SavedPost[]
 }
 
+model Follows {
+  followerId  String
+  followingId String
+  follower    User   @relation("followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User   @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
 
+  @@id([followerId, followingId])
+}
 
- 
+model Hashtag {
+  id     String  @id @default(cuid())
+  text   String  @unique
+  tweets Tweet[] @relation("hashtag")
+}
+
+model Repost {
+  id        String   @id @default(cuid())
+  userId    String
+  tweetId   String?
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  tweet     Tweet?   @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tweetId])
+  @@unique([userId, commentId])
+}
+
+model SavedPost {
+  id        String   @id @default(cuid())
+  userId    String
+  tweetId   String?
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  tweet     Tweet?   @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tweetId])
+  @@unique([userId, commentId])
+}

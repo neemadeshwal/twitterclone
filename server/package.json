@@ -12,7 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "@apollo/server": "^4.11.0",
-    "@prisma/client": "^5.21.1",
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
@@ -35,6 +34,7 @@
     "uuid": "^11.0.2"
   },
   "devDependencies": {
+    "@prisma/client": "^6.2.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/express-session": "^1.18.0",
@@ -44,7 +44,9 @@
     "@types/passport": "^1.0.16",
     "@types/passport-google-oauth2": "^0.1.10",
     "@types/uuid": "^10.0.0",
-    "prisma": "^5.21.1",
+    "i": "^0.3.7",
+    "npm": "^11.0.0",
+    "prisma": "^6.2.1",
     "tsc-watch": "^6.2.0",
     "typescript": "^5.6.3"
   }

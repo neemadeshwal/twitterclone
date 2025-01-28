@@ -239,13 +239,11 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
                   <DrawerContent className="h-[55%] bg-black border-none">
                     <DrawerTitle></DrawerTitle>
                     <div className="">
-                      {isPostControlDialogOpen && (
                         <PostActivity
                           isDrawer={true}
                           singleTweet={tweet}
                           setPostControlDialogOpen={setPostControlDialogOpen}
                         />
-                      )}
                     </div>
                   </DrawerContent>
                 </Drawer>
