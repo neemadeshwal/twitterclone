@@ -12,15 +12,18 @@ import { IoIosStats } from "react-icons/io";
 import { MdDelete, MdEditDocument } from "react-icons/md";
 import { PiSpeakerSimpleSlash } from "react-icons/pi";
 import PostContainer from "./postContainer";
+import DeletePostContainer from "./DeletePostContainer";
 
 const PostActivity = ({
   setPostControlDialogOpen,
   isDrawer,
   singleTweet,
+  setIsTriggerDrawerOpen,
 }: {
   setPostControlDialogOpen: any;
   singleTweet: Tweet;
   isDrawer?: boolean;
+  setIsTriggerDrawerOpen: any;
 }) => {
   const postRef = useRef<HTMLDivElement>(null);
   const { user } = useCurrentUser();
@@ -29,31 +32,6 @@ const PostActivity = ({
   const queryClient = useQueryClient();
   const router = useRouter();
   const [editPost, setEditPost] = useState(false);
-  const[deleteDialog,setDeleteDialog]=useState(false);
-  const mutation = useMutation({
-    mutationFn: deleteTweetMutate,
-    onSuccess: (response: any) => {
-      queryClient.invalidateQueries({
-        queryKey: ["single-tweet", "all-tweet", singleTweet.id],
-      });
-      router.replace("/");
-      queryClient.refetchQueries({ queryKey: ["all-tweet"] });
-    },
-  });
-  const handleDeletePost = async (id: string) => {
-    if (!id) {
-      return;
-    }
-    const body = {
-      tweetId: id,
-    };
-    try {
-      await mutation.mutateAsync(body);
-      setPostControlDialogOpen(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   useEffect(() => {
     if (!user || !singleTweet) {
@@ -93,13 +71,11 @@ const PostActivity = ({
       <div className="flex flex-col gap-6">
         {isUserPost ? (
           <div className=" flex flex-col gap-6">
-            <button
-              onClick={() => setDeleteDialog(true)}
-              className="flex gap-3 items-center font-[600] text-red-500"
-            >
-              <MdDelete className="font-[600] text-[20px]" />
-              Delete
-            </button>
+            <DeletePostContainer
+              postId={singleTweet.id}
+              setPostControlDialogOpen={setPostControlDialogOpen}
+              setIsTriggerDrawerOpen={setIsTriggerDrawerOpen}
+            />
             <PostContainer isEdit={true} editTweet={singleTweet} />
           </div>
         ) : (
@@ -125,21 +101,6 @@ const PostActivity = ({
         </button>
       </div>
       {editPost && <PostContainer isEdit={true} editTweet={singleTweet} />}
-      {
-        deleteDialog&&
-        <div className="z-[1000000] flex justify-center items-center w-screen h-screen fixed gray top-0 left-0">
-
-      <div className="h-auto z-[1000] w-auto rounded-[15px] bg-black">
-        
-        <h2>delete post?</h2>
-        <p>This can’t be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from search results. </p>
-        
-        <button onClick={()=>handleDeletePost("34")}>delete</button>
-        <button onClick={()=>setDeleteDialog(false)}>cancel</button>
-                
-      </div>
-        </div>
-      }
     </div>
   );
 };

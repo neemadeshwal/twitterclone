@@ -3,6 +3,9 @@ import React, { useRef, useState } from "react";
 import { RiShare2Line } from "react-icons/ri";
 import { AiOutlineLink } from "react-icons/ai";
 import useOutsideClick from "./closeContainer";
+import { DrawerTrigger } from "@/components/ui/drawer";
+import PortalContainerWrapper from "./PortalContainerWrapper";
+import DrawDialog from "./DrawDialog";
 
 const SharePost = ({
   link,
@@ -14,6 +17,7 @@ const SharePost = ({
   const [openShareContainer, setOpenShareContainer] = useState(false);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
   const shareContainerRef = useRef<HTMLDivElement>(null);
+
   const handleCopyLink = () => {
     if (navigator.clipboard) {
       navigator.clipboard
@@ -46,17 +50,36 @@ const SharePost = ({
     });
   };
   useOutsideClick(shareContainerRef, () => setOpenShareContainer(false));
-  return (
+
+  const drawerTrigger = (
+    <div
+      className={`md:hidden flex gap-[2px] sm:gap-1 hover:bg-[#1e2034a5] hover:text-blue-400  items-center ${
+        iconColor == "white" ? "white" : "gray"
+      }  text-[13px] font-[400] rounded-full p-2`}
+    >
+      <RiShare2Line className="text-[16px] sm:text-[20px]" />
+    </div>
+  );
+  const drawerComp = (
+    <PortalContainerWrapper
+      isDialogTriggered={openShareContainer}
+      triggerComp={drawerTrigger}
+      element={element}
+    />
+  );
+
+  const element = (
     <div className="relative z-50">
       <div className="">
         <div
           onClick={() => setOpenShareContainer(true)}
-          className={`flex gap-[2px] sm:gap-1 hover:bg-[#1e2034a5] hover:text-blue-400  items-center ${
+          className={`hidden md:flex gap-[2px] sm:gap-1 hover:bg-[#1e2034a5] hover:text-blue-400  items-center ${
             iconColor == "white" ? "white" : "gray"
           }  text-[13px] font-[400] rounded-full p-2`}
         >
           <RiShare2Line className="text-[16px] sm:text-[20px]" />
         </div>
+        <DrawDialog drawerTrigger={drawerTrigger} drawerComp={drawerComp} />
       </div>
       {openShareContainer && (
         <div ref={shareContainerRef} className="absolute z-50 top-0">
@@ -91,6 +114,7 @@ const SharePost = ({
       )}
     </div>
   );
+  return { element };
 };
 
 export default SharePost;

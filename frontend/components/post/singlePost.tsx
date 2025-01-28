@@ -29,16 +29,7 @@ import SharePost from "@/shared/sharePost";
 import SavePost from "@/shared/savePost";
 import HoverProfileDetail from "@/shared/HoverProfileDetail";
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+import DrawDialog from "@/shared/DrawDialog";
 
 const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
@@ -48,6 +39,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { user } = useCurrentUser();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isHoveredOnProfileImgId, setIsHoveredOnProfileImgId] = useState("");
   const socket = useSocket();
 
@@ -231,23 +223,17 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
                   />
                 )}
               </div>
-              <div className="h-full">
-                <Drawer>
-                  <DrawerTrigger>
-                    <IoEllipsisVertical className="gray" />
-                  </DrawerTrigger>
-                  <DrawerContent className="h-[55%] bg-black border-none">
-                    <DrawerTitle></DrawerTitle>
-                    <div className="">
-                        <PostActivity
-                          isDrawer={true}
-                          singleTweet={tweet}
-                          setPostControlDialogOpen={setPostControlDialogOpen}
-                        />
-                    </div>
-                  </DrawerContent>
-                </Drawer>
-              </div>
+              <DrawDialog
+                drawerTrigger={<IoEllipsisVertical className="gray" />}
+                drawerComp={
+                  <PostActivity
+                    isDrawer={true}
+                    singleTweet={tweet}
+                    setPostControlDialogOpen={setPostControlDialogOpen}
+                    setIsTriggerDrawerOpen={setIsDrawerOpen}
+                  />
+                }
+              />
             </div>
           </div>
           <div className="mt-1" onClick={() => handlePostClick(tweet.id)}>
