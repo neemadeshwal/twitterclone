@@ -127,7 +127,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
 
   return (
     <div className="w-full cursor-pointer py-3">
-      <div className="flex gap-4 w-full px-4 sm:px-2">
+      <div className="flex gap-4 w-full px-4 sm:px-2 relative"> 
         <div
           onMouseEnter={() => {
             setIsHoveredOnProfileImgId(tweet.author.id);
@@ -210,10 +210,10 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
             </div>
 
             <div
-              className="relative"
+              className=""
               onClick={() => setPostControlDialogOpen(true)}
             >
-              <div className="p-2 rounded-full hover:bg-[#1e2034a5] gray hover:text-blue-500 hidden md:inline-block">
+              <div className="p-2 rounded-full absolute right-8 hover:bg-[#1e2034a5] gray hover:text-blue-500 hidden md:inline-block">
                 <IoEllipsisHorizontal className="" />
 
                 {isPostControlDialogOpen && (
@@ -223,6 +223,8 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
                   />
                 )}
               </div>
+            </div>
+
               <DrawDialog
                 drawerTrigger={<IoEllipsisVertical className="gray" />}
                 drawerComp={
@@ -235,7 +237,6 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
                 }
                 setIsOpenProp={setIsDrawerOpen}
               />
-            </div>
           </div>
           <div className="mt-1" onClick={() => handlePostClick(tweet.id)}>
             {tweet?.content}

@@ -4,6 +4,7 @@ import DivisionBar from "@/shared/divisionbar";
 import RightSidebar from "../home/rightSide/rightside";
 import HorizontalSidebar from "../home/horizontalSidebar";
 import UserDetail from "./UserDetail";
+import PostDetail from "../postDetail/postDetail";
 
 const Bookmarks = () => {
   return (
@@ -25,7 +26,7 @@ const Bookmarks = () => {
         {/* Middle Content */}
         <main className=" w-full sm:w-[80%] md:w-[95%] middle-width md:max-w-[700px] lg:max-w-full lg:w-[63%] xl:w-[56%]">
           {/* // <UserDetail /> */}
-          hello
+         <PostDetail/>
         </main>
 
         {/* Division Bar for Desktop */}

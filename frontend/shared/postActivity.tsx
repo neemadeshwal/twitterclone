@@ -23,7 +23,7 @@ const PostActivity = ({
   setPostControlDialogOpen: any;
   singleTweet: Tweet;
   isDrawer?: boolean;
-  setIsTriggerDrawerOpen: any;
+  setIsTriggerDrawerOpen?: any;
 }) => {
   const postRef = useRef<HTMLDivElement>(null);
   const { user } = useCurrentUser();

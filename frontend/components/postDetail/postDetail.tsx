@@ -209,51 +209,7 @@ const PostDetail = () => {
         <div className="px-3 pr-5 py-2"></div>
         <div className="px-3">
           <div>{singleTweet?.content}</div>
-          {(singleTweet?.photoArray?.length !== 0 ||
-            singleTweet?.videoArray?.length !== 0) && (
-            <div
-              // onClick={() => handlePostClick(tweet.id)}
-              className={`my-2 grid w-full border border-gray-600 z-50 overflow-hidden rounded-[20px] gap-x-[2px] gap-y-[2px] grid-flow-row ${
-                singleTweet?.photoArray?.length +
-                  singleTweet?.videoArray?.length >
-                2
-                  ? "grid-cols-2 h-[500px]"
-                  : singleTweet?.photoArray?.length +
-                      singleTweet?.videoArray?.length ===
-                    2
-                  ? "grid-cols-2 h-[350px] gap-x-[2px]"
-                  : "grid-cols-1 h-[500px]"
-              }`}
-            >
-              {singleTweet?.photoArray?.length !== 0 &&
-                singleTweet?.photoArray.map((url) => (
-                  <div key={url} className="relative overflow-hidden">
-                    <Image
-                      src={url}
-                      alt=""
-                      width={400}
-                      height={500}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-
-              {singleTweet?.videoArray?.length !== 0 &&
-                singleTweet?.videoArray.map((url) => (
-                  <div key={url} className="relative overflow-hidden">
-                    <video
-                      controls
-                      loop
-                      autoPlay
-                      className="w-full h-full object-cover"
-                      muted
-                    >
-                      <source src={url} type="video/mp4" />
-                    </video>
-                  </div>
-                ))}
-            </div>
-          )}
+        
         </div>
         <div className="px-4 py-2">
           <p className="gray">
