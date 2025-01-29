@@ -66,6 +66,7 @@ const DeletePostContainer = ({
             onClick={(event) => {
               event.stopPropagation();
               setDeleteDialog(false);
+              setIsTriggerDrawerOpen(false);
               console.log("hello close it");
             }}
           >
@@ -78,11 +79,10 @@ const DeletePostContainer = ({
 
   const triggerComp = (
     <button
-     
       onClick={(e) => {
         e.stopPropagation();
         setDeleteDialog(true);
-        
+        setIsTriggerDrawerOpen(false);
       }}
       className="flex gap-3 items-center font-[600] text-red-500"
     >

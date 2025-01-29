@@ -16,9 +16,18 @@ export const useAllTweet = () => {
     queryKey: ["all-tweet"],
     queryFn: () => graphqlClient.request(getAllTweetQuery),
     staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
   console.log(query, "query query");
-  return { ...query, allTweet: query.data?.getAllTweet };
+  return {
+    allTweet: query.data?.getAllTweet,
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
+  };
 };
 
 export const useGetSingleTweet = (id: String) => {

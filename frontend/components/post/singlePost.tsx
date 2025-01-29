@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { BsChat } from "react-icons/bs";
 import { CiBookmark, CiHeart } from "react-icons/ci";
 import { FaDotCircle, FaHeart } from "react-icons/fa";
@@ -31,7 +31,7 @@ import HoverProfileDetail from "@/shared/HoverProfileDetail";
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
 import DrawDialog from "@/shared/DrawDialog";
 
-const SinglePost = ({ tweet }: { tweet: Tweet }) => {
+const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
   const [hoverOnName, setHoverOnName] = useState(false);
   const [repost, setRepost] = useState(false);
@@ -213,8 +213,8 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
               className="relative"
               onClick={() => setPostControlDialogOpen(true)}
             >
-              <div className="hidden md:inline-block">
-                <IoEllipsisHorizontal className="gray" />
+              <div className="p-2 rounded-full hover:bg-[#1e2034a5] gray hover:text-blue-500 hidden md:inline-block">
+                <IoEllipsisHorizontal className="" />
 
                 {isPostControlDialogOpen && (
                   <PostActivity
@@ -233,6 +233,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
                     setIsTriggerDrawerOpen={setIsDrawerOpen}
                   />
                 }
+                setIsOpenProp={setIsDrawerOpen}
               />
             </div>
           </div>
@@ -294,31 +295,44 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
             </div>
             <div
               onClick={handleRepostTweet}
-              className="flex gap-[2px] sm:gap-1 items-center gray text-[13px] font-[400]"
+              className={`flex gap-[2px] relative ${
+                repost ? "text-[#00ba7c]" : "gray hover:text-[#00ba7c]"
+              }  sm:gap-1 items-center gray text-[13px] font-[400]`}
             >
-              {repost ? (
-                <LuRepeat2 className="text-[16px] sm:text-[20px] text-[#00ba7c]" />
-              ) : (
+              <div className="p-2 rounded-full hover:bg-[#1e3429a5] ">
                 <LuRepeat2 className="text-[16px] sm:text-[20px]" />
-              )}
-              <p className={`${repost ? "text-[#00ba7c]" : "gray"}`}>
+              </div>
+              <p
+                className={`
+                 ml-0 pl-0 -right-[0.3rem]  absolute`}
+              >
                 {tweet?.repostTweet.length}
               </p>
             </div>
             <div
               onClick={handleTweetLike}
-              className="flex gap-[2px] sm:gap-1 items-center gray text-[13px] cursor-pointer font-[400]"
+              className={`flex gap-[2px] relative ${
+                liked ? "text-red-500" : "gray"
+              } sm:gap-1 items-center gray hover:text-red-500 text-[13px] cursor-pointer font-[400]`}
             >
               {liked ? (
-                <FaHeart className="text-[16px] sm:text-[20px] heart-animation text-red-500" />
+                <div className="p-2 text-red-500">
+                  <FaHeart className="text-[16px] sm:text-[20px] heart-animation text-red-500" />
+                </div>
               ) : (
-                <CiHeart className="text-[16px] sm:text-[20px]" />
+                <div className="rounded-full p-2 hover:bg-[#341912a5]">
+                  <CiHeart className="text-[16px]  sm:text-[20px]" />
+                </div>
               )}
-              <p className={liked ? "text-red-500" : "gray"}>
+              <p
+                className={` ml-0 pl-0 ${
+                  liked ? "text-red-500" : "gray"
+                } -right-[0.3rem]  absolute`}
+              >
                 {tweet?.LikedBy.length}
               </p>
             </div>
-            
+
             <SharePost
               link={`http://localhost:5000/${tweet.author.userName}/status/${tweet.id}`}
             />
@@ -329,6 +343,6 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
       <DivisionBar type="x" />
     </div>
   );
-};
+});
 
 export default SinglePost;

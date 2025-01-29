@@ -62,18 +62,22 @@ const SavePost = ({
     <div className="flex gap-1 items-center  text-[13px] font-[400]">
       <div
         onClick={handleSaveBookmark}
-        className={`flex gap-1 items-center cursor-pointer  text-[13px] ${
+        className={`flex gap-1 items-center cursor-pointer   text-[13px] ${
           iconColor == "white" ? "white" : "gray"
         } font-[400]`}
       >
         {saveBookmark ? (
-          <FaBookmark className="text-[16px] sm:text-[20px] text-blue-500" />
+          <div className="p-2 rounded-full">
+            <FaBookmark className="text-[16px] sm:text-[20px] text-blue-500" />
+          </div>
         ) : (
-          <FaRegBookmark
-            className={`text-[16px] sm:text-[20px] ${
-              iconColor == "white" ? "white" : "gray"
-            } hover:text-blue-500`}
-          />
+          <div
+            className="p-2 rounded-full
+          hover:text-blue-500 hover:bg-[#1e2034a5]
+          "
+          >
+            <FaRegBookmark className={`text-[16px] sm:text-[20px]  `} />
+          </div>
         )}
       </div>
     </div>
