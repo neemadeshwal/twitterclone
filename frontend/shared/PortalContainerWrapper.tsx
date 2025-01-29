@@ -4,14 +4,16 @@ import ReactDOM from "react-dom";
 const PortalContainerWrapper = ({
   isDialogTriggered,
   element,
-  triggerComp,
+  triggerComp
 }: any) => {
   return (
     <div>
       <div className="">
-        <div>
+        <div >
           {triggerComp}
-          {isDialogTriggered && ReactDOM.createPortal(element, document.body)}
+        </div>
+        <div>
+         {isDialogTriggered&&ReactDOM.createPortal(element, document.body)}
         </div>
       </div>
     </div>

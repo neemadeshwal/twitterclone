@@ -318,6 +318,7 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
                 {tweet?.LikedBy.length}
               </p>
             </div>
+            
             <SharePost
               link={`http://localhost:5000/${tweet.author.userName}/status/${tweet.id}`}
             />

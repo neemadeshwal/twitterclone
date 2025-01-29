@@ -60,61 +60,83 @@ const SharePost = ({
       <RiShare2Line className="text-[16px] sm:text-[20px]" />
     </div>
   );
-  const drawerComp = (
-    <PortalContainerWrapper
-      isDialogTriggered={openShareContainer}
-      triggerComp={drawerTrigger}
-      element={element}
-    />
-  );
-
-  const element = (
-    <div className="relative z-50">
-      <div className="">
+ 
+  const drawerComp=(
+    <div ref={shareContainerRef} className="absolute z-50 top-0 w-full">
+    <div
+     
+      className="rounded-[15px] p-4 flex  w-full min-h-[100px] h-auto  bg-black"
+    >
+      <div className="flex flex-col ">
         <div
-          onClick={() => setOpenShareContainer(true)}
-          className={`hidden md:flex gap-[2px] sm:gap-1 hover:bg-[#1e2034a5] hover:text-blue-400  items-center ${
-            iconColor == "white" ? "white" : "gray"
-          }  text-[13px] font-[400] rounded-full p-2`}
+          onClick={handleCopyLink}
+          className="flex items-center gap-2 py-3 px-3"
         >
-          <RiShare2Line className="text-[16px] sm:text-[20px]" />
+          <p>
+            <AiOutlineLink className="text-[20px]" />
+          </p>
+          <p className="text-[16px] font-[600]">Copy link</p>
         </div>
-        <DrawDialog drawerTrigger={drawerTrigger} drawerComp={drawerComp} />
+        <div
+          onClick={handleShare}
+          className="flex items-center gap-2  py-3 px-3"
+        >
+          <p>
+            <RiShare2Line className="text-[20px]" />
+          </p>
+          <p className="text-[16px] font-[600]">Share post via ...</p>
+        </div>
       </div>
-      {openShareContainer && (
-        <div ref={shareContainerRef} className="absolute z-50 top-0">
+    </div>
+  </div>
+  )
+
+  
+  return  ( <div className="relative z-50">
+  <div className="">
+    <div
+      onClick={() => setOpenShareContainer(true)}
+      className={`hidden md:flex gap-[2px] sm:gap-1 hover:bg-[#1e2034a5] hover:text-blue-400  items-center ${
+        iconColor == "white" ? "white" : "gray"
+      }  text-[13px] font-[400] rounded-full p-2`}
+    >
+      <RiShare2Line className="text-[16px] sm:text-[20px]" />
+    </div>
+    <DrawDialog drawerTrigger={drawerTrigger} drawerComp={drawerComp} />
+  </div>
+  {openShareContainer && (
+    <div ref={shareContainerRef} className="absolute z-50 top-0">
+      <div
+        style={{
+          boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)",
+        }}
+        className="rounded-[15px] w-[230px] min-h-[100px] h-auto py-3 bg-black"
+      >
+        <div className="flex flex-col ">
           <div
-            style={{
-              boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)",
-            }}
-            className="rounded-[15px] w-[230px] min-h-[100px] h-auto py-3 bg-black"
+            onClick={handleCopyLink}
+            className="flex items-center gap-2 hover-bg py-3 px-3"
           >
-            <div className="flex flex-col ">
-              <div
-                onClick={handleCopyLink}
-                className="flex items-center gap-2 hover-bg py-3 px-3"
-              >
-                <p>
-                  <AiOutlineLink className="text-[20px]" />
-                </p>
-                <p className="text-[16px] font-[600]">Copy link</p>
-              </div>
-              <div
-                onClick={handleShare}
-                className="flex items-center gap-2 hover-bg py-3 px-3"
-              >
-                <p>
-                  <RiShare2Line className="text-[20px]" />
-                </p>
-                <p className="text-[16px] font-[600]">Share post via ...</p>
-              </div>
-            </div>
+            <p>
+              <AiOutlineLink className="text-[20px]" />
+            </p>
+            <p className="text-[16px] font-[600]">Copy link</p>
+          </div>
+          <div
+            onClick={handleShare}
+            className="flex items-center gap-2 hover-bg py-3 px-3"
+          >
+            <p>
+              <RiShare2Line className="text-[20px]" />
+            </p>
+            <p className="text-[16px] font-[600]">Share post via ...</p>
           </div>
         </div>
-      )}
+      </div>
     </div>
-  );
-  return { element };
-};
+  )}
+</div>)
+}
+
 
 export default SharePost;

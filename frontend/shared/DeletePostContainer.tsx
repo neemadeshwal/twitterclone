@@ -78,8 +78,11 @@ const DeletePostContainer = ({
 
   const triggerComp = (
     <button
-      onClick={() => {
+     
+      onClick={(e) => {
+        e.stopPropagation();
         setDeleteDialog(true);
+        
       }}
       className="flex gap-3 items-center font-[600] text-red-500"
     >
