@@ -2,7 +2,7 @@ import { authorType } from "@/graphql/types";
 import Image from "next/image";
 import React from "react";
 
-const UserProfile = ({ author }: { author: authorType }) => {
+const AuthorProfile = ({ author }: { author: authorType }) => {
   return (
     <div>
       {author?.profileImgUrl ? (
@@ -35,4 +35,4 @@ const UserProfile = ({ author }: { author: authorType }) => {
   );
 };
 
-export default UserProfile;
+export default AuthorProfile;

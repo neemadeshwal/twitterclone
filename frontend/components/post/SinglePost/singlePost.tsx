@@ -1,36 +1,19 @@
 "use client";
 import React, { useEffect, useState, memo } from "react";
-import { BsChat } from "react-icons/bs";
-import { CiBookmark, CiHeart } from "react-icons/ci";
-import { FaDotCircle, FaHeart } from "react-icons/fa";
-import {
-  IoEllipseOutline,
-  IoEllipsisHorizontal,
-  IoEllipsisVertical,
-  IoShareOutline,
-} from "react-icons/io5";
-import { ImLoop } from "react-icons/im";
-import { LuDot, LuRepeat2 } from "react-icons/lu";
+
+
 import DivisionBar from "@/shared/divisionbar";
-import Image from "next/image";
-import { useAllTweet } from "@/hooks/tweet";
 import { Tweet } from "@/graphql/types";
-import { getRandomDarkHexColor } from "@/lib/randomColor";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleLikeTweet } from "@/graphql/mutation/like";
 import { useCurrentUser, useGetUserById } from "@/hooks/user";
-import Comment from "../comment";
 import { useRouter } from "next/navigation";
-import PostActivity from "@/shared/postActivity";
 import { repostTweet } from "@/graphql/mutation/repost";
-import { io } from "socket.io-client";
 import { useSocket } from "@/context/socketContext";
-import SharePost from "@/shared/sharePost";
-import SavePost from "@/shared/savePost";
-import HoverProfileDetail from "@/shared/HoverProfileDetail";
-import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
-import DrawDialog from "@/shared/DrawDialog";
 import PostActions from "./PostActions";
+import AuthorDetail from "@/shared/singlePost/AuthorDetail";
+import AuthorProfile from "@/shared/AuthorProfile";
+import PostContent from "./PostContent";
 
 const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
@@ -116,165 +99,16 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   return (
     <div className="w-full cursor-pointer py-3">
       <div className="flex gap-4 w-full px-4 sm:px-2 relative">
-        <div
-          onMouseEnter={() => {
-            setIsHoveredOnProfileImgId(tweet.author.id);
-            setHoveredUserId(tweet.author.id);
-          }}
-          onMouseLeave={() => {
-            setIsHoveredOnProfileImgId("");
-            setHoveredUserId("");
-            setHoverUser(null);
-          }}
-        >
-          {tweet.author?.profileImgUrl ? (
-            <div>
-              {isHoveredOnProfileImgId && (
-                <HoverProfileDetail
-                  hoverOnName={hoverOnName}
-                  hoverId={isHoveredOnProfileImgId}
-                />
-              )}
-              {tweet.author?.profileImgUrl.startsWith("#") ? (
-                <div
-                  style={{ backgroundColor: tweet.author?.profileImgUrl }}
-                  className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
-                >
-                  {tweet.author?.firstName.slice(0, 1)}
-                </div>
-              ) : (
-                <Image
-                  src={tweet?.author?.profileImgUrl}
-                  alt="Profile"
-                  width={40}
-                  height={40}
-                  className="rounded-full w-10 h-10"
-                />
-              )}
-            </div>
-          ) : (
-            <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
-              {tweet.author?.firstName.slice(0, 1)}
-            </div>
-          )}
+       
+        <div>
+          <AuthorProfile author={tweet?.author}/>
         </div>
+        <div className="w-full">
+          
+        <AuthorDetail author={tweet?.author} createdAt={tweet?.createdAt}/>
         <div className="w-full pl-0 px-4">
-          <div className="flex justify-between w-full">
-            <div
-              onMouseEnter={() => {
-                setIsHoveredOnProfileImgId(tweet.author.id);
-                setHoveredUserId(tweet.author.id);
-                setHoverOnName(true);
-              }}
-              onMouseLeave={() => {
-                setIsHoveredOnProfileImgId("");
-                setHoveredUserId("");
-                setHoverUser(null);
-                setHoverOnName(false);
-              }}
-              className="flex flex-col sm:flex-row items-start sm:gap-1 sm:items-center"
-            >
-              <div className="flex items-center">
-                <p className="capitalize font-[600] md:text-[17px] text-[15px] leading-[20px]">
-                  {tweet.author?.firstName}
-                </p>
-                <p className="hidden sm:inline-block gray font-[300]">
-                  @{tweet.author?.userName}
-                </p>
-              </div>
-              <div className="flex items-center sm:items-start">
-                <p className="sm:hidden gray text-[15px] leading-[19px] font-[400]">
-                  @{tweet.author?.userName}
-                </p>
-
-                <p>
-                  <LuDot className="gray font-[300]" />
-                </p>
-
-                <p className="gray text-[14px] md:text-[16px] leading-[19px] font-[300]">
-                  {formatTimeAgo(getDateTime(tweet?.createdAt))}
-                </p>
-              </div>
-            </div>
-
-            <div className="" onClick={() => setPostControlDialogOpen(true)}>
-              <div className="p-2 rounded-full absolute right-8 hover:bg-[#1e2034a5] gray hover:text-blue-500 hidden md:inline-block">
-                <IoEllipsisHorizontal className="" />
-
-                {isPostControlDialogOpen && (
-                  <PostActivity
-                    singleTweet={tweet}
-                    setPostControlDialogOpen={setPostControlDialogOpen}
-                  />
-                )}
-              </div>
-            </div>
-
-            <DrawDialog
-              drawerTrigger={<IoEllipsisVertical className="gray" />}
-              drawerComp={
-                <PostActivity
-                  isDrawer={true}
-                  singleTweet={tweet}
-                  setPostControlDialogOpen={setPostControlDialogOpen}
-                  setIsTriggerDrawerOpen={setIsDrawerOpen}
-                />
-              }
-              setIsOpenProp={setIsDrawerOpen}
-            />
-          </div>
-          <div className="mt-1" onClick={() => handlePostClick(tweet.id)}>
-            {tweet?.content}
-
-            {tweet?.hashtags?.length !== 0 && (
-              <div className="mt-2">
-                {tweet?.hashtags?.map((item) => (
-                  <span key={item.id} className="x-textcolor">
-                    {item.text}{" "}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-          {tweet?.mediaArray && tweet?.mediaArray.length !== 0 && (
-            <div
-              className={`my-2 grid w-full border border-gray-600 z-50 overflow-hidden rounded-[20px] gap-x-[2px] gap-y-[2px] grid-flow-row ${
-                tweet?.mediaArray.length > 2
-                  ? "grid-cols-2 h-[250px] xs:h-[300px] sm:h-[400px] md:h-[500px]"
-                  : tweet?.mediaArray.length === 2
-                  ? "grid-cols-2 h-[180px] xs:h-[250px]  sm:h-[350px] gap-x-[2px]"
-                  : "grid-cols-1 h-[180px] sm:h-[500px] xs:h-[300px] "
-              }`}
-            >
-              {tweet?.mediaArray?.map((url, index) => (
-                <div
-                  onClick={() => handlePostPhotoClick(tweet.id, index + 1)}
-                  key={url}
-                  className="relative overflow-hidden"
-                >
-                  {url.endsWith(".mp4") ? (
-                    <video
-                      controls
-                      loop
-                      autoPlay
-                      className="w-full h-full object-cover"
-                      muted
-                    >
-                      <source src={url} type="video/mp4" />
-                    </video>
-                  ) : (
-                    <Image
-                      src={url}
-                      alt="Tweet media"
-                      width={400}
-                      height={500}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+        
+          <PostContent content={tweet?.content} mediaArray={tweet?.mediaArray} hashtags={tweet?.hashtags}/>
           <PostActions
             tweet={tweet}
             liked={liked}
@@ -282,6 +116,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
             handleRepostTweet={handleRepostTweet}
             handleTweetLike={handleTweetLike}
           />
+        </div>
         </div>
       </div>
       <DivisionBar type="x" />
