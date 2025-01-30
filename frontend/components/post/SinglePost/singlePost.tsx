@@ -19,7 +19,7 @@ import { getRandomDarkHexColor } from "@/lib/randomColor";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleLikeTweet } from "@/graphql/mutation/like";
 import { useCurrentUser, useGetUserById } from "@/hooks/user";
-import Comment from "./comment";
+import Comment from "../comment";
 import { useRouter } from "next/navigation";
 import PostActivity from "@/shared/postActivity";
 import { repostTweet } from "@/graphql/mutation/repost";
@@ -30,6 +30,7 @@ import SavePost from "@/shared/savePost";
 import HoverProfileDetail from "@/shared/HoverProfileDetail";
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
 import DrawDialog from "@/shared/DrawDialog";
+import PostActions from "./PostActions";
 
 const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
@@ -52,19 +53,6 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
     onSuccess: (response: any) => {
       console.log(response);
       queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
-      if (socket && user) {
-        socket.emit(
-          "sendLikeNotification",
-          {
-            senderId: user.id,
-            receiverId: tweet.author.id,
-            socketId: socket.id,
-          },
-          () => {
-            console.log("Tweet like notification sent.");
-          }
-        );
-      }
     },
     onError: (error) => {
       console.log(error);
@@ -127,7 +115,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
 
   return (
     <div className="w-full cursor-pointer py-3">
-      <div className="flex gap-4 w-full px-4 sm:px-2 relative"> 
+      <div className="flex gap-4 w-full px-4 sm:px-2 relative">
         <div
           onMouseEnter={() => {
             setIsHoveredOnProfileImgId(tweet.author.id);
@@ -209,10 +197,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
               </div>
             </div>
 
-            <div
-              className=""
-              onClick={() => setPostControlDialogOpen(true)}
-            >
+            <div className="" onClick={() => setPostControlDialogOpen(true)}>
               <div className="p-2 rounded-full absolute right-8 hover:bg-[#1e2034a5] gray hover:text-blue-500 hidden md:inline-block">
                 <IoEllipsisHorizontal className="" />
 
@@ -225,18 +210,18 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
               </div>
             </div>
 
-              <DrawDialog
-                drawerTrigger={<IoEllipsisVertical className="gray" />}
-                drawerComp={
-                  <PostActivity
-                    isDrawer={true}
-                    singleTweet={tweet}
-                    setPostControlDialogOpen={setPostControlDialogOpen}
-                    setIsTriggerDrawerOpen={setIsDrawerOpen}
-                  />
-                }
-                setIsOpenProp={setIsDrawerOpen}
-              />
+            <DrawDialog
+              drawerTrigger={<IoEllipsisVertical className="gray" />}
+              drawerComp={
+                <PostActivity
+                  isDrawer={true}
+                  singleTweet={tweet}
+                  setPostControlDialogOpen={setPostControlDialogOpen}
+                  setIsTriggerDrawerOpen={setIsDrawerOpen}
+                />
+              }
+              setIsOpenProp={setIsDrawerOpen}
+            />
           </div>
           <div className="mt-1" onClick={() => handlePostClick(tweet.id)}>
             {tweet?.content}
@@ -290,55 +275,13 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
               ))}
             </div>
           )}
-          <div className="flex justify-between py-2 pt-3 pb-4">
-            <div className="flex items-center justify-center">
-              <Comment tweet={tweet} user={user!} />
-            </div>
-            <div
-              onClick={handleRepostTweet}
-              className={`flex gap-[2px] relative ${
-                repost ? "text-[#00ba7c]" : "gray hover:text-[#00ba7c]"
-              }  sm:gap-1 items-center gray text-[13px] font-[400]`}
-            >
-              <div className="p-2 rounded-full hover:bg-[#1e3429a5] ">
-                <LuRepeat2 className="text-[16px] sm:text-[20px]" />
-              </div>
-              <p
-                className={`
-                 ml-0 pl-0 -right-[0.3rem]  absolute`}
-              >
-                {tweet?.repostTweet.length}
-              </p>
-            </div>
-            <div
-              onClick={handleTweetLike}
-              className={`flex gap-[2px] relative ${
-                liked ? "text-red-500" : "gray"
-              } sm:gap-1 items-center gray hover:text-red-500 text-[13px] cursor-pointer font-[400]`}
-            >
-              {liked ? (
-                <div className="p-2 text-red-500">
-                  <FaHeart className="text-[16px] sm:text-[20px] heart-animation text-red-500" />
-                </div>
-              ) : (
-                <div className="rounded-full p-2 hover:bg-[#341912a5]">
-                  <CiHeart className="text-[16px]  sm:text-[20px]" />
-                </div>
-              )}
-              <p
-                className={` ml-0 pl-0 ${
-                  liked ? "text-red-500" : "gray"
-                } -right-[0.3rem]  absolute`}
-              >
-                {tweet?.LikedBy.length}
-              </p>
-            </div>
-
-            <SharePost
-              link={`http://localhost:5000/${tweet.author.userName}/status/${tweet.id}`}
-            />
-            <SavePost singleTweet={tweet} user={user} />
-          </div>
+          <PostActions
+            tweet={tweet}
+            liked={liked}
+            repost={repost}
+            handleRepostTweet={handleRepostTweet}
+            handleTweetLike={handleTweetLike}
+          />
         </div>
       </div>
       <DivisionBar type="x" />

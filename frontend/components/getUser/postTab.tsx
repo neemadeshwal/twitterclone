@@ -1,6 +1,6 @@
 import { Tweet } from "@/graphql/types";
 import React from "react";
-import SinglePost from "../post/singlePost";
+import SinglePost from "../post/SinglePost/singlePost";
 
 const PostTab = ({ postlist }: { postlist: Tweet[] }) => {
   return (

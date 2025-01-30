@@ -1,8 +1,10 @@
 "use client";
 import { createComment } from "@/graphql/mutation/comment";
 import { getCurrentUser, Tweet } from "@/graphql/types";
+import { useCurrentUser } from "@/hooks/user";
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
 import CurrentUser from "@/shared/currentUser";
+import UserProfile from "@/shared/AuthorProfile";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -17,11 +19,9 @@ import { RiListRadio } from "react-icons/ri";
 
 const Comment = ({
   tweet,
-  user,
   iconColor,
 }: {
   tweet: Tweet;
-  user: getCurrentUser;
   iconColor?: string;
 }) => {
   const [showDialogBox, setShowDialogBox] = useState(false);
@@ -108,33 +108,7 @@ const Comment = ({
                     <div className="flex gap-4">
                       <div className="flex  w-fit md:items-center flex-col gap-1 h-full md:justify-center  items-center ">
                         <div className=" flex items-center  flex-col gap-2">
-                          {tweet.author?.profileImgUrl ? (
-                            <div>
-                              {tweet.author?.profileImgUrl.startsWith("#") ? (
-                                <div
-                                  className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
-                                  style={{
-                                    backgroundColor:
-                                      tweet.author?.profileImgUrl,
-                                  }}
-                                >
-                                  {tweet.author?.firstName.slice(0, 1)}
-                                </div>
-                              ) : (
-                                <Image
-                                  src={tweet?.author?.profileImgUrl}
-                                  alt=""
-                                  width={40}
-                                  height={40}
-                                  className="rounded-full w-10 h-10"
-                                />
-                              )}
-                            </div>
-                          ) : (
-                            <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
-                              {tweet.author?.firstName.slice(0, 1)}
-                            </div>
-                          )}
+                          <UserProfile author={tweet?.author} />
                         </div>
                         <div className="w-[2px] rounded-full h-full block flex-grow bg-[#2c2c2cb2] "></div>
                       </div>

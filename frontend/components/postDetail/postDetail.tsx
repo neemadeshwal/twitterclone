@@ -19,7 +19,7 @@ import { useCurrentUser } from "@/hooks/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleLikeTweet } from "@/graphql/mutation/like";
 import CurrentUser from "@/shared/currentUser";
-import SinglePost from "../post/singlePost";
+import SinglePost from "../post/SinglePost/singlePost";
 import SingleComment from "./singleComment";
 import { createComment } from "@/graphql/mutation/comment";
 import PostActivity from "@/shared/postActivity";
@@ -209,7 +209,6 @@ const PostDetail = () => {
         <div className="px-3 pr-5 py-2"></div>
         <div className="px-3">
           <div>{singleTweet?.content}</div>
-        
         </div>
         <div className="px-4 py-2">
           <p className="gray">

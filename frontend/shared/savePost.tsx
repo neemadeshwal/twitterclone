@@ -1,20 +1,20 @@
 "use client";
 import { toggleBookmarkTweet } from "@/graphql/mutation/bookmark";
 import { Bookmarks, Tweet } from "@/graphql/types";
+import { useCurrentUser } from "@/hooks/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 
 const SavePost = ({
   singleTweet,
-  user,
   iconColor,
 }: {
   iconColor?: string;
-  user: any;
   singleTweet: any;
 }) => {
   const queryClient = useQueryClient();
+  const user = useCurrentUser();
   const [saveBookmark, setSaveBookmark] = useState(false);
   const saveBookmarkMutation = useMutation({
     mutationFn: toggleBookmarkTweet,

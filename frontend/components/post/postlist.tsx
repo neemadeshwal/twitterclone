@@ -1,10 +1,9 @@
 import { useAllTweet } from "@/hooks/tweet";
 import React from "react";
-import SinglePost from "./singlePost";
+import SinglePost from "./SinglePost/singlePost";
 
 const PostList = () => {
   const { allTweet } = useAllTweet();
-  console.log(allTweet, "alltweet");
 
   return (
     <div>

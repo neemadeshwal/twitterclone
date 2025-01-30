@@ -19,7 +19,7 @@ import { useCurrentUser } from "@/hooks/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleLikeComment, toggleLikeTweet } from "@/graphql/mutation/like";
 import CurrentUser from "@/shared/currentUser";
-import SinglePost from "../post/singlePost";
+import SinglePost from "../post/SinglePost/singlePost";
 // import SingleComment from "./SingleComment";
 import { createComment, replyOnComment } from "@/graphql/mutation/comment";
 import PostActivity from "@/shared/postActivity";

@@ -45,8 +45,7 @@ export const getUserByIdQuery = gql(`
                 tweet{
                     id
                     content
-                    photoArray
-                    videoArray
+                   mediaArray
                     author{
                         id
                         userName
@@ -92,8 +91,7 @@ export const getUserByIdQuery = gql(`
                 
             }
       id
-      photoArray
-      videoArray
+     mediaArray
       author {
         email
         userName
@@ -124,8 +122,7 @@ export const getUserByIdQuery = gql(`
       
       tweet {
         content
-        photoArray
-        videoArray
+        mediaArray
         repostTweet{
                 userId
                 tweetId
@@ -133,8 +130,7 @@ export const getUserByIdQuery = gql(`
                 tweet{
                     id
                     content
-                    photoArray
-                    videoArray
+                    mediaArray
                     author{
                         id
                         userName
@@ -164,8 +160,7 @@ export const getUserByIdQuery = gql(`
                 tweet{
                     id
                     content
-                    photoArray
-                    videoArray
+                   mediaArray
                     author{
                         id
                         userName
@@ -187,8 +182,7 @@ export const getUserByIdQuery = gql(`
         }
         content
         id
-        videoArray
-        photoArray
+       mediaArray
         LikedBy {
           tweet {
             authorId

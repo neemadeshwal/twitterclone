@@ -1,5 +1,5 @@
 import SingleFollowUser from "@/components/home/rightSide/SingleFollowUser";
-import SinglePost from "@/components/post/singlePost";
+import SinglePost from "@/components/post/SinglePost/singlePost";
 import DivisionBar from "@/shared/divisionbar";
 import React from "react";
 

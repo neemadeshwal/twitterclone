@@ -36,6 +36,7 @@ export interface getCurrentUserQueryProps {
   getCurrentUser: getCurrentUser;
 }
 
+export interface authorType extends getCurrentUser {}
 export interface getCurrentUser {
   firstName: string;
   lastName: string;

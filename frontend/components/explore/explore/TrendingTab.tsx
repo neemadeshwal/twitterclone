@@ -1,6 +1,6 @@
 import { useAllTweet } from "@/hooks/tweet";
 import React, { useEffect, useState } from "react";
-import SinglePost from "@/components/post/singlePost";
+import SinglePost from "@/components/post/SinglePost/singlePost";
 
 const TrendingTab = () => {
   const { allTweet } = useAllTweet();
