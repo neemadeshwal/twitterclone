@@ -4,19 +4,18 @@ import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
 import { followUser } from "@/graphql/mutation/follows";
 
-const HoverProfileDetail = ({ hoverId,hoverOnName }: { hoverId: string,hoverOnName:boolean }) => {
+const HoverProfileDetail = ({ hoverId}: { hoverId: string }) => {
   const [commonFollowers, setCommonFollowers] = useState<any>([]);
   const [isVisible, setIsVisible] = useState(false);
   const { user: hoveredUser, isLoading } = useGetUserById(hoverId);
-  const { user: currentUser } = useCurrentUser();
+  const { user } = useCurrentUser();
   const [isAlreadyFollowing, setIsAlreadyFollowing] = useState(false);
   const[onhoverFollowing,setOnhoverFollowing]=useState(false);
-  // Set visibility after a short delay when hoverId changes
   useEffect(() => {
     if (hoverId) {
       const timer = setTimeout(() => {
         setIsVisible(true);
-      }, 200); // Slight delay before showing
+      }, 200); 
       return () => clearTimeout(timer);
     } else {
       setIsVisible(false);
@@ -24,15 +23,21 @@ const HoverProfileDetail = ({ hoverId,hoverOnName }: { hoverId: string,hoverOnNa
   }, [hoverId]);
 
   useEffect(() => {
-    if (!hoveredUser || !currentUser) return;
+    if (!hoveredUser || !user) return;
 
     const userFollowers = hoveredUser.followers || [];
-    const currentUserFollowing = currentUser.following || [];
-    const common = currentUserFollowing.filter(follower => 
-      userFollowers.includes(follower)
+    const currentUserFollowing = user.following || [];
+    console.log(user,"user dot following")
+    console.log(userFollowers,"userfollowers")
+    console.log(currentUserFollowing,"currentUserfollowing")
+    const common = currentUserFollowing.filter(following => 
+      userFollowers.some(follower => follower.followerId === following.followingId)
     );
+    console.log(common,"common")
     setCommonFollowers(common);
-  }, [hoveredUser, currentUser]);
+  }, [hoveredUser, user]);
+
+
   const mutation = useMutation({
     mutationFn: followUser,
     onSuccess: (response: any) => {
@@ -58,12 +63,12 @@ const HoverProfileDetail = ({ hoverId,hoverOnName }: { hoverId: string,hoverOnNa
     }
   };
   useEffect(() => {
-    if (!hoveredUser || !currentUser) {
+    if (!hoveredUser || !user) {
       return;
     }
 
     const isFollowing = hoveredUser.followers.find(
-      (item) => item.followerId === currentUser.id
+      (item) => item.followerId === user.id
     );
     console.log(isFollowing, "following");
     if (isFollowing) {
@@ -71,16 +76,22 @@ const HoverProfileDetail = ({ hoverId,hoverOnName }: { hoverId: string,hoverOnNa
     } else {
       setIsAlreadyFollowing(false);
     }
-  }, [hoveredUser, currentUser]);
+  }, [hoveredUser, user]);
+
+  console.log(commonFollowers,"common followers check")
 
   if (isLoading || !hoveredUser) return null;
 
+ 
+
   return (
     <div className={`
+      relative z-[100]
       transform transition-all duration-300 ease-in-out
+      
       ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}
     `}>
-      <div className={`absolute z-50 ${hoverOnName?"top-4 left-8":"top-10 left-[-4px]"} `}>
+      <div className={`absolute z-[1000]  top-2 left-0 `}>
         <div
           style={{
             boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)",
@@ -120,7 +131,7 @@ const HoverProfileDetail = ({ hoverId,hoverOnName }: { hoverId: string,hoverOnNa
                 )}
               </div>
               {
-                currentUser?.id!==hoveredUser?.id&&
+                user?.id!==hoveredUser?.id&&
                 <div>
           {isAlreadyFollowing ? (
             
@@ -172,8 +183,8 @@ const HoverProfileDetail = ({ hoverId,hoverOnName }: { hoverId: string,hoverOnNa
                   <div className="gray text-[14px]">Followed by</div>
                   <div className="text-sm mt-1">
                     {commonFollowers.map((follower:any, index:number) => (
-                      <span key={follower}>
-                        {follower}
+                      <span key={follower.followerId}>
+                        {follower.followerId}
                         {index < commonFollowers.length - 1 ? ", " : ""}
                       </span>
                     ))}

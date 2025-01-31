@@ -61,7 +61,7 @@ const queries = {
 
     const user = await prismaClient.user.findUnique({
       where: { id },
-      include: { posts: true, likedTweets: true, commentTweets: true },
+      include: { posts: true, likedTweets: true, commentTweets: true,followers:true },
     });
     if (!user) {
       throw new Error("No user present.");
@@ -444,7 +444,7 @@ const extraResolvers = {
 
       return followedUsers;
     },
-    following: async (parent: User) => {
+    followingList: async (parent: User) => {
       const followingUsers = await prismaClient.follows.findMany({
         where: {
           followerId: parent.id,

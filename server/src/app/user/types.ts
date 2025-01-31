@@ -60,7 +60,7 @@ type User{
     followerId:String
     followingId:String
     followers:[Follows]
-    following:[Follows]
+    followingList:[Follows]
 
 
 }

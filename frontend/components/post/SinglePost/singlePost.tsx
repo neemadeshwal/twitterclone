@@ -14,6 +14,7 @@ import PostActions from "./PostActions";
 import AuthorDetail from "@/shared/singlePost/AuthorDetail";
 import AuthorProfile from "@/shared/AuthorProfile";
 import PostContent from "./PostContent";
+import HoverWrapper from "@/shared/singlePost/HoverWrapper";
 
 const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
@@ -97,11 +98,14 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   const [hoverUser, setHoverUser] = useState<any>(null);
 
   return (
-    <div className="w-full cursor-pointer py-3">
-      <div className="flex gap-4 w-full px-4 sm:px-2 relative">
+    <div className="w-full cursor-pointer px-4 sm:px-2  py-3">
+      <div className="flex gap-0 w-full relative">
        
-        <div>
+        <div className="pr-4">
+          <HoverWrapper userId={tweet?.author.id}>
           <AuthorProfile author={tweet?.author}/>
+
+          </HoverWrapper>
         </div>
         <div className="w-full">
           

@@ -5,7 +5,7 @@ import React from "react";
 const AuthorProfile = ({ author }: { author: authorType }) => {
   return (
     <div>
-      {author?.profileImgUrl ? (
+      {author?.profileImgUrl ? 
         <div>
           {author?.profileImgUrl.startsWith("#") ? (
             <div
@@ -26,7 +26,7 @@ const AuthorProfile = ({ author }: { author: authorType }) => {
             />
           )}
         </div>
-      ) : (
+      : (
         <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
           {author?.firstName.slice(0, 1)}
         </div>

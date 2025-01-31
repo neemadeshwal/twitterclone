@@ -12,6 +12,22 @@ export const getCurrentUserQuery = gql(`
       coverImgUrl 
       location
       bio
+      followers{
+      followerId
+      followingId
+      follower{
+        firstName
+        lastName
+      }
+    }
+    followingList{
+      followerId
+      followingId
+      follower{
+        firstName
+        lastName
+      }
+    }
     }
   }
 `);
@@ -31,11 +47,20 @@ export const getUserByIdQuery = gql(`
     followers{
       followerId
       followingId
+      follower{
+        firstName
+        lastName
+      }
     }
-    following{
+    followingList{
       followerId
       followingId
+      follower{
+        firstName
+        lastName
+      }
     }
+    
     posts {
       authorId
       repostTweet{

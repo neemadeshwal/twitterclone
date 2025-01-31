@@ -7,6 +7,15 @@ const FOLLOW_USER = gql`
     followUser(payload: $payload) {
       followerId
       followingId
+      follower{
+        firstName
+        lastName
+      }
+      following{
+        firstName
+        lastName
+      }
+      
     }
   }
 `;
@@ -15,6 +24,14 @@ const UNFOLLOW_USER = gql`
     unfollowUser(payload: $payload) {
       followerId
       followingId
+      follower{
+        firstName
+        lastName
+      }
+      following{
+        firstName
+        lastName
+      }
     }
   }
 `;
