@@ -2,14 +2,14 @@ import { authorType } from "@/graphql/types";
 import Image from "next/image";
 import React from "react";
 
-const AuthorProfile = ({ author }: { author: authorType }) => {
+const AuthorProfile = ({ author,isSmall }: { author: authorType,isSmall?:boolean }) => {
   return (
     <div>
       {author?.profileImgUrl ? 
         <div>
           {author?.profileImgUrl.startsWith("#") ? (
             <div
-              className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
+              className={`rounded-full ${isSmall?"w-6 text-[14px] h-6":"w-10 h-10"} flex items-center justify-center capitalize`}
               style={{
                 backgroundColor: author?.profileImgUrl,
               }}
@@ -22,7 +22,7 @@ const AuthorProfile = ({ author }: { author: authorType }) => {
               alt=""
               width={40}
               height={40}
-              className="rounded-full w-10 h-10"
+              className={` ${isSmall?"w-6 h-6":"w-10 h-10"} rounded-full `}
             />
           )}
         </div>

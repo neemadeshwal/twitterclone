@@ -18,15 +18,11 @@ import HoverWrapper from "@/shared/singlePost/HoverWrapper";
 
 const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
-  const [hoverOnName, setHoverOnName] = useState(false);
   const [repost, setRepost] = useState(false);
-  const [isPostControlDialogOpen, setPostControlDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
   const { user } = useCurrentUser();
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isHoveredOnProfileImgId, setIsHoveredOnProfileImgId] = useState("");
-  const socket = useSocket();
+  
 
   useEffect(() => {
     queryClient.refetchQueries({ queryKey: ["all-tweet"] });
@@ -86,16 +82,9 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
     }
   }, [tweet, user]);
 
-  const handlePostClick = (id: string) => {
-    router.push(`/${tweet.author.userName}/status/${id}`);
-  };
 
-  const handlePostPhotoClick = (id: string, photoId: number) => {
-    router.push(`/${tweet.author.userName}/status/${id}/photos/${photoId}`);
-  };
 
-  const [hoveredUserId, setHoveredUserId] = useState("");
-  const [hoverUser, setHoverUser] = useState<any>(null);
+
 
   return (
     <div className="w-full cursor-pointer px-4 sm:px-2  py-3">
@@ -112,7 +101,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
         <AuthorDetail author={tweet?.author} createdAt={tweet?.createdAt}/>
         <div className="w-full pl-0 px-4">
         
-          <PostContent content={tweet?.content} mediaArray={tweet?.mediaArray} hashtags={tweet?.hashtags}/>
+          <PostContent author={tweet?.author} tweetId={tweet?.id} content={tweet?.content} mediaArray={tweet?.mediaArray} hashtags={tweet?.hashtags}/>
           <PostActions
             tweet={tweet}
             liked={liked}

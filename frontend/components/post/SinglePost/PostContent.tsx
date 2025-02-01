@@ -1,13 +1,18 @@
+import { authorType } from '@/graphql/types'
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
-const PostContent = ({content,hashtags,mediaArray}:{content:string,hashtags:any,mediaArray:string[]}) => {
+const PostContent = ({content,hashtags,mediaArray,author,tweetId}:{content:string,hashtags:any,mediaArray:string[],author:authorType,tweetId:string}) => {
   return (
     <div>
         <div className="mt-1"
-        //  onClick={() => handlePostClick(tweet.id)}
          >
-            {content}
+          <Link href={`/${author.userName}/status/${tweetId}`}>
+          {content}
+          </Link>
+
+          
 
             {hashtags&&hashtags?.length !== 0 && (
               <div className="mt-2">
@@ -30,9 +35,9 @@ const PostContent = ({content,hashtags,mediaArray}:{content:string,hashtags:any,
               }`}
             >
               {mediaArray?.map((url, index) => (
+                <Link  key={url} href={`/${author.userName}/status/${tweetId}/photos/${index+1}`}>
                 <div
-                //   onClick={() => handlePostPhotoClick(tweet.id, index + 1)}
-                  key={url}
+                 
                   className="relative overflow-hidden"
                 >
                   {url.endsWith(".mp4") ? (
@@ -55,6 +60,7 @@ const PostContent = ({content,hashtags,mediaArray}:{content:string,hashtags:any,
                     />
                   )}
                 </div>
+                </Link>
               ))}
             </div>
           )}

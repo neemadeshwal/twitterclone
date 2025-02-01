@@ -65,9 +65,9 @@ const Comment = ({
         onClick={() => setShowDialogBox(true)}
         className={`flex gap-[2px] sm:gap-1 items-center ${
           iconColor == "white" ? "white" : "gray"
-        }  text-[13px] font-[400] cursor-pointer hover:text-blue-400  relative`}
+        }  text-[13px] font-[400] cursor-pointer group hover:text-blue-400  relative`}
       >
-        <div className="p-2 rounded-full hover:bg-[#1e2034a5] ">
+        <div className="p-2 rounded-full group-hover:bg-[#1e2034a5] ">
           <BsChat className="text-[16px] sm:text-[20px] " />
         </div>
         <p className="ml-0 pl-0 -right-[0.3rem] absolute">

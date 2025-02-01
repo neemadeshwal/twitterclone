@@ -16,8 +16,8 @@ const AuthorDetail = ({author,createdAt}:{author:authorType,createdAt:string}) =
                 <div className='hidden xs:inline-block'>
                 <HoverWrapper userId={author?.id}>
               <div className=" gap-1 items-center flex">
-                <p className="capitalize font-[600] md:text-[17px] text-[15px] leading-[20px]">
-                  {author?.firstName}
+                <p className="capitalize font-[600] md:text-[17px] hover:underline text-[15px] leading-[20px]">
+                  {author?.firstName} {author?.lastName}
                 </p>
                 <p className="hidden xs:inline-block gray font-[300]">
                   @{author?.userName}

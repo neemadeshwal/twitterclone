@@ -8,7 +8,6 @@ import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 
 const SavePost = ({
   singleTweet,
-  iconColor,
 }: {
   iconColor?: string;
   singleTweet: any;
@@ -16,6 +15,7 @@ const SavePost = ({
   const queryClient = useQueryClient();
   const user = useCurrentUser();
   const [saveBookmark, setSaveBookmark] = useState(false);
+  
   const saveBookmarkMutation = useMutation({
     mutationFn: toggleBookmarkTweet,
     onSuccess: (response: any) => {
@@ -27,56 +27,55 @@ const SavePost = ({
     },
   });
 
-  console.log(iconColor, "iconColor");
+  console.log(saveBookmark,"savebookmark")
+
   async function handleSaveBookmark() {
-    console.log("heello");
-    console.log(singleTweet, "singletweet");
-    setSaveBookmark((prevVal) => !prevVal);
     if (!singleTweet || !singleTweet.id) {
       return;
     }
-    console.log("he hey");
+
+    // Toggle the bookmark state immediately after the user clicks (optimistic UI)
+    setSaveBookmark((prevVal) => !prevVal);
+
     const body = {
       tweetId: singleTweet.id,
     };
+
     try {
+      // Wait for the mutation to complete
       await saveBookmarkMutation.mutateAsync(body);
     } catch (error) {
       console.log(error);
+      // If mutation fails, revert the state back
+      setSaveBookmark((prevVal) => !prevVal);
     }
   }
 
   useEffect(() => {
-    if (!singleTweet) {
+    if (!singleTweet || !user) {
       return;
     }
-    if (singleTweet.savedPost && user) {
-      setSaveBookmark(
-        singleTweet.savedPost.some(
-          (post: Bookmarks) => post.tweetId === singleTweet.id
-        )
-      );
-    }
+    // Check if the tweet is already saved by the current user
+    const isSaved = singleTweet.savedPost?.some(
+      (post: Bookmarks) => post.tweetId === singleTweet.id
+    );
+    setSaveBookmark(isSaved);
   }, [singleTweet, user]);
+
   return (
-    <div className="flex gap-1 items-center  text-[13px] font-[400]">
+    <div className="flex gap-1 items-center text-[13px] font-[400]">
       <div
-        onClick={handleSaveBookmark}
-        className={`flex gap-1 items-center cursor-pointer   text-[13px] ${
-          iconColor == "white" ? "white" : "gray"
-        } font-[400]`}
+        onClick={handleSaveBookmark}  // Use the handleSaveBookmark function here
+        className={`flex gap-1 items-center cursor-pointer text-[13px] font-[400] `}
       >
         {saveBookmark ? (
-          <div className="p-2 rounded-full">
+            <div className="p-2 text-blue-500 ">
+
             <FaBookmark className="text-[16px] sm:text-[20px] text-blue-500" />
-          </div>
+            </div>
         ) : (
-          <div
-            className="p-2 rounded-full
-          hover:text-blue-500 hover:bg-[#1e2034a5]
-          "
-          >
-            <FaRegBookmark className={`text-[16px] sm:text-[20px]  `} />
+          <div className="p-2 rounded-full gray hover:text-blue-500 hover:bg-[#1e2034a5]">
+            <FaRegBookmark className="text-[16px] gray sm:text-[20px]" />
           </div>
         )}
       </div>
