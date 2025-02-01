@@ -3,6 +3,7 @@ import { useCurrentUser, useGetUserById } from "@/hooks/user";
 import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
 import { followUser } from "@/graphql/mutation/follows";
+import AuthorProfile from "./AuthorProfile";
 
 const HoverProfileDetail = ({ hoverId}: { hoverId: string }) => {
   const [commonFollowers, setCommonFollowers] = useState<any>([]);
@@ -26,7 +27,7 @@ const HoverProfileDetail = ({ hoverId}: { hoverId: string }) => {
     if (!hoveredUser || !user) return;
 
     const userFollowers = hoveredUser.followers || [];
-    const currentUserFollowing = user.following || [];
+    const currentUserFollowing = user.followingList || [];
     console.log(user,"user dot following")
     console.log(userFollowers,"userfollowers")
     console.log(currentUserFollowing,"currentUserfollowing")
@@ -168,7 +169,7 @@ const HoverProfileDetail = ({ hoverId}: { hoverId: string }) => {
               {/* Stats */}
               <div className="flex gap-3 items-center mt-2">
                 <div>
-                  <span className="font-medium">{hoveredUser.following?.length}</span>{" "}
+                  <span className="font-medium">{hoveredUser.followingList?.length}</span>{" "}
                   <span className="gray text-[14px]">Following</span>
                 </div>
                 <div>
@@ -179,14 +180,26 @@ const HoverProfileDetail = ({ hoverId}: { hoverId: string }) => {
 
               {/* Common Followers */}
               {commonFollowers.length > 0 && (
-                <div className="mt-3">
+                <div className="mt-3 flex gap-1 items-center">
+                   {commonFollowers.map((follower:any, index:number) => (
+                      <div key={follower.followerId}>
+                        <AuthorProfile author={follower.following}/>
+                        
+
+                      </div>
+                     
+                    ))}
                   <div className="gray text-[14px]">Followed by</div>
-                  <div className="text-sm mt-1">
+                  <div className="text-sm gray">
                     {commonFollowers.map((follower:any, index:number) => (
-                      <span key={follower.followerId}>
-                        {follower.followerId}
+                        <span key={follower.followerId} className="capitalize">
+                        {follower.following?.firstName} 
+                        {" "}
+                        {follower.following?.lastName}
+
                         {index < commonFollowers.length - 1 ? ", " : ""}
                       </span>
+                     
                     ))}
                   </div>
                 </div>

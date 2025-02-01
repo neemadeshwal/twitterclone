@@ -52,7 +52,7 @@ export interface getCurrentUser {
   commentTweets: Comment[];
   posts: Tweet[];
   followers: follow[];
-  following: follow[];
+  followingList: follow[];
 }
 
 export interface createTweetMutateProps {
@@ -152,6 +152,14 @@ export interface getAllUsersQueryProps {
 export interface follow {
   followingId: string;
   followerId: string;
+  follower:{
+    firstName:string;
+    lastName:string
+  }
+  following:{
+    firstName:string;
+    lastName:string;
+  }
 }
 
 export interface followUserProps {

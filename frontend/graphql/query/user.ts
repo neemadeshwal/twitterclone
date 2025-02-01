@@ -18,6 +18,7 @@ export const getCurrentUserQuery = gql(`
       follower{
         firstName
         lastName
+        profileImgUrl
       }
     }
     followingList{
@@ -26,6 +27,12 @@ export const getCurrentUserQuery = gql(`
       follower{
         firstName
         lastName
+        profileImgUrl
+      }
+      following{
+        firstName
+        lastName
+        profileImgUrl
       }
     }
     }
@@ -50,6 +57,7 @@ export const getUserByIdQuery = gql(`
       follower{
         firstName
         lastName
+        profileImgUrl
       }
     }
     followingList{
@@ -58,6 +66,7 @@ export const getUserByIdQuery = gql(`
       follower{
         firstName
         lastName
+        profileImgUrl
       }
     }
     
@@ -237,7 +246,7 @@ export const getAllUsersQuery = gql(`
        
         
       }
-      following{
+      followingList{
         followingId
         followerId
       }
