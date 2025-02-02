@@ -25,7 +25,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import GifContainer from "./GifContainer";
-const PostContainer = ({isEdit,editTweet}:{isEdit?:boolean,editTweet?:any}) => {
+const PostContainer = ({isEdit,editTweet,ref}:{isEdit?:boolean,editTweet?:any,ref?:any}) => {
   const [showRightChevron, setShowRightChevron] = useState(false);
   const [showLeftChevron, setShowLeftChevron] = useState(false);
   const [isContainerOpen, setIsContainerOpen] = useState(false);
@@ -233,7 +233,7 @@ const PostContainer = ({isEdit,editTweet}:{isEdit?:boolean,editTweet?:any}) => {
   
 
   const element = (
-    <div className="fixed top-0 left-0 w-full h-full z-[100] dimBg flex items-center justify-center overflow-y-auto p-4">
+    <div ref={ref} className="fixed top-0 left-0 w-full h-full z-[100] dimBg flex items-center justify-center overflow-y-auto p-4">
       <div className="bg-black min-h-[50%] h-auto pb-10 rounded-[20px] z-[1000] w-full max-w-2xl relative flex flex-col">
         {/* Header */}
         <div className="p-4 relative">
@@ -417,7 +417,7 @@ const PostContainer = ({isEdit,editTweet}:{isEdit?:boolean,editTweet?:any}) => {
   
   return (
     <div>
-      <div
+      {/* <div
         onClick={() => setIsContainerOpen(true)}
         className={`p-2 ${isEdit?"text-white bg-black":"bg-white text-black"} w-fit flex fullWidth rounded-full my-2 cursor-pointer`}
       >
@@ -440,9 +440,9 @@ const PostContainer = ({isEdit,editTweet}:{isEdit?:boolean,editTweet?:any}) => {
           </div>
         }
        
-      </div>
+      </div> */}
 
-      {isContainerOpen && ReactDOM.createPortal(element, document.body)}
+      {isEdit && ReactDOM.createPortal(element, document.body)}
     </div>
   );
 };

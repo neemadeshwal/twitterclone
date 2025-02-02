@@ -13,6 +13,7 @@ import { MdDelete, MdEditDocument } from "react-icons/md";
 import { PiSpeakerSimpleSlash } from "react-icons/pi";
 import PostContainer from "./postContainer";
 import DeletePostContainer from "./DeletePostContainer";
+import Link from "next/link";
 
 const PostActivity = ({
   setPostControlDialogOpen,
@@ -32,6 +33,8 @@ const PostActivity = ({
   const queryClient = useQueryClient();
   const router = useRouter();
   const [editPost, setEditPost] = useState(false);
+  const[deleteDialog,setDeleteDialog]=useState(false)
+  
 
   useEffect(() => {
     if (!user || !singleTweet) {
@@ -71,12 +74,24 @@ const PostActivity = ({
       <div className="flex flex-col gap-6">
         {isUserPost ? (
           <div className=" flex flex-col gap-6">
-            <DeletePostContainer
-              postId={singleTweet.id}
-              setPostControlDialogOpen={setPostControlDialogOpen}
-              setIsTriggerDrawerOpen={setIsTriggerDrawerOpen}
-            />
-            <PostContainer isEdit={true} editTweet={singleTweet} />
+             <button
+      onClick={(e) => {
+        e.stopPropagation();
+        setDeleteDialog(true);
+      }}
+      className="flex gap-3 items-center font-[600] text-red-500"
+    >
+      <MdDelete className="font-[600] text-[20px]" />
+      Delete
+    </button>
+    <button  
+    onClick={(e)=>{e.stopPropagation();setEditPost(true)}}
+    
+    className="flex gap-3 items-center font-[600]">
+              <MdEditDocument className="font-[600] text-[17px]" />
+              Edit
+            </button>
+           
           </div>
         ) : (
           <div className=" flex flex-col gap-6">
@@ -95,12 +110,18 @@ const PostActivity = ({
             </button>
           </div>
         )}
-        <button className="flex gap-3 items-center font-[600]">
+          <button  onClick={()=>router.push(`/${singleTweet?.author.userName}/status/${singleTweet?.id}`)}  className="flex gap-3 items-center font-[600]">
           <IoIosStats className="font-[600] text-[17px]" />
           View post engagements
         </button>
+       
       </div>
-      {editPost && <PostContainer isEdit={true} editTweet={singleTweet} />}
+      {editPost && <PostContainer ref={postRef} isEdit={editPost} editTweet={singleTweet} />}
+      {deleteDialog&& <DeletePostContainer
+              postId={singleTweet.id}
+              setDeleteDialog={setDeleteDialog}
+              setPostControlDialogOpen={setPostControlDialogOpen}
+            />}
     </div>
   );
 };

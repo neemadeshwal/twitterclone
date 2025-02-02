@@ -6,6 +6,8 @@ import { LuDot } from 'react-icons/lu';
 import HoverWrapper from './HoverWrapper';
 
 const AuthorDetail = ({author,createdAt}:{author:authorType,createdAt:string}) => {
+
+  
   return (
     <div>
           <div className="flex justify-between w-full">
@@ -44,18 +46,7 @@ const AuthorDetail = ({author,createdAt}:{author:authorType,createdAt:string}) =
               </div>
             </div>
 
-            <div className="" >
-              <div className="p-2 rounded-full absolute right-8 hover:bg-[#1e2034a5] gray hover:text-blue-500 hidden md:inline-block">
-                <IoEllipsisHorizontal className="" />
-
-                {/* {isPostControlDialogOpen && (
-                  <PostActivity
-                    singleTweet={tweet}
-                    setPostControlDialogOpen={setPostControlDialogOpen}
-                  />
-                )} */}
-              </div>
-            </div>
+         
 
             {/* <DrawDialog
               drawerTrigger={<IoEllipsisVertical className="gray" />}
