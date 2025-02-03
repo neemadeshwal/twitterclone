@@ -17,30 +17,29 @@ const ComposePost = () => {
   const [tweetContent, setTweetContent] = useState("");
   const [openGifContainer, setOpenGifContainer] = useState(false);
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
-        const emojiCloseRef = useRef<HTMLDivElement>(null);
-  
-         useEffect(() => {
-                const handleEmojiClose = (event: MouseEvent) => {
-                  if (
-                    emojiCloseRef.current &&
-                    !emojiCloseRef.current.contains(event.target as Node)
-                  ) {
-                    console.log("hey");
-                    setIsEmojiTableOpen(false);
-                  }
-                };
-                if (isEmojiTableOpen) {
-                    document.addEventListener("mousedown", handleEmojiClose);
-                  } else {
-                    document.removeEventListener("mousedown", handleEmojiClose);
-                  }
-            
-            
-                return () => {
-                  document.removeEventListener("mousedown", handleEmojiClose);
-                };
-              }, [isEmojiTableOpen, setIsEmojiTableOpen]);
-            
+  const emojiCloseRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleEmojiClose = (event: MouseEvent) => {
+      if (
+        emojiCloseRef.current &&
+        !emojiCloseRef.current.contains(event.target as Node)
+      ) {
+        console.log("hey");
+        setIsEmojiTableOpen(false);
+      }
+    };
+    if (isEmojiTableOpen) {
+      document.addEventListener("mousedown", handleEmojiClose);
+    } else {
+      document.removeEventListener("mousedown", handleEmojiClose);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleEmojiClose);
+    };
+  }, [isEmojiTableOpen, setIsEmojiTableOpen]);
+
   const mutation = useMutation({
     mutationFn: createTweetMutate,
     onSuccess: (response: any) => {
@@ -105,21 +104,21 @@ const ComposePost = () => {
         </div>
       </div>
       <DivisionBar type="x" />
-      {isEmojiTableOpen && 
-         <div
-         ref={emojiCloseRef}
-         className="absolute border rounded-[8px] border-gray-400 mx-[10%] z-[1000]"
-       >
-         <div>
-           <Picker
-             data={data}
-             onEmojiSelect={(emoji: any) =>
-               setTweetContent((prevVal: string) => prevVal + emoji.native)
-             }
-           />
-         </div>
-         </div>
-      }
+      {isEmojiTableOpen && (
+        <div
+          ref={emojiCloseRef}
+          className="absolute border rounded-[8px] border-gray-400 mx-[10%] z-[1000]"
+        >
+          <div>
+            <Picker
+              data={data}
+              onEmojiSelect={(emoji: any) =>
+                setTweetContent((prevVal: string) => prevVal + emoji.native)
+              }
+            />
+          </div>
+        </div>
+      )}
       {openGifContainer && (
         <GifContainer
           setOpenGifContainer={setOpenGifContainer}

@@ -1,28 +1,27 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BsEmojiSmile } from "react-icons/bs";
 import { FiMapPin } from "react-icons/fi";
 import { HiOutlinePhotograph } from "react-icons/hi";
 import { LuFolderClock } from "react-icons/lu";
 import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
+
 import { previewFile } from "@/lib/uploadFile";
 
 import GifContainer from "../GifContainer";
+import EmojiTable from "../ComposePost/EmojiTable";
 
 const TweetAction = ({
   setTweetContent,
   setFiles,
-  setLoading
+  setLoading,
 }: {
   setTweetContent: any;
   setFiles: any;
-  setLoading:any;
+  setLoading: any;
 }) => {
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const [openGifContainer, setOpenGifContainer] = useState(false);
-  const emojiCloseRef = useRef<HTMLDivElement>(null);
   async function handleImgUpload(event: React.ChangeEvent<HTMLInputElement>) {
     if (!event.target.files || event.target.files.length === 0) {
       return;
@@ -32,7 +31,7 @@ const TweetAction = ({
       const fileUrl = await previewFile(event.target.files);
       console.log(fileUrl, "fileUrl");
       if (fileUrl && fileUrl.length !== 0) {
-        setFiles((prevVal:string[]) => [...prevVal, ...fileUrl]);
+        setFiles((prevVal: string[]) => [...prevVal, ...fileUrl]);
       }
     } catch (error) {
       console.log(error);
@@ -82,19 +81,11 @@ const TweetAction = ({
         </div>
       </div>
       {isEmojiTableOpen && (
-        <div
-          ref={emojiCloseRef}
-          className="absolute border rounded-[8px] border-gray-400  mx-[10%] z-[1000]"
-        >
-          <div>
-            <Picker
-              data={data}
-              onEmojiSelect={(emoji: any) =>
-                setTweetContent((prevVal: string) => prevVal + emoji.native)
-              }
-            />
-          </div>
-        </div>
+        <EmojiTable
+          setTweetContent={setTweetContent}
+          isEmojiTableOpen={isEmojiTableOpen}
+          setIsEmojiTableOpen={setIsEmojiTableOpen}
+        />
       )}
       {openGifContainer && (
         <GifContainer

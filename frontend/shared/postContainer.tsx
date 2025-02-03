@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {BiX } from "react-icons/bi";
+import { BiX } from "react-icons/bi";
 
 import CurrentUser from "./currentUser";
 
@@ -60,7 +60,7 @@ const PostContainer = ({
     }
     const body = {
       content: tweetContent,
-      mediaArray:files
+      mediaArray: files,
     };
     try {
       await mutation.mutateAsync(body);
@@ -90,7 +90,6 @@ const PostContainer = ({
       if (editTweet.mediaArray) {
         setFiles(editTweet.mediaArray);
       }
-    
     }
   }, [isEdit, isContainerOpen]);
   useEffect(() => {
@@ -115,28 +114,26 @@ const PostContainer = ({
     <div className="fixed top-0 left-0 w-full h-full z-[100] dimBg flex items-center justify-center overflow-y-auto p-4">
       <div
         ref={ref}
-        className="bg-black min-h-[50%] h-auto pb-4 rounded-[20px] z-[1000] w-full max-w-2xl relative flex flex-col"
+        className="bg-black min-h-[50%] py-10 h-auto pb-4 rounded-[20px] z-[1000] w-full max-w-2xl relative flex flex-col justify-between"
       >
         {/* Header */}
-        <div className="p-4 relative">
-          <div
-            className="absolute left-1 top-1 rounded-full p-1 hover:bg-[#0f0f0f] cursor-pointer"
-            onClick={() => {
-              setIsContainerOpen(false);
-              setPostControlDialogOpen(false);
-            }}
-          >
-            <BiX className="text-[30px]" />
-          </div>
+        <div
+          className="absolute left-1 top-2 rounded-full p-1 hover:bg-[#0f0f0f] cursor-pointer"
+          onClick={() => {
+            setIsContainerOpen(false);
+            setPostControlDialogOpen(false);
+          }}
+        >
+          <BiX className="text-[30px]" />
         </div>
 
         {/* Content */}
-        <div className="">
+        <div className="h-full">
           <div className="flex items-start gap-4 p-4 pt-4 pb-0">
             <div className="">
               <CurrentUser />
             </div>
-            <div className="w-full  h-auto px-2">
+            <div className="w-full pt-1  h-auto px-2">
               <TweetContent
                 tweetContent={tweetContent}
                 setTweetContent={setTweetContent}
@@ -146,15 +143,14 @@ const PostContainer = ({
 
               {/* Image Preview */}
               {files && typeof files !== "undefined" && files.length !== 0 && (
-               
-               <MediaUpload   files={files} setFiles={setFiles} />
+                <MediaUpload files={files} setFiles={setFiles} />
               )}
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-4 py-0 w-full">
+        <div className="p-4 py-0 pt-6 w-full">
           <DivisionBar type="x" />
           <div className="flex justify-between items-center mt-4">
             <TweetAction
