@@ -179,8 +179,7 @@ const Comment = ({
                   </div>
                 </div>
                 <div className="w-full flex gap-4 my-2 items-center h-10 ">
-                  <div className="w-[2px] mx-4 rounded-full h-full block bg-[#2c2c2cb2] "></div>
-
+                  <div className="w-[2px] mx-[19px]  rounded-full h-full block bg-[#2c2c2cb2] "></div>
                   <div className="gray font-[500] text-[15px] xs:text-lg sm:text-xl py-1">
                     Replying to{" "}
                     <p className="x-textcolor inline">

@@ -67,7 +67,7 @@ const mutations = {
       throw new Error("Unauthorized.No token present");
     }
     const { content, mediaArray } = payload;
-    if (!content && !mediaArray) {
+    if (!content && mediaArray.length==0) {
       throw new Error("No content .Please provide content first.");
     }
     const hashtags = content.match(/#\w+/g) || [];
@@ -149,6 +149,76 @@ const mutations = {
     });
     return deleteTweet;
   },
+  editTweet:async(parent:any,{payload}:{payload:{content:string,mediaArray:string[],tweetId:string}},ctx:GraphqlContext)=>{
+
+    if(!ctx.user){
+      throw new Error("No user found")
+    }
+    const {content,mediaArray,tweetId}=payload;
+
+    if(!tweetId){
+      throw new Error("No tweet id is present")
+    }
+    if(!content&&mediaArray.length===0){
+      throw new Error("No content present.")
+    }
+
+
+    const isTweetExist=await prismaClient.tweet.findUnique({
+      where:{
+        id:tweetId
+      }
+    })
+
+    const hashtags = content.match(/#\w+/g) || [];
+    const cleanContent = content.replace(/#\w+/g, "").trim();
+
+
+    const allHashtag = await Promise.all(
+      hashtags.map(async (hashtag) => {
+        const findHashTag = await prismaClient.hashtag.findUnique({
+          where: {
+            text: hashtag.toLowerCase(),
+          },
+        });
+
+        if (!findHashTag) {
+          const findHashTag = await prismaClient.hashtag.create({
+            data: {
+              text: hashtag.toLowerCase(),
+            },
+          });
+          return findHashTag;
+        }
+        return findHashTag;
+      })
+    );
+
+    if(!isTweetExist){
+      throw new Error("tweet donot exist")
+    }
+
+    const updatedTweet=await prismaClient.tweet.update({
+      where:{
+        id:tweetId
+      },
+      data:{
+        content:content?cleanContent:isTweetExist.content,
+        mediaArray:mediaArray.length!==0?mediaArray:isTweetExist.mediaArray,
+        hashtags: {
+          connect:
+            allHashtag.length !== 0
+              ? allHashtag.map((tag) => ({
+                  id: tag?.id,
+                }))
+              : undefined,
+        },
+      }
+    })
+    return updatedTweet
+
+
+  }
 };
 
 const extraResolvers = {

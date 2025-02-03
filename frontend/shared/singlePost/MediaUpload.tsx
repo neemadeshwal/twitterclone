@@ -6,24 +6,31 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Image from "next/image";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { BiX } from "react-icons/bi";
+
 
 const MediaUpload = ({
   files,
   setFiles,
+  isEdit
 }: {
   files: string[];
   setFiles: any;
+  isEdit?:boolean
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+    const [loading, setLoading] = useState(false);
+  
   const deletePreviewPhotos = async (deleteUrl: string) => {
     setFiles((prevVal: string[]) =>
       prevVal.filter((url: string) => url !== deleteUrl)
     );
   };
+   
   return (
     <div>
+
       {
         <div ref={scrollRef}>
           <Carousel
@@ -36,7 +43,7 @@ const MediaUpload = ({
               {files.map((url: string) => {
                 return (
                   <CarouselItem key={url} className="relative   basis-1/2">
-                    <div className="rounded-[20px] py-3 flex aspect-square  items-center justify-center  ">
+                    <div className={` rounded-[20px] py-3 flex aspect-square  items-center justify-center  `}>
                       {url.endsWith(".mp4") ? (
                         <div className="rounded-[20px] relative">
                           <video

@@ -116,7 +116,7 @@ const PostActivity = ({
         </button>
        
       </div>
-      {editPost && <PostContainer ref={postRef} isEdit={editPost} editTweet={singleTweet} />}
+      {editPost && <PostContainer ref={postRef} setPostControlDialogOpen={setPostControlDialogOpen} isEdit={editPost} editTweet={singleTweet} />}
       {deleteDialog&& <DeletePostContainer
               postId={singleTweet.id}
               setDeleteDialog={setDeleteDialog}

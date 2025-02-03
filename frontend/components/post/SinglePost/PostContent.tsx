@@ -38,7 +38,7 @@ const PostContent = ({content,hashtags,mediaArray,author,tweetId}:{content:strin
                 <Link  key={url} href={`/${author.userName}/status/${tweetId}/photos/${index+1}`}>
                 <div
                  
-                  className="relative overflow-hidden"
+                  className={`relative overflow-hidden ${mediaArray.length==3&&index==1&&"row-span-2"}`}
                 >
                   {url.endsWith(".mp4") ? (
                     <video

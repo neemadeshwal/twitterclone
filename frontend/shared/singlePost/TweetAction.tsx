@@ -7,20 +7,39 @@ import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import { previewFile } from "@/lib/uploadFile";
+
 import GifContainer from "../GifContainer";
 
 const TweetAction = ({
   setTweetContent,
   setFiles,
-  handleImgUpload,
+  setLoading
 }: {
   setTweetContent: any;
   setFiles: any;
-  handleImgUpload: any;
+  setLoading:any;
 }) => {
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const [openGifContainer, setOpenGifContainer] = useState(false);
   const emojiCloseRef = useRef<HTMLDivElement>(null);
+  async function handleImgUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    if (!event.target.files || event.target.files.length === 0) {
+      return;
+    }
+    setLoading(true);
+    try {
+      const fileUrl = await previewFile(event.target.files);
+      console.log(fileUrl, "fileUrl");
+      if (fileUrl && fileUrl.length !== 0) {
+        setFiles((prevVal:string[]) => [...prevVal, ...fileUrl]);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div>

@@ -39,4 +39,10 @@ input SingleTweetInput{
     id:String
 }
 
+input EditTweetInput{
+    content:String
+    mediaArray:[String]
+    tweetId:String
+}
+
 `;
