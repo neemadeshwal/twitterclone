@@ -15,6 +15,7 @@ import AuthorDetail from "@/shared/singlePost/AuthorDetail";
 import AuthorProfile from "@/shared/AuthorProfile";
 import PostContent from "./PostContent";
 import HoverWrapper from "@/shared/singlePost/HoverWrapper";
+import PostControlDialog from "@/shared/singlePost/postControlDialog";
 
 const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
@@ -87,8 +88,8 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
 
 
   return (
-    <div className="w-full cursor-pointer px-4 sm:px-2  py-3">
-      <div className="flex gap-0 w-full relative">
+    <div className="w-full cursor-pointer  py-3">
+      <div className="flex gap-0 w-full relative px-4 sm:px-2 ">
        
         <div className="pr-4">
           <HoverWrapper userId={tweet?.author.id}>
@@ -99,6 +100,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
         <div className="w-full">
           
         <AuthorDetail author={tweet?.author} createdAt={tweet?.createdAt}/>
+        <PostControlDialog tweet={tweet} />
         <div className="w-full pl-0 px-4">
         
           <PostContent author={tweet?.author} tweetId={tweet?.id} content={tweet?.content} mediaArray={tweet?.mediaArray} hashtags={tweet?.hashtags}/>

@@ -9,7 +9,6 @@ import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 const SavePost = ({
   singleTweet,
 }: {
-  iconColor?: string; 
   singleTweet: any;
 }) => {
   const queryClient = useQueryClient();
@@ -34,7 +33,6 @@ const SavePost = ({
       return;
     }
 
-    // Toggle the bookmark state immediately after the user clicks (optimistic UI)
     setSaveBookmark((prevVal) => !prevVal);
 
     const body = {
@@ -42,12 +40,9 @@ const SavePost = ({
     };
 
     try {
-      // Wait for the mutation to complete
       await saveBookmarkMutation.mutateAsync(body);
     } catch (error) {
       console.log(error);
-      // If mutation fails, revert the state back
-      setSaveBookmark((prevVal) => !prevVal);
     }
   }
 
@@ -55,17 +50,16 @@ const SavePost = ({
     if (!singleTweet || !user) {
       return;
     }
-    // Check if the tweet is already saved by the current user
     const isSaved = singleTweet.savedPost?.some(
       (post: Bookmarks) => post.tweetId === singleTweet.id
     );
     setSaveBookmark(isSaved);
-  }, [singleTweet, user]);
+  }, []);
 
   return (
     <div className="flex gap-1 items-center text-[13px] font-[400]">
       <div
-        onClick={handleSaveBookmark}  // Use the handleSaveBookmark function here
+        onClick={handleSaveBookmark}  
         className={`flex gap-1 items-center cursor-pointer text-[13px] font-[400] `}
       >
         {saveBookmark ? (

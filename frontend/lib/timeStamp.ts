@@ -34,7 +34,11 @@ export function getDateTime(timeStamp: string) {
   console.log(date.getFullYear());
 
   // Return appropriate time format
-  if (seconds < 60) {
+  if(seconds==0){
+    return { type: "seconds", value: 1 };
+
+  }
+ else if (seconds < 60) {
     return { type: "seconds", value: seconds };
   } else if (minutes < 60) {
     return { type: "minutes", value: minutes };
