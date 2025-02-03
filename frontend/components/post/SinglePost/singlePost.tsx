@@ -21,7 +21,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   const [repost, setRepost] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { user } = useCurrentUser();
+  const { user } = useCurrentUser();  
   
 
   useEffect(() => {

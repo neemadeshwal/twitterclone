@@ -9,7 +9,7 @@ import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 const SavePost = ({
   singleTweet,
 }: {
-  iconColor?: string;
+  iconColor?: string; 
   singleTweet: any;
 }) => {
   const queryClient = useQueryClient();
