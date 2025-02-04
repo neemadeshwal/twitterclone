@@ -8,8 +8,8 @@ import HorizontalSidebar from "./horizontalSidebar";
 const Home = () => {
   return (
     <div className="min-h-screen flex flex-col sm:flex-row">
-      <div className="flex-1 flex flex-col sm:flex-row px-0  md:px-[100px]">
-        <div className="hidden sm:flex flex-col w-[7%] justify-center  left-width sticky top-0 h-screen">
+      <div className="flex-1 flex flex-col sm:flex-row px-0  md:px-[100px] lg:px-[20px] xl1300:px-[40px]">
+        <div className="hidden sm:flex flex-col w-[7%] sm:w-[10%] md:w-[11%] justify-center xl1300:w-[20%] left-width sticky top-0 h-screen">
           <div className="flex h-full">
             <div className="flex-grow">
               <Sidebar />
@@ -20,7 +20,7 @@ const Home = () => {
           </div>
         </div>
 
-        <main className=" w-full sm:w-[80%] md:w-[95%] middle-width md:max-w-[700px] lg:max-w-full lg:w-[63%] xl:w-[56%]">
+        <main className=" w-full sm:w-[80%] md:w-[95%]  md:max-w-[700px] lg:max-w-full lg:w-[60%] xl1300:w-[50%] ">
           <MiddlePost />
         </main>
 
@@ -28,7 +28,7 @@ const Home = () => {
           <DivisionBar type="y" />
         </div>
 
-        <div className="hidden lg:block  lg:w-[30%] xl:w-[37%] right-width">
+        <div className="hidden lg:block  lg:w-[33%] xl1300:w-[30%] ">
           <RightSidebar />
         </div>
       </div>

@@ -203,8 +203,8 @@ const mutations = {
         id:tweetId
       },
       data:{
-        content:content?cleanContent:isTweetExist.content,
-        mediaArray:mediaArray.length!==0?mediaArray:isTweetExist.mediaArray,
+        content:cleanContent,
+        mediaArray:mediaArray,
         hashtags: {
           connect:
             allHashtag.length !== 0

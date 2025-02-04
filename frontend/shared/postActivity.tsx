@@ -35,6 +35,7 @@ const PostActivity = ({
   const [editPost, setEditPost] = useState(false);
   const[deleteDialog,setDeleteDialog]=useState(false)
   
+  const [isContainerOpen, setIsContainerOpen] = useState(false);
 
   useEffect(() => {
     if (!user || !singleTweet) {
@@ -85,7 +86,7 @@ const PostActivity = ({
       Delete
     </button>
     <button  
-    onClick={(e)=>{e.stopPropagation();setEditPost(true)}}
+    onClick={(e)=>{e.stopPropagation();setEditPost(true);setIsContainerOpen(true)}}
     
     className="flex gap-3 items-center font-[600]">
               <MdEditDocument className="font-[600] text-[17px]" />
@@ -116,7 +117,7 @@ const PostActivity = ({
         </button>
        
       </div>
-      {editPost && <PostContainer ref={postRef} setPostControlDialogOpen={setPostControlDialogOpen} isEdit={editPost} editTweet={singleTweet} />}
+      {editPost&&isContainerOpen && <PostContainer ref={postRef} setPostControlDialogOpen={setPostControlDialogOpen} isEdit={editPost} editTweet={singleTweet} isContainerOpen={isContainerOpen} setIsContainerOpen={setIsContainerOpen} />}
       {deleteDialog&& <DeletePostContainer
               postId={singleTweet.id}
               setDeleteDialog={setDeleteDialog}

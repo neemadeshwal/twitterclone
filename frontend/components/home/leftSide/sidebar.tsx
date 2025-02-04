@@ -63,6 +63,7 @@ const Sidebar = () => {
   const [moreContainer, setMoreContainer] = useState(false);
   const pathname = usePathname();
   const [logoutContainer, setLogoutContainer] = useState(false);
+  const[isContainerOpen,setIsContainerOpen]=useState(false)
 
   return (
     <div className="flex flex-col h-full items-center justify-between">
@@ -112,8 +113,21 @@ const Sidebar = () => {
           </div>
 
           {/* Post Button */}
-          <PostContainer />
+          <div className="">
+
+          <div
+        onClick={() => setIsContainerOpen(true)}
+        className="p-2 bg-white text-black w-fit flex fullWidth rounded-full my-2 cursor-pointer"
+      >
+        <div className="show-feather">
+          <BsFeather className="text-[28px]" />
         </div>
+        <p className="text-center hidden showPostName w-full justify-center items-center font-[700] text-[18px] showPost">
+          Post
+        </p>
+      </div>
+          </div>
+        </div> 
       </div>
 
       {/* Current User Section - Sticky */}
@@ -144,6 +158,8 @@ const Sidebar = () => {
           />
         )}
       </div>
+      <PostContainer isContainerOpen={isContainerOpen} setIsContainerOpen={setIsContainerOpen}/>
+
     </div>
   );
 };

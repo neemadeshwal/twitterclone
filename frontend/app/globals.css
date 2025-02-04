@@ -90,15 +90,8 @@ p {
   margin-bottom: 1rem;
 }
 @media (min-width: 1300px) {
-  .right-width {
-    width: 20%;
-  }
-  .middle-width {
-    width: 55%;
-  }
-  .left-width {
-    width: 25%;
-  }
+  
+ 
   .showIcon {
     display: inline-block;
   }

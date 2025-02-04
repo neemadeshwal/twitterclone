@@ -2,9 +2,11 @@
 import { followUser } from "@/graphql/mutation/follows";
 import { getCurrentUser } from "@/graphql/types";
 import { useCurrentUser } from "@/hooks/user";
+import AuthorProfile from "@/shared/AuthorProfile";
 import { useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import DynamicNameTruncate from "./DynamicNameTruncate";
 
 const SingleFollowUser = ({
   singleUser,
@@ -65,47 +67,23 @@ const SingleFollowUser = ({
       <div className="flex justify-between w-full">
         <div className="flex gap-2 items-center">
           <div>
-            {singleUser.profileImgUrl ? (
-              <div>
-                {singleUser.profileImgUrl.startsWith("#") ? (
-                  <div className=" flex items-center justify-center capitalize  cursor-pointer">
-                    <p
-                      style={{ backgroundColor: singleUser?.profileImgUrl }}
-                      className=" rounded-full w-10 h-10 flex items-center justify-center "
-                    >
-                      {singleUser?.firstName.slice(0, 1)}
-                    </p>
-                  </div>
-                ) : (
-                  <Image
-                    src={singleUser?.profileImgUrl}
-                    alt=""
-                    width={100}
-                    height={100}
-                    className="w-10 h-10 rounded-full"
-                  />
-                )}
-              </div>
-            ) : (
-              <div className=" flex items-center justify-center capitalize  cursor-pointer">
-                <p className="bg-green-900 rounded-full w-10 h-10 flex items-center justify-center ">
-                  {singleUser?.firstName.slice(0, 1)}
-                </p>
-              </div>
-            )}
+           <AuthorProfile
+           author={singleUser}
+
+           />
           </div>
           <div>
-            <h3 className="text-[16px] font-[500] capitalize hover:underline underline-white cursor-pointer">
-              {singleUser?.firstName} {singleUser?.lastName}
+            <h3 className="text-[14px] xl:text-[16px] font-[500] capitalize hover:underline underline-white cursor-pointer">
+            <DynamicNameTruncate text={`${singleUser?.firstName} ${singleUser?.lastName}`}/>
             </h3>
-            <p className="gray text-[14px] font-[300] break-all">
-              @{singleUser?.userName}
-            </p>
+            <h4 className="gray text-[13px] xl:text-[14px] font-[300] break-all">
+              <DynamicNameTruncate text={`@${singleUser?.userName}`}/>
+            </h4>
           </div>
         </div>
         <div>
           {isAlreadyFollowing ? (
-            <button className="px-4 py-1 rounded-full border border-gray-600 capitalize font-[600]">
+            <button className="px-3 text-[14px] xl:text-[16px]  py-1 rounded-full border border-gray-600 capitalize font-[600]">
               following
             </button>
           ) : (

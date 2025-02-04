@@ -9,7 +9,7 @@ import data from "@emoji-mart/data";
 
 import DivisionBar from "./divisionbar";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createTweetMutate } from "@/graphql/mutation/tweet";
+import { createTweetMutate, editTweetMutate } from "@/graphql/mutation/tweet";
 
 import GifContainer from "./GifContainer";
 import TweetAction from "./singlePost/TweetAction";
@@ -20,13 +20,16 @@ const PostContainer = ({
   editTweet,
   ref,
   setPostControlDialogOpen,
+  isContainerOpen,
+  setIsContainerOpen
 }: {
   isEdit?: boolean;
   editTweet?: any;
   ref?: any;
-  setPostControlDialogOpen: any;
+  setPostControlDialogOpen?: any;
+  isContainerOpen:boolean;
+  setIsContainerOpen:any;
 }) => {
-  const [isContainerOpen, setIsContainerOpen] = useState(false);
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [openGifContainer, setOpenGifContainer] = useState(false);
@@ -46,18 +49,38 @@ const PostContainer = ({
       console.log(error);
     },
   });
-  async function onSubmit() {
-    let photoArray: string[] = [];
-    let videoArray: string[] = [];
-    if (files.length !== 0) {
-      files.map((url) => {
-        if (url.endsWith("mp4")) {
-          videoArray.push(url);
-        } else {
-          photoArray.push(url);
-        }
-      });
+
+  const editMutation=useMutation({
+     mutationFn:editTweetMutate,
+     onSuccess:(response:any)=>{
+      queryClient.invalidateQueries({queryKey:["all-tweet"]});
+      setIsContainerOpen(false);
+      setPostControlDialogOpen(false);
+      
+     },
+     onError: (error) => {
+      console.log(error);
+    },
+  })
+
+  async function onEdit(){
+     
+    const body={
+      content:tweetContent,
+      mediaArray:files,
+      tweetId:editTweet.id
+
+
     }
+    try {
+      await editMutation.mutateAsync(body);
+    } catch (error) {
+      console.log(error);
+    }
+   
+  }
+  async function onSubmit() {
+   
     const body = {
       content: tweetContent,
       mediaArray: files,
@@ -157,13 +180,25 @@ const PostContainer = ({
               setTweetContent={setTweetContent}
               setFiles={setFiles}
               setLoading={setLoading}
+              containerType="PostDialog"
             />
-            <button
-              onClick={onSubmit}
+            {
+              isEdit?
+              <button
+              onClick={onEdit}
               className="py-2 px-4 rounded-full bg-blue-500 text-white"
             >
-              {isEdit ? "Edit post" : "Post"}
-            </button>
+               Edit post
+            </button>:
+             <button
+             onClick={onSubmit}
+             className="py-2 px-4 rounded-full bg-blue-500 text-white"
+           >
+             Post
+           </button>
+
+            }
+           
           </div>
         </div>
       </div>
@@ -188,7 +223,7 @@ const PostContainer = ({
     </div>
   );
 
-  return <div>{isEdit && ReactDOM.createPortal(element, document.body)}</div>;
+  return <div>{isContainerOpen && ReactDOM.createPortal(element, document.body)}</div>;
 };
 
 export default PostContainer;

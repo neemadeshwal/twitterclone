@@ -91,6 +91,7 @@ const ComposePost = () => {
               setTweetContent={setTweetContent}
               setFiles={setFiles}
               setLoading={setLoading}
+              containerType="MainPost"
             />
             <div>
               <button

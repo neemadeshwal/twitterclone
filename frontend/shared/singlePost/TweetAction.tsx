@@ -15,10 +15,13 @@ const TweetAction = ({
   setTweetContent,
   setFiles,
   setLoading,
+  containerType
 }: {
   setTweetContent: any;
   setFiles: any;
   setLoading: any;
+  containerType:string;
+
 }) => {
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const [openGifContainer, setOpenGifContainer] = useState(false);
@@ -44,10 +47,10 @@ const TweetAction = ({
     <div>
       <div className="flex gap-2 ">
         <div className="rounded-full p-2 hover:bg-[#081323] ">
-          <label htmlFor="file">
+          <label htmlFor={containerType}>
             <input
               type="file"
-              id="file"
+              id={containerType}
               multiple
               className="hidden"
               onChange={handleImgUpload}

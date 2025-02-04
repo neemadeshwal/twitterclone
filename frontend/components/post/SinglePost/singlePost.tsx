@@ -89,7 +89,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
 
   return (
     <div className="w-full cursor-pointer  py-3">
-      <div className="flex gap-0 w-full relative px-4 sm:px-2 ">
+      <div className="flex gap-0 w-full relative px-4 ">
        
         <div className="pr-4">
           <HoverWrapper userId={tweet?.author.id}>
@@ -115,6 +115,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
         </div>
       </div>
       <DivisionBar type="x" />
+
     </div>
   );
 });
