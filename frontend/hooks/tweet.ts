@@ -3,11 +3,13 @@ import {
   allHashTagQuery,
   getAllTweetQuery,
   getSingleTweetQuery,
+  getUserFollowingTweet,
 } from "@/graphql/query/tweet";
 import {
   getAllHashTagsProps,
   GetAllTweetProps,
   getSingleTweetProps,
+  GetUserFollowingTweetProps,
 } from "@/graphql/types";
 import { useQuery } from "@tanstack/react-query";
 
@@ -24,6 +26,24 @@ export const useAllTweet = () => {
   console.log(query, "query query");
   return {
     allTweet: query.data?.getAllTweet,
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
+  };
+};
+
+export const usegetUserFollowingTweet = () => {
+  const query = useQuery<GetUserFollowingTweetProps>({
+    queryKey: ["user-following-tweet"],
+    queryFn: () => graphqlClient.request(getUserFollowingTweet),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
+  return {
+    userFollowingTweet: query.data?.getUserFollowingTweet,
     isLoading: query.isLoading,
     error: query.error,
     refetch: query.refetch,

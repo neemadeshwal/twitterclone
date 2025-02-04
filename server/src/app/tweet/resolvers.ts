@@ -13,7 +13,6 @@ const queries = {
         hashtags: true,
       },
     });
-    console.log(tweets, "tweets");
     return tweets;
   },
 
@@ -52,6 +51,46 @@ const queries = {
     const allHashtag = await prismaClient.hashtag.findMany({});
     return allHashtag;
   },
+  getUserFollowingTweet: async (
+    parent: any,
+    payload: any,
+    ctx: GraphqlContext
+  ) => {
+    if (!ctx.user) {
+      throw new Error("Unauthorized.");
+    }
+
+    const isUserExist = await prismaClient.user.findUnique({
+      where: {
+        id: ctx.user.id,
+      },
+      include: {
+        followingList: {
+          select: {
+            followingId: true,
+            followerId: true,
+          },
+        },
+      },
+    });
+
+    if (!isUserExist) {
+      throw new Error("No user exist");
+    }
+
+    const followingTweet = await prismaClient.tweet.findMany({
+      where: {
+        authorId: {
+          in: isUserExist.followingList.map((follow) => follow.followerId),
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return followingTweet;
+  },
 };
 const mutations = {
   createTweet: async (
@@ -67,7 +106,7 @@ const mutations = {
       throw new Error("Unauthorized.No token present");
     }
     const { content, mediaArray } = payload;
-    if (!content && mediaArray.length==0) {
+    if (!content && mediaArray.length == 0) {
       throw new Error("No content .Please provide content first.");
     }
     const hashtags = content.match(/#\w+/g) || [];
@@ -149,30 +188,33 @@ const mutations = {
     });
     return deleteTweet;
   },
-  editTweet:async(parent:any,{payload}:{payload:{content:string,mediaArray:string[],tweetId:string}},ctx:GraphqlContext)=>{
-
-    if(!ctx.user){
-      throw new Error("No user found")
+  editTweet: async (
+    parent: any,
+    {
+      payload,
+    }: { payload: { content: string; mediaArray: string[]; tweetId: string } },
+    ctx: GraphqlContext
+  ) => {
+    if (!ctx.user) {
+      throw new Error("No user found");
     }
-    const {content,mediaArray,tweetId}=payload;
+    const { content, mediaArray, tweetId } = payload;
 
-    if(!tweetId){
-      throw new Error("No tweet id is present")
+    if (!tweetId) {
+      throw new Error("No tweet id is present");
     }
-    if(!content&&mediaArray.length===0){
-      throw new Error("No content present.")
+    if (!content && mediaArray.length === 0) {
+      throw new Error("No content present.");
     }
 
-
-    const isTweetExist=await prismaClient.tweet.findUnique({
-      where:{
-        id:tweetId
-      }
-    })
+    const isTweetExist = await prismaClient.tweet.findUnique({
+      where: {
+        id: tweetId,
+      },
+    });
 
     const hashtags = content.match(/#\w+/g) || [];
     const cleanContent = content.replace(/#\w+/g, "").trim();
-
 
     const allHashtag = await Promise.all(
       hashtags.map(async (hashtag) => {
@@ -194,17 +236,17 @@ const mutations = {
       })
     );
 
-    if(!isTweetExist){
-      throw new Error("tweet donot exist")
+    if (!isTweetExist) {
+      throw new Error("tweet donot exist");
     }
 
-    const updatedTweet=await prismaClient.tweet.update({
-      where:{
-        id:tweetId
+    const updatedTweet = await prismaClient.tweet.update({
+      where: {
+        id: tweetId,
       },
-      data:{
-        content:cleanContent,
-        mediaArray:mediaArray,
+      data: {
+        content: cleanContent,
+        mediaArray: mediaArray,
         hashtags: {
           connect:
             allHashtag.length !== 0
@@ -213,12 +255,10 @@ const mutations = {
                 }))
               : undefined,
         },
-      }
-    })
-    return updatedTweet
-
-
-  }
+      },
+    });
+    return updatedTweet;
+  },
 };
 
 const extraResolvers = {

@@ -15,20 +15,21 @@ import GifContainer from "./GifContainer";
 import TweetAction from "./singlePost/TweetAction";
 import MediaUpload from "./singlePost/MediaUpload";
 import TweetContent from "./singlePost/TweetContent";
+import { FaArrowLeft } from "react-icons/fa";
 const PostContainer = ({
   isEdit,
   editTweet,
   ref,
   setPostControlDialogOpen,
   isContainerOpen,
-  setIsContainerOpen
+  setIsContainerOpen,
 }: {
   isEdit?: boolean;
   editTweet?: any;
   ref?: any;
   setPostControlDialogOpen?: any;
-  isContainerOpen:boolean;
-  setIsContainerOpen:any;
+  isContainerOpen: boolean;
+  setIsContainerOpen: any;
 }) => {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
@@ -50,37 +51,31 @@ const PostContainer = ({
     },
   });
 
-  const editMutation=useMutation({
-     mutationFn:editTweetMutate,
-     onSuccess:(response:any)=>{
-      queryClient.invalidateQueries({queryKey:["all-tweet"]});
+  const editMutation = useMutation({
+    mutationFn: editTweetMutate,
+    onSuccess: (response: any) => {
+      queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
       setIsContainerOpen(false);
-      setPostControlDialogOpen(false);
-      
-     },
-     onError: (error) => {
+      setPostControlDialogOpen && setPostControlDialogOpen(false);
+    },
+    onError: (error) => {
       console.log(error);
     },
-  })
+  });
 
-  async function onEdit(){
-     
-    const body={
-      content:tweetContent,
-      mediaArray:files,
-      tweetId:editTweet.id
-
-
-    }
+  async function onEdit() {
+    const body = {
+      content: tweetContent,
+      mediaArray: files,
+      tweetId: editTweet.id,
+    };
     try {
       await editMutation.mutateAsync(body);
     } catch (error) {
       console.log(error);
     }
-   
   }
   async function onSubmit() {
-   
     const body = {
       content: tweetContent,
       mediaArray: files,
@@ -134,25 +129,52 @@ const PostContainer = ({
   }, [isEmojiTableOpen, setIsEmojiTableOpen]);
 
   const element = (
-    <div className="fixed top-0 left-0 w-full h-full z-[100] dimBg flex items-center justify-center overflow-y-auto p-4">
+    <div className="fixed top-0 left-0 w-full h-full z-[10000] dimBg flex items-center justify-center overflow-y-auto md:p-4">
       <div
         ref={ref}
-        className="bg-black min-h-[50%] py-10 h-auto pb-4 rounded-[20px] z-[1000] w-full max-w-2xl relative flex flex-col justify-between"
+        className="bg-black w-full h-full md:h-auto py-10  pb-4 md:rounded-[20px] z-[1000]  md:max-w-2xl relative flex flex-col justify-between"
       >
         {/* Header */}
         <div
-          className="absolute left-1 top-2 rounded-full p-1 hover:bg-[#0f0f0f] cursor-pointer"
+          className="absolute left-1  hidden md:block top-2 rounded-full p-1 hover:bg-[#0f0f0f] cursor-pointer"
           onClick={() => {
             setIsContainerOpen(false);
-            setPostControlDialogOpen(false);
+            setPostControlDialogOpen && setPostControlDialogOpen(false);
           }}
         >
           <BiX className="text-[30px]" />
         </div>
+        <div
+          onClick={() => setIsContainerOpen(false)}
+          className="absolute top-2 left-2 rounded-full p-1  md:hidden  z-50 hover:bg-[#0f0f0f] cursor-pointer"
+        >
+          <FaArrowLeft className="text-[20px] " strokeWidth={1} />
+        </div>
+        {
+          isEdit?
+          <div className="absolute top-2 md:hidden right-2 rounded-full z-50 p-1 hover:bg-[#0f0f0f] cursor-pointer">
+              <button
+                onClick={onEdit}
+                className="py-[0.4rem] rounded-full x-bgcolor px-6"
+              >
+                Edit
+              </button>
+            </div>:
+            <div className="absolute top-2 md:hidden right-2 rounded-full z-50 p-1 hover:bg-[#0f0f0f] cursor-pointer">
+              <button
+                onClick={onSubmit}
+                className="py-[0.4rem] rounded-full x-bgcolor px-6"
+              >
+                Reply
+              </button>
+            </div>
+
+        }
+        
 
         {/* Content */}
         <div className="h-full">
-          <div className="flex items-start gap-4 p-4 pt-4 pb-0">
+          <div className="flex items-start gap-4 p-4 pt-4 pb-2 md:pb-0">
             <div className="">
               <CurrentUser />
             </div>
@@ -182,23 +204,21 @@ const PostContainer = ({
               setLoading={setLoading}
               containerType="PostDialog"
             />
-            {
-              isEdit?
+            {isEdit ? (
               <button
-              onClick={onEdit}
-              className="py-2 px-4 rounded-full bg-blue-500 text-white"
-            >
-               Edit post
-            </button>:
-             <button
-             onClick={onSubmit}
-             className="py-2 px-4 rounded-full bg-blue-500 text-white"
-           >
-             Post
-           </button>
-
-            }
-           
+                onClick={onEdit}
+                className="py-2 px-4 hidden md:inline-block rounded-full bg-blue-500 text-white"
+              >
+                Edit post
+              </button>
+            ) : (
+              <button
+                onClick={onSubmit}
+                className="py-2 px-4 hidden md:inline-block rounded-full bg-blue-500 text-white"
+              >
+                Post
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -223,7 +243,11 @@ const PostContainer = ({
     </div>
   );
 
-  return <div>{isContainerOpen && ReactDOM.createPortal(element, document.body)}</div>;
+  return (
+    <div>
+      {isContainerOpen && ReactDOM.createPortal(element, document.body)}
+    </div>
+  );
 };
 
 export default PostContainer;

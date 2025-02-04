@@ -198,3 +198,74 @@ export const allHashTagQuery = gql(`
     }
     
     `);
+
+export const getUserFollowingTweet=gql(`
+ query GetUserFollowingTweet{
+            getUserFollowingTweet{
+            id 
+            content
+            mediaArray
+            createdAt
+            updatedAt
+            savedPost{
+                id
+                userId
+                tweetId
+            }
+            hashtags{
+                id 
+                text
+                tweets{
+                    id
+                }
+            }
+            repostTweet{
+                userId
+                tweetId
+                id
+                tweet{
+                    id
+                    content
+                    mediaArray
+                    author{
+                        id
+                        userName
+                        email
+                        firstName
+                        lastName
+                    }
+                }
+            }
+            commentAuthor{
+                    id
+                    comment
+                    userId
+                    tweetId
+                }
+            author{
+                firstName
+                lastName
+                userName
+                profileImgUrl
+                id
+            }
+            LikedBy{
+                id
+                userId
+                tweetId
+                tweet{
+                    id
+                    content
+
+                }
+                user{
+                    firstName
+                    email
+                    id
+                    
+                }
+            
+            }
+            }
+        }
+    `)

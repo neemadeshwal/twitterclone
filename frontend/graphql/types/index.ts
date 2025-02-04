@@ -86,6 +86,9 @@ interface getAllTweet {
 export interface GetAllTweetProps {
   getAllTweet: Tweet[];
 }
+export interface GetUserFollowingTweetProps {
+  getUserFollowingTweet: Tweet[];
+}
 export interface getAllHashTagsProps {
   getAllHashTags: HashTag[];
 }

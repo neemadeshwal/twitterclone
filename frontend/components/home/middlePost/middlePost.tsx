@@ -1,6 +1,8 @@
 "use client";
 import ComposePost from "@/components/post/compostPost";
+import FollowingList from "@/components/post/followingList";
 import PostList from "@/components/post/postlist";
+import ComposePostIcon from "@/shared/ComposePostIcon";
 import CurrentUser from "@/shared/currentUser";
 import DivisionBar from "@/shared/divisionbar";
 import React, { useState } from "react";
@@ -55,7 +57,16 @@ const MiddlePost = () => {
         <div className="w-full md:inline-block hidden">
           <ComposePost />
         </div>
-        <PostList />
+        {
+          isForYou?
+        <PostList />:<FollowingList/>
+
+
+        }
+      </div>
+      <div className="sm:hidden">
+      <ComposePostIcon/>
+
       </div>
     </div>
   );

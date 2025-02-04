@@ -49,15 +49,15 @@ const GifContainer = ({
   }, [searchGif, fetch]);
   return (
     <div className="fixed top-0 left-0 w-full h-full z-[1000] dimBg flex items-center justify-center">
-      <div className="bg-black rounded-[20px] z-50 w-[45%] min-h-[65%] h-[90vh] relative">
+      <div className="bg-black md:rounded-[20px] z-50 w-full md:w-[45%] h-full md:min-h-[65%] md:h-[90vh] relative">
         <div className="sticky top-0 z-[1000] backdrop-blur-sm rounded-[20px]">
           <div
-            className="absolute top-2 left-2 rounded-full cursor-pointer p-2"
+            className="absolute top-1 left-1 rounded-full cursor-pointer p-2"
             onClick={() => setOpenGifContainer(false)}
           >
             <BiX className="w-7 h-7" />
           </div>
-          <div className="flex justify-center w-full">
+          <div className="flex justify-center mt-4 w-full">
             <div className="flex justify-center w-[80%] py-3 relative">
               <input
                 onChange={(e) => setSearchGif(e.target.value)}
