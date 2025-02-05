@@ -10,6 +10,7 @@ import GifContainer from "@/shared/GifContainer";
 import TweetAction from "@/shared/singlePost/TweetAction";
 import MediaUpload from "@/shared/singlePost/MediaUpload";
 import TweetContent from "@/shared/singlePost/TweetContent";
+import Loading from "@/shared/loading";
 const ComposePost = () => {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
@@ -76,7 +77,7 @@ const ComposePost = () => {
               setTweetContent={setTweetContent}
             />
 
-            {loading && <div>Loading....</div>}
+            {loading && <Loading />}
 
             {files && typeof files !== "undefined" && files.length !== 0 && (
               <MediaUpload files={files} setFiles={setFiles} />

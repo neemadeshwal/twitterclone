@@ -1,69 +1,51 @@
 "use client";
-import React, { useState } from "react";
-import { GoHome } from "react-icons/go";
-import { MdHomeFilled } from "react-icons/md";
-import { IoSearch } from "react-icons/io5";
-import {
-  IoIosNotificationsOutline,
-  IoMdNotifications,
-  IoMdMail,
-} from "react-icons/io";
-import {
-  HiOutlineDotsCircleHorizontal,
-  HiOutlineDotsHorizontal,
-} from "react-icons/hi";
-import { FaSearch, FaRegUser, FaUser } from "react-icons/fa";
-import { CiMail } from "react-icons/ci";
-import { PiDotsThreeCircleFill } from "react-icons/pi";
-import { BsTwitterX } from "react-icons/bs";
-import { BsFeather } from "react-icons/bs";
-import { useCurrentUser } from "@/hooks/user";
-import CurrentUser from "@/shared/currentUser";
+import React from "react";
 import Link from "next/link";
+
+import { Icons } from "@/utils/icons";
+
+import { useCurrentUser } from "@/hooks/user";
 import { usePathname } from "next/navigation";
 import MoreContainer from "@/shared/moreContainer";
-import { FaEllipsisVertical } from "react-icons/fa6";
-import LogOutContainer from "@/shared/logoutContainer";
-import PostContainer from "@/shared/postContainer";
+import { getCurrentUser } from "@/graphql/types";
+import PostButton from "./leftSideComp/PostButton";
+import ProfileContainer from "./leftSideComp/ProfileContainer";
+import MoreContainerTrigger from "./leftSideComp/MoreContainerTrigger";
 export const sidebarIcons = [
   {
     title: "home",
-    icon: <GoHome />,
-    iconActive: <MdHomeFilled />,
+    icon: <Icons.Home />,
+    iconActive: <Icons.HomeActive />,
     activePathname: "/",
   },
   {
     title: "explore",
-    icon: <IoSearch />,
-    iconActive: <FaSearch />,
+    icon: <Icons.Search />,
+    iconActive: <Icons.SearchActive />,
     activePathname: "/explore",
   },
   {
     title: "notifications",
-    icon: <IoIosNotificationsOutline />,
-    iconActive: <IoMdNotifications />,
+    icon: <Icons.Notification />,
+    iconActive: <Icons.NotificationActive />,
     activePathname: "/notifications",
   },
   {
     title: "messages",
-    icon: <CiMail />,
-    iconActive: <IoMdMail />,
+    icon: <Icons.Message />,
+    iconActive: <Icons.MessageActive />,
     activePathname: "/messages",
   },
   {
     title: "profile",
-    icon: <FaRegUser />,
-    iconActive: <FaUser />,
+    icon: <Icons.Profile />,
+    iconActive: <Icons.ProfileActive />,
     activePathname: "/profile",
   },
 ];
 
-const Sidebar = () => {
-  const { user } = useCurrentUser();
-  const [moreContainer, setMoreContainer] = useState(false);
+const Sidebar = ({ currentUser }: { currentUser: getCurrentUser | null }) => {
   const pathname = usePathname();
-  const [logoutContainer, setLogoutContainer] = useState(false);
-  const [isContainerOpen, setIsContainerOpen] = useState(false);
 
   return (
     <div className="flex flex-col h-full items-center justify-between">
@@ -72,7 +54,7 @@ const Sidebar = () => {
         <div className="py-2">
           {/* Logo */}
           <div className="p-3 w-fit  hover:bg-[#2a2a2abb] rounded-full">
-            <BsTwitterX className="text-[28px]" />
+            <Icons.TwitterX className="text-[28px]" />
           </div>
 
           {/* Navigation Icons */}
@@ -82,7 +64,7 @@ const Sidebar = () => {
                 key={item.title + index}
                 href={
                   item.title === "profile"
-                    ? `/@${user?.userName}`
+                    ? `/@${currentUser?.userName}`
                     : item.activePathname
                 }
               >
@@ -101,66 +83,15 @@ const Sidebar = () => {
           </div>
 
           {/* More Button */}
-          <div
-            onClick={() => setMoreContainer(true)}
-            className="p-2 more-bottom-height mt-2 rounded-full fullWidth w-fit hover:bg-[#1d1d1dbb] flex items-center justify-center cursor-pointer fixPosition px-width"
-          >
-            <HiOutlineDotsCircleHorizontal className="text-[28px]" />
-            {moreContainer && (
-              <MoreContainer setMoreContainer={setMoreContainer} />
-            )}
-            <span className="hidden showIcon capitalize">more</span>
-          </div>
+          <MoreContainerTrigger />
 
           {/* Post Button */}
-          <div className="">
-            <div
-              onClick={() => setIsContainerOpen(true)}
-              className="p-2 bg-white text-black w-fit flex fullWidth rounded-full my-2 cursor-pointer"
-            >
-              <div className="show-feather">
-                <BsFeather className="text-[28px]" />
-              </div>
-              <p className="text-center hidden showPostName w-full justify-center items-center font-[700] text-[18px] showPost">
-                Post
-              </p>
-            </div>
-          </div>
+          <PostButton />
         </div>
       </div>
 
       {/* Current User Section - Sticky */}
-      <div
-        onClick={() => setLogoutContainer(true)}
-        className="sticky bottom-8 bg-black p-3 w-fit fullWidth hover:bg-[#1d1d1dbb] rounded-full cursor-pointer"
-      >
-        <div className="flex justify-between w-full relative  items-center">
-          <div className="flex items-center gap-2">
-            <CurrentUser />
-            <div className=" flex-col justify-center showPostName hidden items-start">
-              <div className="font-[700] text-[14px]">
-                {user?.firstName} {user?.lastName}
-              </div>
-              <div className="gray text-[14px]">@{user?.userName}</div>
-            </div>
-          </div>
-          <div className="showPostName hidden">
-            <HiOutlineDotsHorizontal />
-          </div>
-        </div>
-      </div>
-      <div className="relative">
-        {logoutContainer && (
-          <LogOutContainer
-            setLogoutContainer={setLogoutContainer}
-            userName={user?.userName}
-          />
-        )}
-      </div>
-      <PostContainer
-        isContainerOpen={isContainerOpen}
-        setIsContainerOpen={setIsContainerOpen}
-      />
+      <ProfileContainer currentUser={currentUser} />
     </div>
   );
 };
