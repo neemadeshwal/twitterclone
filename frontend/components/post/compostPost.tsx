@@ -1,10 +1,9 @@
 "use client";
 import DivisionBar from "@/shared/divisionbar";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import CurrentUser from "@/shared/currentUser";
-import GifContainer from "@/shared/GifContainer";
 import TweetAction from "@/shared/singlePost/TweetAction";
 import MediaUpload from "@/shared/singlePost/MediaUpload";
 import TweetContent from "@/shared/singlePost/TweetContent";
@@ -13,37 +12,17 @@ import { getCurrentUser } from "@/graphql/types";
 import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 import CharacterCircle from "@/shared/CharacterCircle";
 import { TWEET_CHARACTER_LIMIT } from "@/lib/constants";
+import useOutsideClick from "@/shared/closeContainer";
+
 const ComposePost = ({ user }: { user: getCurrentUser | null }) => {
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
   const [tweetContent, setTweetContent] = useState("");
-  const [openGifContainer, setOpenGifContainer] = useState(false);
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
+
   const emojiCloseRef = useRef<HTMLDivElement>(null);
 
-  
-  
-
-  useEffect(() => {
-    const handleEmojiClose = (event: MouseEvent) => {
-      if (
-        emojiCloseRef.current &&
-        !emojiCloseRef.current.contains(event.target as Node)
-      ) {
-        console.log("hey");
-        setIsEmojiTableOpen(false);
-      }
-    };
-    if (isEmojiTableOpen) {
-      document.addEventListener("mousedown", handleEmojiClose);
-    } else {
-      document.removeEventListener("mousedown", handleEmojiClose);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleEmojiClose);
-    };
-  }, [isEmojiTableOpen, setIsEmojiTableOpen]);
+  useOutsideClick(emojiCloseRef, () => setIsEmojiTableOpen(false));
 
   const { createTweet } = useTweetMutation({
     onSuccess: () => {
@@ -75,10 +54,11 @@ const ComposePost = ({ user }: { user: getCurrentUser | null }) => {
               setTweetContent={setTweetContent}
             />
 
-            {loading && <div className="pb-3 pl-3">
-              <Loading />
+            {loading && (
+              <div className="pb-3 pl-3">
+                <Loading />
               </div>
-              }
+            )}
 
             {files.length !== 0 && (
               <MediaUpload files={files} setFiles={setFiles} />
@@ -96,17 +76,19 @@ const ComposePost = ({ user }: { user: getCurrentUser | null }) => {
               containerType="MainPost"
             />
             <div className="flex gap-2 items-center">
-              {
-                tweetContent.length>0&&
-                <div >
-                <CharacterCircle tweetContentLength={tweetContent.length} characterLimit={Number(TWEET_CHARACTER_LIMIT)}/>
-              </div>
-              }
-             
+              {tweetContent.length > 0 && (
+                <div>
+                  <CharacterCircle
+                    tweetContentLength={tweetContent.length}
+                    characterLimit={Number(TWEET_CHARACTER_LIMIT)}
+                  />
+                </div>
+              )}
+
               <button
                 onClick={onSubmit}
                 className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
-                disabled={files.length==0&& tweetContent.trim()==""}
+                disabled={files.length == 0 && tweetContent.trim() == ""}
               >
                 Post
               </button>
@@ -129,12 +111,6 @@ const ComposePost = ({ user }: { user: getCurrentUser | null }) => {
             />
           </div>
         </div>
-      )}
-      {openGifContainer && (
-        <GifContainer
-          setOpenGifContainer={setOpenGifContainer}
-          setFiles={setFiles}
-        />
       )}
     </div>
   );

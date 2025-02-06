@@ -1,44 +1,40 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BiSearch, BiX } from "react-icons/bi";
-import { Grid } from "@giphy/react-components";
 import { GiphyFetch } from "@giphy/js-fetch-api";
-import Image from "next/image";
 import GridGifContainer from "./gridGifContainer";
+import { GIF_KEY } from "@/lib/constants";
 
 const GifContainer = ({
   setOpenGifContainer,
-  setFiles
+  setFiles,
+  gifContainerRef
 }: {
   setOpenGifContainer: any;
-  setFiles?:any
+  setFiles?: any;
+  gifContainerRef:any;
 }) => {
+
+
+
   const [fetched, setFetched] = useState(false);
   const [searchGif, setSearchGif] = useState("");
-  const [gifContainer, setGifContainer] = useState<any>([]);
-  const fetchGif = new GiphyFetch("pxCY8oOUaehMopzZV52Qi2KKDgHIv1wl");
-
-  // Function to fetch trending GIFs
+  
+  const fetchGif = new GiphyFetch(GIF_KEY!);
   const trendingGifs = async () => {
     const response = await fetchGif.trending({ limit: 7 });
-    setGifContainer(response.data);
     console.log(response.data);
-    return response; // Return the response to the Grid component
+    return response;
   };
 
-  // Function to fetch search results
   const searchGifs = async () => {
-    console.log("searchgif");
     const response = await fetchGif.search(searchGif, { limit: 6 });
     console.log(response);
-    setGifContainer(response.data);
 
-    return response; // Return the search result to the Grid component
+    return response; 
   };
-  console.log(searchGif, "sejalj");
 
   useEffect(() => {
-    setFetched(false);
     searchGif
       ? searchGifs().then((res) => {
           setFetched(true);
@@ -47,9 +43,11 @@ const GifContainer = ({
           setFetched(true);
         });
   }, [searchGif, fetch]);
+
+ 
   return (
     <div className="fixed top-0 left-0 w-full h-full z-[1000] dimBg flex items-center justify-center">
-      <div className="bg-black md:rounded-[20px] z-50 w-full md:w-[45%] h-full md:min-h-[65%] md:h-[90vh] relative">
+      <div ref={gifContainerRef} className="bg-black md:rounded-[20px] z-50 w-full md:w-[45%] h-full md:min-h-[55%] md:h-[90%] relative">
         <div className="sticky top-0 z-[1000] backdrop-blur-sm rounded-[20px]">
           <div
             className="absolute top-1 left-1 rounded-full cursor-pointer p-2"
@@ -76,20 +74,12 @@ const GifContainer = ({
           </div>
         </div>
         <div className="px-4 ">
-          <GridGifContainer searchGif={searchGif} fetched={fetched} setOpenGifContainer={setOpenGifContainer} setFiles={setFiles}/>
-          {/* {gifContainer?.length !== 0 &&
-            gifContainer?.map((item: any) => {
-              return (
-                <div key={item.id}>
-                  <Image
-                    src={item.images.original.url}
-                    alt=""
-                    width={300}
-                    height={300}
-                  />
-                </div>
-              );
-            })} */}
+          <GridGifContainer
+            searchGif={searchGif}
+            fetched={fetched}
+            setOpenGifContainer={setOpenGifContainer}
+            setFiles={setFiles}
+          />
         </div>
       </div>
     </div>

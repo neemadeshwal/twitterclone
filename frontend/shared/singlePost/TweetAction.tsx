@@ -1,30 +1,30 @@
-import React, { useEffect, useRef, useState } from "react";
-import { BsEmojiSmile } from "react-icons/bs";
-import { FiMapPin } from "react-icons/fi";
-import { HiOutlinePhotograph } from "react-icons/hi";
-import { LuFolderClock } from "react-icons/lu";
-import { MdOutlineGifBox } from "react-icons/md";
-import { RiListRadio } from "react-icons/ri";
+import React, { useRef, useState } from "react";
 
 import { previewFile } from "@/lib/uploadFile";
 
 import GifContainer from "../GifContainer";
 import EmojiTable from "../ComposePost/EmojiTable";
+import ScrollLock from "../ScrollLock";
+import useOutsideClick from "../closeContainer";
+import { Icons } from "@/utils/icons";
 
 const TweetAction = ({
   setTweetContent,
   setFiles,
   setLoading,
-  containerType
+  containerType,
 }: {
   setTweetContent: any;
   setFiles: any;
   setLoading: any;
-  containerType:string;
-
+  containerType: string;
 }) => {
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const [openGifContainer, setOpenGifContainer] = useState(false);
+
+  const gifContainerRef = useRef<HTMLDivElement | null>(null);
+  useOutsideClick(gifContainerRef, () => setOpenGifContainer(false));
+
   async function handleImgUpload(event: React.ChangeEvent<HTMLInputElement>) {
     if (!event.target.files || event.target.files.length === 0) {
       return;
@@ -55,32 +55,32 @@ const TweetAction = ({
               className="hidden"
               onChange={handleImgUpload}
             />
-            <HiOutlinePhotograph className="text-[22px] x-textcolor " />
+            <Icons.PhotoIcon className="text-[22px] x-textcolor " />
           </label>
         </div>
         <div
           className="rounded-full p-2 hover:bg-[#081323]"
           onClick={() => setOpenGifContainer(true)}
         >
-          <MdOutlineGifBox className="text-[22px] x-textcolor " />
+          <Icons.GifIcon className="text-[22px] x-textcolor " />
         </div>
 
         <div className="rounded-full p-2 hover:bg-[#081323]">
-          <RiListRadio className="text-[22px] x-textcolor " />
+          <Icons.RadioIcon className="text-[22px] x-textcolor " />
         </div>
 
         <div
           onClick={() => setIsEmojiTableOpen((prevVal) => !prevVal)}
           className="rounded-full p-2 hover:bg-[#081323]"
         >
-          <BsEmojiSmile className="text-[22px] x-textcolor " />
+          <Icons.EmojiSmile className="text-[22px] x-textcolor " />
         </div>
 
         <div className="rounded-full p-2 hover:bg-[#081323]">
-          <LuFolderClock className="text-[22px] x-textcolor " />
+          <Icons.CLock className="text-[22px] x-textcolor " />
         </div>
         <div className="rounded-full p-2 hover:bg-[#081323]">
-          <FiMapPin className="text-[22px] x-textcolor " />
+          <Icons.Pin className="text-[22px] x-textcolor " />
         </div>
       </div>
       {isEmojiTableOpen && (
@@ -91,10 +91,14 @@ const TweetAction = ({
         />
       )}
       {openGifContainer && (
-        <GifContainer
-          setOpenGifContainer={setOpenGifContainer}
-          setFiles={setFiles}
-        />
+        <div>
+          <GifContainer
+            gifContainerRef={gifContainerRef}
+            setOpenGifContainer={setOpenGifContainer}
+            setFiles={setFiles}
+          />
+          <ScrollLock isOpen={openGifContainer} />
+        </div>
       )}
     </div>
   );

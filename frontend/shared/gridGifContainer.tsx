@@ -13,19 +13,19 @@ const gridGifContainer = ({
   const fetchGif = new GiphyFetch("pxCY8oOUaehMopzZV52Qi2KKDgHIv1wl");
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
   const [containerWidth, setContainerWidth] = useState(window.innerWidth);
+  const viewportHeight = window.innerHeight;
   const trendingGifs = async () => {
     const response = await fetchGif.trending({ limit: 20 });
     console.log(response.data);
-    return response; // Return the response to the Grid component
+    return response;
   };
 
-  // Function to fetch search results
   const searchGifs = async () => {
     console.log("searchgif");
     const response = await fetchGif.search(searchGif, { limit: 20 });
     console.log(response);
 
-    return response; // Return the search result to the Grid component
+    return response; 
   };
   console.log(selectedGif, "selectedgif");
   useEffect(() => {
@@ -35,7 +35,9 @@ const gridGifContainer = ({
     }
   }, [selectedGif]);
   return fetched ? (
-    <div className="overflow-y-auto h-[80vh] flex flex-wrap ">
+    <div
+    style={{ height: `${viewportHeight - 200}px` }}
+    className={`overflow-y-auto  flex flex-wrap`}>
       {!searchGif ? (
         <Grid
           fetchGifs={trendingGifs}
