@@ -4,21 +4,25 @@ import React, { useEffect, useRef, useState } from "react";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import CurrentUser from "@/shared/currentUser";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createTweetMutate } from "@/graphql/mutation/tweet";
 import GifContainer from "@/shared/GifContainer";
 import TweetAction from "@/shared/singlePost/TweetAction";
 import MediaUpload from "@/shared/singlePost/MediaUpload";
 import TweetContent from "@/shared/singlePost/TweetContent";
 import Loading from "@/shared/loading";
-const ComposePost = () => {
-  const queryClient = useQueryClient();
+import { getCurrentUser } from "@/graphql/types";
+import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
+import CharacterCircle from "@/shared/CharacterCircle";
+import { TWEET_CHARACTER_LIMIT } from "@/lib/constants";
+const ComposePost = ({ user }: { user: getCurrentUser | null }) => {
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
   const [tweetContent, setTweetContent] = useState("");
   const [openGifContainer, setOpenGifContainer] = useState(false);
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const emojiCloseRef = useRef<HTMLDivElement>(null);
+
+  
+  
 
   useEffect(() => {
     const handleEmojiClose = (event: MouseEvent) => {
@@ -41,16 +45,10 @@ const ComposePost = () => {
     };
   }, [isEmojiTableOpen, setIsEmojiTableOpen]);
 
-  const mutation = useMutation({
-    mutationFn: createTweetMutate,
-    onSuccess: (response: any) => {
-      console.log(response);
-      queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
+  const { createTweet } = useTweetMutation({
+    onSuccess: () => {
       setTweetContent("");
       setFiles([]);
-    },
-    onError: (error) => {
-      console.log(error);
     },
   });
 
@@ -60,7 +58,7 @@ const ComposePost = () => {
       mediaArray: files,
     };
     try {
-      await mutation.mutateAsync(body);
+      await createTweet(body);
     } catch (error) {
       console.log(error);
     }
@@ -70,16 +68,19 @@ const ComposePost = () => {
     <div className="w-full relative">
       <div className="w-full p-6 px-0 sm:px-4 pb-4">
         <div className="flex  gap-2 w-full">
-          <CurrentUser />
+          <CurrentUser user={user} />
           <div className="w-full mt-2 px-2">
             <TweetContent
               tweetContent={tweetContent}
               setTweetContent={setTweetContent}
             />
 
-            {loading && <Loading />}
+            {loading && <div className="pb-3 pl-3">
+              <Loading />
+              </div>
+              }
 
-            {files && typeof files !== "undefined" && files.length !== 0 && (
+            {files.length !== 0 && (
               <MediaUpload files={files} setFiles={setFiles} />
             )}
 
@@ -94,10 +95,18 @@ const ComposePost = () => {
               setLoading={setLoading}
               containerType="MainPost"
             />
-            <div>
+            <div className="flex gap-2 items-center">
+              {
+                tweetContent.length>0&&
+                <div >
+                <CharacterCircle tweetContentLength={tweetContent.length} characterLimit={Number(TWEET_CHARACTER_LIMIT)}/>
+              </div>
+              }
+             
               <button
                 onClick={onSubmit}
-                className="py-2 rounded-full x-bgcolor px-4"
+                className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
+                disabled={files.length==0&& tweetContent.trim()==""}
               >
                 Post
               </button>
@@ -109,7 +118,7 @@ const ComposePost = () => {
       {isEmojiTableOpen && (
         <div
           ref={emojiCloseRef}
-          className="absolute border rounded-[8px] border-gray-400 mx-[10%] z-[1000]"
+          className="absolute  rounded-[8px] shadow-[0_0_6px_rgba(255,255,255,0.6)] mx-[10%] z-[1000]"
         >
           <div>
             <Picker

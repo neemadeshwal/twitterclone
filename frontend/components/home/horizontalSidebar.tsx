@@ -1,13 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { sidebarIcons } from "./leftSide/sidebar";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useCurrentUser } from "@/hooks/user";
+import SideIcons, { sidebarIcons } from "./leftSide/leftSideComp/SideIcons";
+import { getCurrentUser } from "@/graphql/types";
 
-const HorizontalSidebar = () => {
-  const pathname = usePathname();
-  const { user } = useCurrentUser();
+const HorizontalSidebar = ({
+  currentUser,
+}: {
+  currentUser: getCurrentUser | null;
+}) => {
   const [lastScrollTop, setLastScrollTop] = useState(0);
   const [scrollDirection, setScrollDirection] = useState("");
 
@@ -24,46 +24,24 @@ const HorizontalSidebar = () => {
           setScrollDirection("up");
         }
         setLastScrollTop(currentScroll <= 0 ? 0 : currentScroll); // Ensure scrollTop doesn't go negative
-      });
-      window.addEventListener("scroll", handleScroll);
+      }, 100);
+    };
+    window.addEventListener("scroll", handleScroll);
 
-      return () => {
-        window.removeEventListener("scroll", handleScroll);
-      };
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(debounceTimer);
     };
   }, [lastScrollTop]);
 
   return (
     <div className="fixed bottom-0 w-full ">
       <div
-        className={`flex justify-between  w-full px-4 py-1 ${
-          scrollDirection === "down" ? "bg-black/50" : "bg-black"
+        className={` w-full px-6 py-1 overflow-hidden transition-[height] bg-black duration-100 ${
+          scrollDirection === "down" ? "h-0" : "h-16"
         }`}
       >
-        {sidebarIcons.map((item, index) => {
-          return (
-            <Link
-              key={item.title + index}
-              href={
-                item.title === "profile"
-                  ? `/@${user?.userName}`
-                  : item.activePathname
-              }
-            >
-              <div
-                className={` p-2 ${
-                  scrollDirection == "down" ? "text-white/50" : "text-white"
-                } py-3 hover:bg-[#1d1d1dbb] cursor-pointer rounded-full flex items-center justify-center`}
-              >
-                {pathname === item.activePathname ? (
-                  <p className="text-[28px]">{item.iconActive}</p>
-                ) : (
-                  <p className="text-[28px]">{item.icon}</p>
-                )}
-              </div>
-            </Link>
-          );
-        })}
+        <SideIcons position="x" currentUser={currentUser} />
       </div>
     </div>
   );

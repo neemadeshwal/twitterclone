@@ -37,7 +37,7 @@ const TweetContent = ({
           value={tweetContent}
           onChange={(e) => handleContentChange(e.target.value)}
           rows={2}
-          className={`text-[20px] resize-none bg-transparent   outline-none border-0 w-full placeholder:text-gray-600`}
+          className={`text-[20px] resize-none overflow-visible bg-transparent   outline-none border-0 w-full placeholder:text-gray-600`}
           placeholder="What is happening?!"
         ></textarea>
         {isHashTagDialogOpen && (

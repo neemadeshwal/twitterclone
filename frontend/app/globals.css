@@ -22,6 +22,9 @@ p {
 .x-bgcolor {
   background-color: #1d9bf0;
 }
+.x-bgcolor:disabled{
+  background-color: #84adc81f;
+}
 
 .x-textcolor {
   color: #1d9bf0;

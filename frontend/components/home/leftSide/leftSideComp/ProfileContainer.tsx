@@ -1,9 +1,11 @@
 "use client";
+import React, { useState } from "react";
+
+
 import { getCurrentUser } from "@/graphql/types";
 import CurrentUser from "@/shared/currentUser";
 import LogOutContainer from "@/shared/logoutContainer";
 import { Icons } from "@/utils/icons";
-import React, { useState } from "react";
 
 const ProfileContainer = ({
   currentUser,

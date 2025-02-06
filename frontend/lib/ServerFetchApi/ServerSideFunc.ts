@@ -21,6 +21,7 @@ export const getGraphQLClient = async() => {
     });
   };
 export const getCurrentUserData=async():Promise<getCurrentUser|null>=>{
+  
 try{
 
     const client = await getGraphQLClient();
