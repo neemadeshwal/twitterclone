@@ -20,6 +20,13 @@ type Tweet{
 
 
 }
+
+type TrendingProps{
+    trendingHashtag:[HashTag],
+    trendingTweet:[Tweet],
+    trendingUser:[User]
+}
+
 type HashTag{
     id:String
     text:String

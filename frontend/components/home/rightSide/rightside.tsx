@@ -3,6 +3,7 @@ import React from "react";
 import { BiSearch } from "react-icons/bi";
 import RecommendedUser from "./recommendedUser";
 import { useGetAllUsers } from "@/hooks/user";
+import TrendingTopics from "./TrendingTopics";
 
 const RightSidebar = () => {
   const { allUsers } = useGetAllUsers();
@@ -20,6 +21,7 @@ const RightSidebar = () => {
           </div>
         </div>
         <div className="h-[200vh] text-[15px]">
+          <TrendingTopics />
           <RecommendedUser userList={allUsers} />
         </div>
       </div>

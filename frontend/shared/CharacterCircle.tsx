@@ -1,18 +1,29 @@
-import React from 'react';
+import React from "react";
 
 interface CircleProps {
   tweetContentLength: number;
   characterLimit: number;
 }
 
-const CharacterCircle: React.FC<CircleProps> = ({ tweetContentLength, characterLimit }) => {
+const CharacterCircle: React.FC<CircleProps> = ({
+  tweetContentLength,
+  characterLimit,
+}) => {
   const radius = 10; // Radius of the circle
   const circumference = 2 * Math.PI * radius; // Circumference of the circle
   const percentage = Math.min(tweetContentLength / characterLimit, 1); // The percentage of the circle filled
 
+  console.log(characterLimit);
   const strokeDasharray = circumference;
   const strokeDashoffset = circumference - percentage * circumference;
 
+  console.log(
+    tweetContentLength,
+    strokeDasharray,
+    strokeDashoffset,
+    percentage,
+    "tweetvvggg"
+  );
   return (
     <div className="relative">
       <svg width="40" height="40">
@@ -30,15 +41,14 @@ const CharacterCircle: React.FC<CircleProps> = ({ tweetContentLength, characterL
           r={radius}
           stroke="#1d9bf0"
           strokeWidth="2.2"
-           strokeLinecap="round"
+          strokeLinecap="round"
           fill="transparent"
-            transform="rotate(-90 20 20)"
+          transform="rotate(-90 20 20)"
           strokeDasharray={strokeDasharray}
           strokeDashoffset={strokeDashoffset}
           style={{ transition: "stroke-dashoffset 0.3s ease" }}
         />
       </svg>
-     
     </div>
   );
 };

@@ -4,5 +4,7 @@ getAllTweet:[Tweet]
 getSingleTweet(payload:SingleTweetInput!):Tweet
 getAllHashTags:[HashTag]
 getUserFollowingTweet:[Tweet]
+getTrendingTweet:TrendingProps
+
 
 `;

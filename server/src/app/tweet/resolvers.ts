@@ -91,6 +91,53 @@ const queries = {
 
     return followingTweet;
   },
+
+  getTrendingTweet:async(parent:any,payload:any,ctx:GraphqlContext)=>{
+    
+    if(!ctx.user){
+      throw new Error("Unauthroized")
+    }
+
+    const trendingTweet=await prismaClient.tweet.findMany({
+        orderBy:{
+          LikedBy:{
+            _count:'desc'
+          }
+        },
+        take:5,
+        include:{
+          LikedBy:true
+        }
+    })
+    const popularHashtags = await prismaClient.hashtag.findMany({
+      orderBy: {
+        tweets: {
+          _count: 'desc',
+        },
+      },
+      take: 5, // Top 5 popular hashtags
+      include: {
+        tweets: true, // Include tweets related to each hashtag
+      },
+    });
+
+    const trendingUser = await prismaClient.user.findMany({
+      orderBy: {
+        followers: {
+          _count: 'desc',
+        },
+      },
+      take: 5, // Top 5 popular hashtags
+      include: {
+        posts: true, // Include tweets related to each hashtag
+      },
+    });
+
+    const trendingHashtag = popularHashtags.flatMap((hashtag) => hashtag.tweets);
+  
+     return{trendingHashtag,trendingTweet,trendingUser}
+
+  }
 };
 const mutations = {
   createTweet: async (

@@ -269,3 +269,25 @@ export const getUserFollowingTweet=gql(`
             }
         }
     `)
+
+export const getTrendingTweet=gql(`
+    query getTrendingTweet{
+        getTrendingTweet{
+            trendingHashtag{
+                id,
+                tweets{
+                    id
+                    content
+                }
+                text
+            },
+
+            trendingTweet{
+                id,
+                content,
+            }
+            
+        },
+        
+    }
+    `)    
