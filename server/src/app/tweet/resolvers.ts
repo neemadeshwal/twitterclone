@@ -92,7 +92,7 @@ const queries = {
     return followingTweet;
   },
 
-  getTrendingTweet:async(parent:any,payload:any,ctx:GraphqlContext)=>{
+  getAllTrending:async(parent:any,payload:any,ctx:GraphqlContext)=>{
     
     if(!ctx.user){
       throw new Error("Unauthroized")
@@ -109,7 +109,7 @@ const queries = {
           LikedBy:true
         }
     })
-    const popularHashtags = await prismaClient.hashtag.findMany({
+    const trendingHashtag = await prismaClient.hashtag.findMany({
       orderBy: {
         tweets: {
           _count: 'desc',
@@ -133,7 +133,7 @@ const queries = {
       },
     });
 
-    const trendingHashtag = popularHashtags.flatMap((hashtag) => hashtag.tweets);
+
   
      return{trendingHashtag,trendingTweet,trendingUser}
 

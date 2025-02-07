@@ -1,8 +1,20 @@
 import React from "react";
 import SingleFollowUser from "./SingleFollowUser";
 import { getCurrentUser } from "@/graphql/types";
+import Loading from "@/shared/loading";
 
 const RecommendedUser = ({ userList }: { userList: any }) => {
+
+  if(!userList||userList.length==0){
+    return(
+      <div className="rounded-[20px] border border-gray-700 p-4">
+      
+      <div className="flex items-center justify-center py-2">
+        <Loading/>
+      </div>
+      </div>
+    )
+  }
   return (
     <div>
       <div className="rounded-[20px] border-[1px] border-gray-700 py-4 px-4">

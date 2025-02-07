@@ -270,9 +270,9 @@ export const getUserFollowingTweet=gql(`
         }
     `)
 
-export const getTrendingTweet=gql(`
-    query getTrendingTweet{
-        getTrendingTweet{
+export const getAllTrending=gql(`
+    query getAllTrending{
+        getAllTrending{
             trendingHashtag{
                 id,
                 tweets{
@@ -285,6 +285,28 @@ export const getTrendingTweet=gql(`
             trendingTweet{
                 id,
                 content,
+                createdAt,
+                mediaArray
+
+                LikedBy{
+                    id
+                    user{
+                        id
+                        firstName
+                        lastName
+                        userName
+                        profileImgUrl
+
+                    }
+                }
+            },
+            trendingUser{
+                id,
+                firstName,
+                lastName,
+                followers{
+                    followerId
+                }
             }
             
         },

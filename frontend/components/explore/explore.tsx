@@ -1,51 +1,48 @@
 import DivisionBar from "@/shared/divisionbar";
 import React from "react";
 import RightSidebar from "@/components/home/rightSide/rightside";
-import MiddlePost from "@/components/home//middlePost/middlePost";
 import Sidebar from "@/components/home/leftSide/sidebar";
-import UserDetail from "../getUser/UserDetail";
+import HorizontalSidebar from "@/components/home/horizontalSidebar";
+import { getCurrentUserData } from "@/lib/ServerFetchApi/ServerSideFunc";
 import SearchPage from "./searchPage";
-import HorizontalSidebar from "../home/horizontalSidebar";
 
-const Explore = ({ pathType }: { pathType: string }) => {
+const Home = async () => {
+  const user = await getCurrentUserData();
   return (
     <div className="min-h-screen flex flex-col sm:flex-row">
-      {/* Main content wrapper with padding */}
-      <div className="flex-1 flex flex-col sm:flex-row px-0 lg:px-[100px] md:px-[100px]">
-        {/* Left Sidebar - Desktop */}
-        <div className="hidden sm:flex flex-col w-[7%] justify-center  left-width sticky top-0 h-screen">
-          <div className="flex h-full">
+      <div className="flex-1 flex flex-col sm:flex-row px-0  md:px-[100px] lg:px-[20px] xl1300:px-[40px]">
+        <aside className="hidden sm:flex flex-col w-[7%] sm:w-[10%] md:w-[11%] justify-center xl1300:w-[20%]   sticky top-0 h-screen">
+          <div className="flex h-full w-full">
             <div className="flex-grow">
-              <Sidebar />
+              <Sidebar currentUser={user} />
             </div>
             <div className="h-full">
               <DivisionBar type="y" />
             </div>
           </div>
-        </div>
+        </aside>
 
-        {/* Middle Content */}
-        <main className=" w-full sm:w-[80%] md:w-[95%] middle-width md:max-w-[700px] lg:max-w-full lg:w-[63%] xl:w-[56%]">
-         <SearchPage/>          
+        <main className=" w-full sm:w-[80%] md:w-[95%]  md:max-w-[700px] lg:max-w-full lg:w-[60%] xl1300:w-[50%] ">
+          <SearchPage />
         </main>
 
-        {/* Division Bar for Desktop */}
         <div className="hidden lg:block">
           <DivisionBar type="y" />
         </div>
 
-        {/* Right Sidebar - Desktop */}
-        <div className="hidden lg:block  lg:w-[30%] xl:w-[37%] right-width">
-          <RightSidebar />
+        <div className="hidden lg:block   lg:w-[33%] xl1300:w-[30%] ">
+         <div className="sticky top-0 h-auto">
+         <RightSidebar />
+
+         </div>
         </div>
       </div>
 
-      {/* Mobile Horizontal Sidebar */}
-      <div className="sm:hidden">
-        <HorizontalSidebar />
-      </div>
+      <nav className="sm:hidden">
+        <HorizontalSidebar currentUser={user}/>
+      </nav>
     </div>
   );
 };
 
-export default Explore;
+export default Home;

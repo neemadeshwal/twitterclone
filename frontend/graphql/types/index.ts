@@ -77,6 +77,7 @@ export interface Tweet {
 export interface HashTag {
   id: string;
   text: string;
+  tweets:Tweet[]
 }
 
 interface getAllTweet {
@@ -91,6 +92,16 @@ export interface GetUserFollowingTweetProps {
 }
 export interface getAllHashTagsProps {
   getAllHashTags: HashTag[];
+}
+
+export interface getAllTrending{
+  trendingHashtag:HashTag[];
+  trendingTweet:Tweet[];
+  trendingUser:getCurrentUser[];
+}
+
+export interface getAllTrendingProps{
+  getAllTrending:getAllTrending
 }
 
 export interface Bookmarks {

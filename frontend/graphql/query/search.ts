@@ -16,8 +16,7 @@ export const getSearchByQuery = gql`
         tweets {
           id
           content
-          photoArray
-          videoArray
+         mediaArray
           hashtags {
             id
             text
@@ -32,8 +31,7 @@ export const getSearchByQuery = gql`
             tweet {
               id
               content
-              photoArray
-              videoArray
+              mediaArray
               author {
                 id
                 userName
@@ -75,8 +73,8 @@ export const getSearchByQuery = gql`
       post {
         id
         content
-        photoArray
-        videoArray
+        mediaArray
+        
         hashtags {
           id
           text
@@ -91,8 +89,8 @@ export const getSearchByQuery = gql`
           tweet {
             id
             content
-            photoArray
-            videoArray
+            mediaArray
+            
             author {
               id
               userName

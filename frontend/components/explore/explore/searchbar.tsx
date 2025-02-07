@@ -1,195 +1,175 @@
+// SearchBar.tsx
 "use client";
 import { useSearchquery } from "@/hooks/search";
 import React, { useEffect, useRef, useState } from "react";
-import { BiLeftArrow, BiSearch, BiX } from "react-icons/bi";
+import { BiSearch, BiX } from "react-icons/bi";
 import ShowSearchPreview from "./showSearchPreview";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 
-const SearchBar = ({
-  searchbarTab,
-  setSearchBarTab,
-  setSearchResultForTopTab,
-}: any) => {
+interface SearchBarProps {
+  currentTab: string;
+  onTabChange: any;
+  onSearchResults: (results: any) => void;
+}
+
+const TABS = [
+  { id: "top", label: "Top" },
+  { id: "forYou", label: "ForYou" },
+
+  { id: "trending", label: "Trending" },
+  { id: "latest", label: "Latest" },
+
+  { id: "people", label: "People" },
+
+  { id: "hashtag", label: "Hashtag" },
+  
+  { id: "post", label: "Post" },
+  { id: "media", label: "Media" },
+];
+
+const SearchBar: React.FC<SearchBarProps> = ({
+  currentTab,
+  onTabChange,
+  onSearchResults,
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [shouldFocus, setShouldFocus] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const { allSearchResult } = useSearchquery(debouncedQuery);
-  const [showSearchResultPage, setShowSearchResultPage] = useState(false);
-  const [showPreviewPage, setShowPreviewPage] = useState(false);
-  const [goBack, setGoBack] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+
   useEffect(() => {
-    if (shouldFocus && inputRef.current) {
+    const debounceTimer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 500); // Reduced from 2000ms for better responsiveness
+
+    return () => clearTimeout(debounceTimer);
+  }, [query]);
+
+  useEffect(() => {
+    if (isSearchFocused && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [shouldFocus]);
+  }, [isSearchFocused]);
 
-  const handleSearch = () => {
-    console.log(allSearchResult, "search result");
+  const handleSearch = (e: React.KeyboardEvent) => {
+    if (!query || e.key !== "Enter") return;
+
+    e.preventDefault();
+    setShowSearchResults(true);
+    setShowPreview(false);
+    onSearchResults(allSearchResult);
+    onTabChange("top");
+    setIsSearchFocused(false);
+    addRecentSearch(query);
   };
-  console.log(allSearchResult, "search result");
 
-  useEffect(() => {
-    const debounced = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, 2000);
-    return () => {
-      clearTimeout(debounced);
-    };
-  }, [query]);
-  console.log(shouldFocus, "shouldfocus");
+  const addRecentSearch = (searchTerm: string) => {
+    if (!searchTerm) return;
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!query) {
-      return;
-    }
-    if (e.key === "Enter") {
-      e.preventDefault();
-      setShowSearchResultPage(true);
-      setShowPreviewPage(false);
-      setSearchResultForTopTab(allSearchResult);
-      setSearchBarTab("top");
-      setShouldFocus(false);
-
-      addItemToLocalStorage("recentSearch", query);
+    const recentSearches = JSON.parse(
+      localStorage.getItem("recentSearch") || "[]"
+    );
+    if (!recentSearches.includes(searchTerm)) {
+      localStorage.setItem(
+        "recentSearch",
+        JSON.stringify([...recentSearches, searchTerm])
+      );
     }
   };
-  function addItemToLocalStorage(key: string, newItem: string) {
-    if (!newItem) {
-      return;
-    }
-    console.log(newItem, "new item");
-    const existingArray = localStorage.getItem(key)
-      ? JSON.parse(localStorage.getItem(key) as string)
-      : [];
 
-    console.log(existingArray, "array");
+  const handleBack = () => {
+    setIsSearchFocused(false);
+    setShowPreview(false);
+    setShowSearchResults(false);
+    setQuery("");
+  };
 
-    if (existingArray.includes(newItem)) {
-      return;
-    }
-
-    existingArray.push(newItem);
-
-    localStorage.setItem(key, JSON.stringify(existingArray));
-  }
   return (
     <div className="relative z-[100]">
-      {goBack && (
-        <div
-          onClick={(event) => {
-            event.stopPropagation();
-            setShouldFocus(false);
-          }}
-          className="absolute left-5 top-[12%] z-[100] p-2  cursor-pointer hover:bg-[#5a5a5a3f] rounded-full "
+      {isSearchFocused && (
+        <button
+          onClick={handleBack}
+          className="absolute left-5 top-[12%] z-[100] p-2 hover:bg-[#5a5a5a3f] rounded-full"
         >
-          <ArrowLeftIcon
-            onClick={() => {
-              setShouldFocus(false);
-              setGoBack(false);
-              setShowSearchResultPage(false);
-              setQuery("");
-              setShowPreviewPage(false);
-            }}
-            className="w-6 h-6"
-          />
-        </div>
+          <ArrowLeftIcon className="w-6 h-6" />
+        </button>
       )}
-      <div
-        ref={inputRef}
-        onClick={() => {
-          setShouldFocus(true);
-          setShowPreviewPage(true);
-          setGoBack(true);
-        }}
-        className="backdrop-blur-md pt-1 bg-[#000000b0]  "
-      >
-        <div className="px-12 relative ">
+
+      <div className="backdrop-blur-md pt-1 bg-[#000000b0]">
+        <div className="px-12 relative">
           <div
-            className={` ${goBack ? "w-[90%] ml-10" : "w-full"} relative py-1 `}
+            className={`relative py-1 ${
+              isSearchFocused ? "ml-10 w-[90%]" : "w-full"
+            }`}
           >
             <input
+              ref={inputRef}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="search"
-              className={` w-full
-            
- rounded-full px-12 py-2 outline-0 ${
-   shouldFocus
-     ? "bg-black border-[#1d9bf0] border"
-     : "bg-[#262626c0] border-gray-700 "
- }  `}
-            />
-            {query && shouldFocus && (
-              <div
-                onClick={() => setQuery("")}
-                className="x-bgcolor  rounded-full cursor-pointer absolute right-3 top-[25%] w-fit"
-              >
-                <BiX className="text-black w-6 h-6" />
-              </div>
-            )}
-            <BiSearch
-              className={`absolute top-[30%]   left-4 text-[22px] ${
-                shouldFocus ? "x-textcolor " : "gray"
+              onKeyDown={handleSearch}
+              placeholder="Search"
+              onClick={() => {
+                setIsSearchFocused(true);
+                setShowPreview(true);
+              }}
+              className={`w-full rounded-full px-12 py-2 outline-0 ${
+                isSearchFocused
+                  ? "bg-black border-[#1d9bf0] border"
+                  : "bg-[#262626c0] border-gray-700"
               }`}
             />
-            {showPreviewPage && (
+
+            {query && isSearchFocused && (
+              <button
+                onClick={() => setQuery("")}
+                className="x-bgcolor rounded-full absolute right-3 top-[25%]"
+              >
+                <BiX className="text-black w-6 h-6" />
+              </button>
+            )}
+
+            <BiSearch
+              className={`absolute top-[30%] left-4 text-[22px] ${
+                isSearchFocused ? "x-textcolor" : "gray"
+              }`}
+            />
+
+            {showPreview && (
               <ShowSearchPreview
-                showSearchPreview={shouldFocus}
-                setIsSearchPreviewOpen={setShowPreviewPage}
+                showSearchPreview={isSearchFocused}
+                setIsSearchPreviewOpen={setShowPreview}
                 allSearchResult={allSearchResult}
                 setQuery={setQuery}
               />
             )}
           </div>
+
           <div className="flex items-center w-full">
-            {showSearchResultPage && (
-              <div
-                onClick={() => setSearchBarTab("top")}
-                className="relative w-1/3"
-              >
-                <button className="py-4 px-4 w-full hover:bg-[#1d1d1dbb]">
-                  Top
-                </button>
-                {searchbarTab === "top" && (
-                  <p className="absolute bottom-0 bg-blue-500 w-[50%] left-[28%] h-1 rounded-full"></p>
-                )}
-              </div>
-            )}
-            <div
-              onClick={() => setSearchBarTab("people")}
-              className="relative w-1/3"
-            >
-              <button className="py-4 px-4 w-full hover:bg-[#1d1d1dbb]">
-                people
-              </button>
-              {searchbarTab === "people" && (
-                <p className="absolute bottom-0 bg-blue-500 w-[50%] left-[28%] h-1 rounded-full"></p>
-              )}
-            </div>
-            <div
-              onClick={() => setSearchBarTab("hashtag")}
-              className="relative w-1/3"
-            >
-              <button className="py-4 px-4 w-full hover:bg-[#1d1d1dbb]">
-                hashtag
-              </button>
-              {searchbarTab === "hashtag" && (
-                <p className="absolute bottom-0 bg-blue-500 w-[50%] left-[28%] h-1 rounded-full"></p>
-              )}
-            </div>
-            <div
-              onClick={() => setSearchBarTab("trending")}
-              className="relative w-1/3"
-            >
-              <button className="py-4 px-4 w-full hover:bg-[#1d1d1dbb]">
-                trending
-              </button>
-              {searchbarTab === "trending" && (
-                <p className="absolute bottom-0 bg-blue-500 w-[50%] left-[28%] h-1 rounded-full"></p>
-              )}
-            </div>
+            {TABS.map(({ id, label }) => {
+              if (query && (id == "forYou" || id === "post"||id==="trending")) {
+                return null;
+              }
+              if (!query && (id == "top" || id == "media"||id=="latest")) {
+                return null;
+              }
+              return (
+                <div
+                  key={id}
+                  onClick={() => onTabChange(id)}
+                  className="relative w-1/3"
+                >
+                  <button className="py-4 px-4 w-full hover:bg-[#1d1d1dbb]">
+                    {label}
+                  </button>
+                  {currentTab === id && (
+                    <div className="absolute bottom-0 bg-blue-500 w-[50%] left-[28%] h-1 rounded-full" />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -198,3 +178,5 @@ const SearchBar = ({
 };
 
 export default SearchBar;
+
+// TopTab.tsx

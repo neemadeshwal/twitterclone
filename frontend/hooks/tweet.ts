@@ -1,12 +1,15 @@
 import { graphqlClient } from "@/clients/api";
 import {
   allHashTagQuery,
+  getAllTrending,
   getAllTweetQuery,
   getSingleTweetQuery,
   getUserFollowingTweet,
 } from "@/graphql/query/tweet";
 import {
+  getAllBookmarksProps,
   getAllHashTagsProps,
+  getAllTrendingProps,
   GetAllTweetProps,
   getSingleTweetProps,
   GetUserFollowingTweetProps,
@@ -69,3 +72,13 @@ export const useGetAllHashTag = () => {
   console.log(query, "query query");
   return { ...query, allHashtag: query.data?.getAllHashTags };
 };
+
+
+export const useGetAllTrending = () => {
+  const query = useQuery<getAllTrendingProps>({
+    queryKey: ["all-trending"],
+    queryFn: () => graphqlClient.request(getAllTrending),
+    staleTime: 1000 * 60 * 5,
+  });
+  console.log(query, "query query");
+  return { ...query, allTrending: query.data?.getAllTrending};}

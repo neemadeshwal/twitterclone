@@ -1,6 +1,6 @@
 import { GoHome } from "react-icons/go";
 import { MdHomeFilled } from "react-icons/md";
-import { IoSearch } from "react-icons/io5";
+import { IoEllipsisVertical, IoSearch } from "react-icons/io5";
 import {
   IoIosNotificationsOutline,
   IoMdNotifications,
@@ -43,6 +43,7 @@ export const Icons={
     PhotoIcon:HiOutlinePhotograph,
     CLock:LuFolderClock,
     GifIcon:MdOutlineGifBox,
-    RadioIcon:RiListRadio
+    RadioIcon:RiListRadio,
+    VerticalDots:IoEllipsisVertical
 
 }
