@@ -103,6 +103,14 @@ export interface getAllTrending{
 export interface getAllTrendingProps{
   getAllTrending:getAllTrending
 }
+export interface getForYouProps{
+  getForYou:getForYou
+}
+export interface getForYou{
+  forYouHashtag:HashTag[];
+  forYouTweet:Tweet[];
+  forYouUser:getCurrentUser[];
+}
 
 export interface Bookmarks {
   id: string;

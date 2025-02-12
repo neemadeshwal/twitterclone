@@ -27,7 +27,7 @@ const AuthorProfile = ({ author,isSmall }: { author: authorType,isSmall?:boolean
           )}
         </div>
       : (
-        <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
+        <div className={`rounded-full  ${isSmall?"w-6 h-6":"w-10 h-10"} bg-blue-900 flex items-center justify-center capitalize`}>
           {author?.firstName.slice(0, 1)}
         </div>
       )}

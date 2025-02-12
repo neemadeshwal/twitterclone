@@ -1,20 +1,20 @@
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
 import AuthorProfile from "@/shared/AuthorProfile";
+import { Icons } from "@/utils/icons";
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 
 const SingleTweetHighlight = ({ tweet }: { tweet: any }) => {
+
  
   return (
     <div key={tweet.key}>
       <div className="flex justify-between">
         <div>
-          <h2>{tweet.content}</h2>
-          <div className="flex gap-1 gray text-[14px]">
-           <div className="flex -space-x-5">
-            {tweet.LikedBy.length!==0&&tweet.LikedBy.map((item:any,index:number)=>{
-             console.log(item,"item item")
+          <h2>{tweet.content?tweet.content.slice(0,50):"....."}</h2>
+          <div className="flex gap-1 gray text-[14px] items-center">
+           <div className="flex -space-x-[0.9rem]">
+            {tweet.LikedBy.length!==0&&tweet.LikedBy.slice(0,3).map((item:any,index:number)=>{
              return(
                 <div className=" ring-2 ring-black rounded-full  scale-75" key={item.id}  style={{
                   zIndex: tweet.LikedBy.length - index
@@ -25,9 +25,12 @@ const SingleTweetHighlight = ({ tweet }: { tweet: any }) => {
               )
             })}
            </div>
+
+           
            <p>
            {formatTimeAgo(getDateTime(tweet?.createdAt))} ago
             </p>
+            <Icons.Dot/>
             <p>{tweet.LikedBy.length} likes</p>
           </div>
         </div>

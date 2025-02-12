@@ -74,6 +74,8 @@ export const getSearchByQuery = gql`
         id
         content
         mediaArray
+        createdAt
+
         
         hashtags {
           id
@@ -112,6 +114,7 @@ export const getSearchByQuery = gql`
           userName
           profileImgUrl
           id
+
         }
         LikedBy {
           id

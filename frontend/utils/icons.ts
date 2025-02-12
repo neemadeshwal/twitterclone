@@ -21,7 +21,7 @@ import { HiOutlinePhotograph } from "react-icons/hi";
 import { LuFolderClock } from "react-icons/lu";
 import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
-
+import { LuDot } from "react-icons/lu";
 export const Icons={
     Home:GoHome,
     HomeActive:MdHomeFilled,
@@ -44,6 +44,7 @@ export const Icons={
     CLock:LuFolderClock,
     GifIcon:MdOutlineGifBox,
     RadioIcon:RiListRadio,
-    VerticalDots:IoEllipsisVertical
+    VerticalDots:IoEllipsisVertical,
+    Dot:LuDot
 
 }

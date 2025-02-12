@@ -11,9 +11,11 @@ import DynamicNameTruncate from "./DynamicNameTruncate";
 const SingleFollowUser = ({
   singleUser,
   filterArray,
+  isBio
 }: {
   singleUser: getCurrentUser;
   filterArray?: boolean;
+  isBio?:boolean
 }) => {
   const { user } = useCurrentUser();
   const [isAlreadyFollowing, setIsAlreadyFollowing] = useState(false);
@@ -79,6 +81,11 @@ const SingleFollowUser = ({
             <h4 className="gray text-[13px] xl:text-[14px] font-[300] break-all">
               <DynamicNameTruncate text={`@${singleUser?.userName}`}/>
             </h4>
+            {
+              isBio&&singleUser?.bio&&
+              <DynamicNameTruncate text={`${singleUser?.bio}`}/>
+
+            }
           </div>
         </div>
         <div>

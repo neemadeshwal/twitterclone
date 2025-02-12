@@ -3,6 +3,7 @@ import {
   allHashTagQuery,
   getAllTrending,
   getAllTweetQuery,
+  getForYouQuery,
   getSingleTweetQuery,
   getUserFollowingTweet,
 } from "@/graphql/query/tweet";
@@ -11,6 +12,7 @@ import {
   getAllHashTagsProps,
   getAllTrendingProps,
   GetAllTweetProps,
+  getForYouProps,
   getSingleTweetProps,
   GetUserFollowingTweetProps,
 } from "@/graphql/types";
@@ -73,6 +75,14 @@ export const useGetAllHashTag = () => {
   return { ...query, allHashtag: query.data?.getAllHashTags };
 };
 
+export const usegetForYou= () => {
+  const query = useQuery<getForYouProps>({
+    queryKey: ["for-you"],
+    queryFn: () => graphqlClient.request(getForYouQuery),
+    staleTime: 1000 * 60 * 5,
+  });
+  return { ...query, allForYou: query.data?.getForYou}}
+
 
 export const useGetAllTrending = () => {
   const query = useQuery<getAllTrendingProps>({
@@ -80,5 +90,5 @@ export const useGetAllTrending = () => {
     queryFn: () => graphqlClient.request(getAllTrending),
     staleTime: 1000 * 60 * 5,
   });
-  console.log(query, "query query");
+  console.log(query.data, "query query check");
   return { ...query, allTrending: query.data?.getAllTrending};}

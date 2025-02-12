@@ -1,10 +1,11 @@
 import { GetServerSideProps } from "next";
 import { graphqlClient } from "@/clients/api";
-import { getCurrentUser, getCurrentUserQueryProps } from "@/graphql/types";
+import { getCurrentUser, getCurrentUserQueryProps, getForYou, getForYouProps } from "@/graphql/types";
 import { getCurrentUserQuery } from "@/graphql/query/user";
 import { cookies } from "next/headers";
 import { GraphQLClient } from "graphql-request";
 import { SERVER_URL } from "../constants";
+import { getForYouQuery} from "@/graphql/query/tweet";
 
 export const getGraphQLClient = async() => {
     const cookieStore = await cookies();
@@ -34,4 +35,16 @@ catch(error){
     return null
 
 }
+}
+
+export const getForYouData=async():Promise<getForYou|null>=>{
+  try{
+    const client=await getGraphQLClient();
+    const data=await client.request<getForYouProps>(getForYouQuery)
+    return data.getForYou
+  }
+  catch(error){
+    console.error("Error fetching current user data:", error);
+    return null
+  }
 }

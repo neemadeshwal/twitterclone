@@ -10,11 +10,13 @@ interface SearchBarProps {
   currentTab: string;
   onTabChange: any;
   onSearchResults: (results: any) => void;
+  query:any;
+  setQuery:any;
 }
 
 const TABS = [
   { id: "top", label: "Top" },
-  { id: "forYou", label: "ForYou" },
+  { id: "forYou", label: "For You" },
 
   { id: "trending", label: "Trending" },
   { id: "latest", label: "Latest" },
@@ -31,10 +33,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
   currentTab,
   onTabChange,
   onSearchResults,
+  query,
+  setQuery
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const { allSearchResult } = useSearchquery(debouncedQuery);
   const [showSearchResults, setShowSearchResults] = useState(false);

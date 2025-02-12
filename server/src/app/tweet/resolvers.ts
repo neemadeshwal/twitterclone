@@ -91,14 +91,32 @@ const queries = {
 
     return followingTweet;
   },
-
-  getAllTrending:async(parent:any,payload:any,ctx:GraphqlContext)=>{
-    
+  getForYou:async(parent:any,payload:any,ctx:GraphqlContext)=>{
     if(!ctx.user){
       throw new Error("Unauthroized")
     }
 
-    const trendingTweet=await prismaClient.tweet.findMany({
+    const forYouTweet=await prismaClient.tweet.findMany({
+
+      where:{
+        OR: [
+          {
+            LikedBy: {
+              some: {}
+            }
+          },
+          {
+            commentAuthor: {
+              some: {}
+            }
+          },
+          {
+            repostTweet: {
+              some: {}
+            }
+          }
+        ]
+      },
         orderBy:{
           LikedBy:{
             _count:'desc'
@@ -106,10 +124,14 @@ const queries = {
         },
         take:5,
         include:{
-          LikedBy:true
+          LikedBy:{
+            include:{
+              user:true
+            }
+          }
         }
     })
-    const trendingHashtag = await prismaClient.hashtag.findMany({
+    const forYouHashtag = await prismaClient.hashtag.findMany({
       orderBy: {
         tweets: {
           _count: 'desc',
@@ -121,24 +143,309 @@ const queries = {
       },
     });
 
-    const trendingUser = await prismaClient.user.findMany({
-      orderBy: {
-        followers: {
-          _count: 'desc',
+    const forYouUser = await prismaClient.user.findMany({
+      where: {
+        AND: [
+          {
+            id: {
+              not: ctx.user.id
+            }
+          },
+          {
+            followers: {
+              none: {
+                followingId: ctx.user.id
+              }
+            }
+          },
+      
+          {
+            posts: {
+              some: {}
+            }
+          }
+        ]
+      },
+      orderBy: [
+        {
+          followers: {
+            _count: 'desc'
+          }
         },
-      },
-      take: 5, // Top 5 popular hashtags
+        {
+          posts: {
+            _count: 'desc'
+          }
+        }
+      ],
+      take: 5,
       include: {
-        posts: true, // Include tweets related to each hashtag
-      },
+        posts: {
+          take: 3, 
+          orderBy: {
+            createdAt: 'desc'
+          },
+          include: {
+            LikedBy: true,
+            commentAuthor: true
+          }
+        },
+        followers: true,
+        _count: {
+          select: {
+            followers: true,
+            posts: true
+          }
+        }
+      }
     });
+    
+
 
 
   
+     return{forYouHashtag,forYouTweet,forYouUser}
+  },
+
+  getAllTrending:async(parent:any,payload:any,ctx:GraphqlContext)=>{
+    
+    if(!ctx.user){
+      throw new Error("Unauthroized")
+    }
+
+   
+    
+      const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    
+      const tweets = await prismaClient.tweet.findMany({
+        where: {
+          AND: [
+            {
+              createdAt: {
+                gte: lastWeek
+              }
+            },
+            {
+              OR: [
+                {
+                  LikedBy: {
+                    some: {}
+                  }
+                },
+                {
+                  commentAuthor: {
+                    some: {}
+                  }
+                },
+                {
+                  repostTweet: {
+                    some: {}
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        include: {
+          author: true
+          ,
+          LikedBy: {
+            where: {
+              createdAt: {
+                gte: last24Hours
+              }
+            },
+            include: {
+              user: true
+              }
+            }
+          ,
+          commentAuthor: {
+            where: {
+              createdAt: {
+                gte: last24Hours
+              }
+            }
+          },
+          repostTweet: {
+            where: {
+              createdAt: {
+                gte: last24Hours
+              }
+            }
+          },
+          hashtags: true
+        }
+        })
+      
+    
+      // Calculate engagement score for each tweet
+      const tweetsWithScore = tweets.map((tweet:any) => {
+        const recentLikes = tweet.LikedBy.length;
+        const recentComments = tweet.commentAuthor.length;
+        const recentReposts = tweet.repostTweet.length;
+    
+        // Calculate engagement score with weights
+        const engagementScore = 
+          recentLikes * 1 +      // Base weight for likes
+          recentComments * 2 +   // Comments weighted higher
+          recentReposts * 3;     // Reposts weighted highest
+    
+        // Factor in time decay
+        const hoursOld = (Date.now() - new Date(tweet.createdAt).getTime()) / (1000 * 60 * 60);
+        const timeDecayFactor = 1 / Math.pow(hoursOld + 2, 0.5); // Add 2 to avoid division by zero
+    
+        // Final score combines engagement and time decay
+        const finalScore = engagementScore * timeDecayFactor;
+    
+        return {
+          ...tweet,
+          engagementScore: finalScore
+        };
+      });
+    
+      // Sort by final score and take top 10
+      const trendingTweet = tweetsWithScore
+        .sort((a, b) => b.engagementScore - a.engagementScore)
+        .slice(0, 10);
+    
+   
+    
+    
+    
+      // Get timestamp for last 24 hours
+    
+      // Get hashtags and their engagement metrics
+      const hashtags = await prismaClient.hashtag.findMany({
+        where: {
+          tweets: {
+            some: {
+              createdAt: {
+                gte: last24Hours,
+              },
+            },
+          },
+        },
+        include: {
+          tweets: {
+            where: {
+              createdAt: {
+                gte: last24Hours,
+              },
+            },
+            include: {
+              LikedBy: true,
+              commentAuthor: true,
+              repostTweet: true,
+            },
+          },
+        },
+      });
+    
+      // Calculate engagement score for each hashtag based on tweet interactions
+      const hashtagsWithScore = hashtags.map((hashtag) => {
+        let engagementScore = 0;
+    
+        hashtag.tweets.forEach((tweet) => {
+          const recentLikes = tweet.LikedBy.length;
+          const recentComments = tweet.commentAuthor.length;
+          const recentReposts = tweet.repostTweet.length;
+    
+          engagementScore +=
+            recentLikes * 1 +
+            recentComments * 2 +
+            recentReposts * 3; // Adjust weights as needed
+        });
+    
+        return {
+          ...hashtag,
+          engagementScore,
+        };
+      })
+      const trendingHashtag = hashtagsWithScore
+      .sort((a, b) => b.engagementScore - a.engagementScore)
+      .slice(0, 10);
+  
+  
+    console.log(trendingHashtag,"trending hastage")
+    
+      
+        // Get timestamp for last 24 hours
+      
+        // Get users and their tweets with engagement metrics
+        const users = await prismaClient.user.findMany({
+          where: {
+            AND:[
+              {
+                
+                  createdAt: {
+                    gte: last24Hours,
+                  },
+  
+            
+              },
+              {
+              
+                  followers: {
+                    some: {}, // This checks if the user has at least one follower
+                  },
+              }
+             
+            ]
+           
+          },
+          include: {
+            posts: {
+              where: {
+                createdAt: {
+                  gte: last24Hours,
+                },
+              },
+              include: {
+                LikedBy: true,
+                commentAuthor: true,
+                repostTweet: true,
+              },
+            },
+          },
+        });
+        console.log(users,"users users")
+      
+        // Calculate total engagement score for each user
+        const usersWithScore = users.map((user) => {
+          let totalEngagement = 0;
+      
+          user.posts.forEach((tweet) => {
+            const recentLikes = tweet.LikedBy.length;
+            const recentComments = tweet.commentAuthor.length;
+            const recentReposts = tweet.repostTweet.length;
+      
+            totalEngagement +=
+              recentLikes * 1 +
+              recentComments * 2 +
+              recentReposts * 3;
+          });
+      
+          return {
+            ...user,
+            totalEngagement,
+          };
+        });
+      
+        // Sort users by engagement score and return top trending users
+        const trendingUser = usersWithScore
+          .sort((a, b) => b.totalEngagement - a.totalEngagement)
+          .slice(0, 10);
+      
+       
+
+        console.log(trendingUser,"trending user")
+
      return{trendingHashtag,trendingTweet,trendingUser}
 
-  }
-};
+    }
+}
 const mutations = {
   createTweet: async (
     parent: any,
@@ -326,6 +633,9 @@ const extraResolvers = {
         where: {
           tweetId: parent.id,
         },
+        include:{
+          user:true
+        }
       });
       return LikedBy;
     },

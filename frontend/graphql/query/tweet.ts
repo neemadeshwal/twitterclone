@@ -287,9 +287,18 @@ export const getAllTrending=gql(`
                 content,
                 createdAt,
                 mediaArray
+                author{
+                    id
+                        firstName
+                        lastName
+                        userName
+                        profileImgUrl
+                }
 
                 LikedBy{
                     id
+                   
+
                     user{
                         id
                         firstName
@@ -304,6 +313,9 @@ export const getAllTrending=gql(`
                 id,
                 firstName,
                 lastName,
+                userName,
+                bio,
+                profileImgUrl
                 followers{
                     followerId
                 }
@@ -313,3 +325,59 @@ export const getAllTrending=gql(`
         
     }
     `)    
+
+export const getForYouQuery=gql(`
+    query getForYou{
+        getForYou{
+         forYouHashtag{
+                id,
+                tweets{
+                    id
+                    content
+                }
+                text
+            },
+
+            forYouTweet{
+                id,
+                content,
+                createdAt,
+                mediaArray
+                author{
+                    id
+                        firstName
+                        lastName
+                        userName
+                        profileImgUrl
+                }
+
+                LikedBy{
+                    id
+                   
+
+                    user{
+                        id
+                        firstName
+                        lastName
+                        userName
+                        profileImgUrl
+
+                    }
+                }
+            },
+            forYouUser{
+                id,
+                firstName,
+                lastName,
+                userName,
+                bio,
+                profileImgUrl
+                followers{
+                    followerId
+                }
+            }
+            
+        },
+        
+    }
+    `)  

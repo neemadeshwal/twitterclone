@@ -27,6 +27,11 @@ type TrendingProps{
     trendingUser:[User]
 }
 
+type ForYouProps{
+    forYouHashtag:[HashTag],
+    forYouTweet:[Tweet],
+    forYouUser:[User]
+}
 type HashTag{
     id:String
     text:String
