@@ -5,11 +5,10 @@ import DivisionBar from "@/shared/divisionbar";
 import PeopleTab from "./explore/tabs/peopleTab";
 import TrendingTab from "./explore/tabs/TrendingTab";
 import HashtagTab from "./explore/tabs/hashtagTab";
-import TopTab from "./explore/tabs/TopTab";
+import TopTab from "./search/tabs/TopTab";
 import ForYou from "./explore/tabs/ForYou";
-import Media from "./explore/tabs/Media";
 import PostTab from "./explore/tabs/postTab";
-import Latest from "./explore/tabs/Latest";
+import Latest from "./search/tabs/Latest";
 
 export const TABS = {
   PEOPLE: "people",
@@ -50,8 +49,6 @@ const SearchPage = () => {
         {searchbarTab === TABS.POST && <PostTab />}
         {searchbarTab === TABS.TOP && <TopTab searchResult={searchResults} query={query}/>}
         {searchbarTab === TABS.FORYOU && <ForYou   />}
-        {searchbarTab === TABS.MEDIA && <Media />}
-        {searchbarTab===TABS.LATEST&&<Latest/>}
       </div>
     </div>
   );

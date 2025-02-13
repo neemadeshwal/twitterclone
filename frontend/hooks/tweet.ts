@@ -1,7 +1,7 @@
 import { graphqlClient } from "@/clients/api";
 import {
   allHashTagQuery,
-  getAllTrending,
+  getAllTrendingQuery,
   getAllTweetQuery,
   getForYouQuery,
   getSingleTweetQuery,
@@ -87,7 +87,7 @@ export const usegetForYou= () => {
 export const useGetAllTrending = () => {
   const query = useQuery<getAllTrendingProps>({
     queryKey: ["all-trending"],
-    queryFn: () => graphqlClient.request(getAllTrending),
+    queryFn: () => graphqlClient.request(getAllTrendingQuery),
     staleTime: 1000 * 60 * 5,
   });
   console.log(query.data, "query query check");

@@ -6,7 +6,10 @@ input searchQueryInput{
 
 type SearchQueryType{
     post:[Tweet]
-    hashtag:[HashTag]
     people:[User]
+    media:[Tweet]
+    latest:[Tweet]
+    hashtag:[HashTag]
+
 }
 `;

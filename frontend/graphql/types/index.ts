@@ -171,6 +171,7 @@ export interface getAllUsersQueryProps {
   getAllUsers: getCurrentUser[];
 }
 
+
 export interface follow {
   followingId: string;
   followerId: string;

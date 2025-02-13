@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import SinglePost from "@/components/post/SinglePost/singlePost";
 import { getAllPostData } from "@/lib/ServerFetchApi/ServerSideFunc";
 import Loading from "@/shared/loading";
+import { Tweet } from "@/graphql/types";
 
-const PostTab = async () => {
-  const allTweet = await getAllPostData();
+const PostTab = ({allTweet,query}:{allTweet:Tweet[],query:string}) => {
   if (!allTweet) {
     return (
       <div className="flex justify-center py-10">
@@ -15,8 +15,11 @@ const PostTab = async () => {
   }
   if (allTweet && !allTweet.length) {
     return (
-      <div className="rounded-[20px] p-4">
-        <p className="text-gray-500 text-sm">No Posts yet</p>
+        <div className="py-10 flex flex-col justify-center items-center">
+        <h3 className="text-lg font-bold mb-4">No results for {query}</h3>
+        <p className="text-gray-500 text-sm">
+          Try searching for something else
+        </p>
       </div>
     );
   }

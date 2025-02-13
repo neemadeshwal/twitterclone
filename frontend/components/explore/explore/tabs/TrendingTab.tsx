@@ -1,10 +1,9 @@
-import React from "react";
-import { useGetAllTrending } from "@/hooks/tweet";
 import Loading from "@/shared/loading";
 import { Icons } from "@/utils/icons";
+import { getAllTrendingData } from "@/lib/ServerFetchApi/ServerSideFunc";
 
-const TrendingTab = () => {
-  const { allTrending } = useGetAllTrending();
+const TrendingTab = async() => {
+  const allTrending = await getAllTrendingData();
 
   if (!allTrending) {
     return (

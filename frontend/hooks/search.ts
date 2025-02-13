@@ -1,6 +1,5 @@
 import { graphqlClient } from "@/clients/api";
 import { getSearchByQuery } from "@/graphql/query/search";
-import { searchQueryProps } from "@/graphql/types";
 import { useQuery } from "@tanstack/react-query";
 
 export const useSearchquery = (search: string) => {
@@ -13,7 +12,6 @@ export const useSearchquery = (search: string) => {
         },
       }),
   });
-  console.log(query.data, "querydata");
 
   return { ...query, allSearchResult: query.data?.searchQuery };
 };

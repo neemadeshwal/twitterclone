@@ -1,6 +1,5 @@
 import DivisionBar from "@/shared/divisionbar";
 
-import SearchInput from "../../SearchInput";
 import SingleTweetHighlight from "./SingleTweetHighlight";
 import { Icons } from "@/utils/icons";
 import RecommendedUser from "@/components/home/rightSide/recommendedUser";
@@ -23,7 +22,6 @@ const ForYou = async() => {
 
   return (
     <div>
-      <SearchInput />
       <div className="min-h-screen w-full">
         <div>
           <div>

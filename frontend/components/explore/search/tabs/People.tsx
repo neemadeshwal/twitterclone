@@ -4,8 +4,8 @@ import { getCurrentUser } from "@/graphql/types";
 import { getAllUsersData } from "@/lib/ServerFetchApi/ServerSideFunc";
 import Loading from "@/shared/loading";
 
-const PeopleTab =async () => {
-  const userList = await getAllUsersData();
+const PeopleTab = ({userList,query}:{userList:getCurrentUser[],query:string}) => {
+    console.log(userList,query,"userlistinsearch")
 
   if(!userList){
     return (
@@ -16,11 +16,18 @@ const PeopleTab =async () => {
   }
   if (userList&& !userList.length) {
     return (
-      <div className="rounded-[20px] p-4">
-        <p className="text-gray-500 text-sm">No Users yet</p>
+        <div className="py-10 flex flex-col justify-center items-center">
+        <h3 className="text-lg font-bold mb-4">No results for {query}</h3>
+        <p className="text-gray-500 text-sm">
+          Try searching for something else
+        </p>
       </div>
     );
   }
+
+  const sortedUserList=userList.sort(
+    (a,b)=>b.followers.length-a.followers.length
+  )
 
   return (
     <div>
@@ -29,9 +36,8 @@ const PeopleTab =async () => {
           <h3 className="text-[18px] font-[800]">People</h3>
         </div>
         <div className="flex flex-col gap-5">
-          {userList &&
-            userList.length !== 0 &&
-            userList.map((item: getCurrentUser) => {
+          {
+            sortedUserList.map((item: getCurrentUser) => {
               return <SingleFollowUser key={item.id} singleUser={item} />;
             })}
         </div>

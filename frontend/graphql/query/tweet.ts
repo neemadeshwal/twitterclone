@@ -270,7 +270,7 @@ export const getUserFollowingTweet=gql(`
         }
     `)
 
-export const getAllTrending=gql(`
+export const getAllTrendingQuery=gql(`
     query getAllTrending{
         getAllTrending{
             trendingHashtag{

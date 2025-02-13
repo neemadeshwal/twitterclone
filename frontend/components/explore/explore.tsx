@@ -6,7 +6,7 @@ import HorizontalSidebar from "@/components/home/horizontalSidebar";
 import { getCurrentUserData } from "@/lib/ServerFetchApi/ServerSideFunc";
 import SearchPage from "./searchPage";
 
-const Home = async () => {
+const Explore = async () => {
   const user = await getCurrentUserData();
   return (
     <div className="min-h-screen flex flex-col sm:flex-row">
@@ -23,7 +23,7 @@ const Home = async () => {
         </aside>
 
         <main className=" w-full sm:w-[80%] md:w-[95%]  md:max-w-[700px] lg:max-w-full lg:w-[60%] xl1300:w-[50%] ">
-          <SearchPage />
+          {/* <SearchPage /> */}
         </main>
 
         <div className="hidden lg:block">
@@ -45,4 +45,4 @@ const Home = async () => {
   );
 };
 
-export default Home;
+export default Explore;

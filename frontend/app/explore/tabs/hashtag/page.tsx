@@ -1,9 +1,10 @@
+import HashtagTab from '@/components/explore/explore/tabs/hashtagTab'
 import React from 'react'
 
-const page = () => {
+const Hashtag = () => {
   return (
-    <div>page</div>
+    <HashtagTab/>
   )
 }
 
-export default page
+export default Hashtag
