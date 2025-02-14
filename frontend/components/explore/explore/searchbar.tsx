@@ -6,7 +6,7 @@ import { BiSearch, BiX } from "react-icons/bi";
 import ShowSearchPreview from "./showSearchPreview";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import ExploreTabs from "./exploreTabs";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface SearchBarProps {
   onSearchResults: (results: any) => void;
@@ -16,22 +16,31 @@ interface SearchBarProps {
 
 
 
-const SearchBar: React.FC<SearchBarProps> = ({
-  onSearchResults,
-  query,
-  setQuery
+const SearchBar = ({
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  const { allSearchResult } = useSearchquery(debouncedQuery);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const { allSearchResult,isLoading } = useSearchquery(debouncedQuery);
+  const searchParams=useSearchParams()
 
+
+  const urlQuery = searchParams.get("q");
+  const [query,setQuery]=useState(urlQuery||"")
+
+ 
+
+  useEffect(() => {
+    if (urlQuery) {
+      setQuery(urlQuery);
+    }
+  }, [urlQuery]);
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       setDebouncedQuery(query);
-    }, 500); // Reduced from 2000ms for better responsiveness
+    }, 200); // Reduced from 2000ms for better responsiveness
 
     return () => clearTimeout(debounceTimer);
   }, [query]);
@@ -44,13 +53,17 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const router=useRouter()
 
-  const handleSearch = (e: React.KeyboardEvent) => {
+  const handleSearch = async(e: React.KeyboardEvent) => {
     if (!query || e.key !== "Enter") return;
       e.preventDefault();
+
+      if (debouncedQuery !== query) {
+        await new Promise(resolve => setTimeout(resolve, 600)); // Wait slightly longer than debounce time
+      }
     setShowSearchResults(true);
     setShowPreview(false);
-    onSearchResults(allSearchResult);
     setIsSearchFocused(false);
+
     addRecentSearch(query);
 
     const searchParams = new URLSearchParams(window.location.search);
@@ -76,12 +89,16 @@ const SearchBar: React.FC<SearchBarProps> = ({
       );
     }
   };
+  
 
   const handleBack = () => {
-    setIsSearchFocused(false);
     setShowPreview(false);
-    setShowSearchResults(false);
-    setQuery("");
+    const queryParams=searchParams.get("q")
+  
+    if(queryParams){
+    setQuery(queryParams)}
+    router.back()
+
   };
 
   return (
@@ -140,6 +157,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 setIsSearchPreviewOpen={setShowPreview}
                 allSearchResult={allSearchResult}
                 setQuery={setQuery}
+                isLoading={isLoading}
               />
             )}
           </div>

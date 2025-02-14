@@ -1,11 +1,13 @@
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import TopTab from "./tabs/TopTab";
 import Latest from "./tabs/Latest";
 import PeopleTab from "./tabs/People";
 import PostTab from "./tabs/Post";
-
+import { useSearchquery } from "@/hooks/search";
+import MediaTab from "./tabs/Media";
+import DivisionBar from "@/shared/divisionbar";
 const SEARCHTABS = [
   { id: "top", label: "Top" },
 
@@ -18,10 +20,39 @@ const SEARCHTABS = [
   { id: "media", label: "Media" },
 ];
 
-const SearchTabs = ({ query, searchResults }: any) => {
+const SearchTabs = () => {
+  
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  useEffect(()=>{
+    if(!searchParams.get("q")){
+      router.replace("/explore")
+    }
+  },[])
   const router = useRouter();
+  const query=searchParams.get("q")
+
+  const [searchResults,setSearchResults]=useState({
+    people:[],
+    post:[],
+    hashtag:[],
+    media:[],
+    latest:[]
+  })
+  
+  const { allSearchResult,isLoading} = useSearchquery(query||"");
+
+  
+
+  useEffect(()=>{
+   
+    if(query){
+      setSearchResults(allSearchResult);
+
+    }
+  },[allSearchResult,query])
+
+  
 
   const currentTab = searchParams.get("tab");
 
@@ -38,8 +69,10 @@ const SearchTabs = ({ query, searchResults }: any) => {
     const newUrl = `${pathname}?${params.toString()}`;
     router.push(newUrl);
   };
+  console.log(searchResults,"serachresults")
   return (
     <div>
+      <div>
       <div className="flex items-center w-full">
         {SEARCHTABS.map(({ id, label }) => {
           return (
@@ -57,17 +90,25 @@ const SearchTabs = ({ query, searchResults }: any) => {
             </div>
           );
         })}
+        </div>
+        <DivisionBar type="x"/>
+
       </div>
-      {!currentTab && <TopTab searchResult={searchResults} query={query} />}
-      {currentTab == "latest" && searchResults && (
-        <Latest tweetList={searchResults.latest} query={query} />
+      {!currentTab &&query&& <TopTab searchResult={searchResults} query={query} isLoading={isLoading} />}
+      {currentTab == "latest"  &&query&& (
+        <Latest searchResult={searchResults} query={query} isLoading={isLoading} />
       )}
-       {currentTab == "people"  && (
-        <PeopleTab userList={searchResults.people}  query={query} />
+       {currentTab == "people"  && query&&(
+        <PeopleTab searchResult={searchResults}  query={query} isLoading={isLoading}/>
       )}
-       {currentTab == "post"  && (
-        <PostTab allTweet={searchResults.post} query={query} />
+       {currentTab == "post" && query&&(
+        <PostTab searchResult={searchResults} query={query} isLoading={isLoading}/>
       )}
+      {
+        currentTab=="media"&&query&&(
+          <MediaTab query={query} searchResult={searchResults} isLoading={isLoading}/>
+        )
+      }
       
     </div>
   );

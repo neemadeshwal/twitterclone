@@ -3,31 +3,32 @@ import SingleFollowUser from "@/components/home/rightSide/SingleFollowUser";
 import { getCurrentUser } from "@/graphql/types";
 import { getAllUsersData } from "@/lib/ServerFetchApi/ServerSideFunc";
 import Loading from "@/shared/loading";
+import ScrollTop from "@/shared/ScrollTop";
 
-const PeopleTab = ({userList,query}:{userList:getCurrentUser[],query:string}) => {
-    console.log(userList,query,"userlistinsearch")
+const PeopleTab = ({searchResult,query,isLoading}:{searchResult:any,query:string,isLoading:any}) => {
 
-  if(!userList){
+  if(isLoading||!searchResult){
     return (
       <div className="flex justify-center py-10">
         <Loading />
       </div>
     );
   }
-  if (userList&& !userList.length) {
+  if (searchResult&&searchResult?.people&& !searchResult.people.length) {
     return (
-        <div className="py-10 flex flex-col justify-center items-center">
+      <>
+  <ScrollTop/>
+  <div className="py-10 flex flex-col justify-center items-center">
         <h3 className="text-lg font-bold mb-4">No results for {query}</h3>
         <p className="text-gray-500 text-sm">
           Try searching for something else
         </p>
       </div>
+      </>
+       
     );
   }
-
-  const sortedUserList=userList.sort(
-    (a,b)=>b.followers.length-a.followers.length
-  )
+const userList=searchResult.people
 
   return (
     <div>
@@ -37,7 +38,7 @@ const PeopleTab = ({userList,query}:{userList:getCurrentUser[],query:string}) =>
         </div>
         <div className="flex flex-col gap-5">
           {
-            sortedUserList.map((item: getCurrentUser) => {
+            userList.map((item: getCurrentUser) => {
               return <SingleFollowUser key={item.id} singleUser={item} />;
             })}
         </div>

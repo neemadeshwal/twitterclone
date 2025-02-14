@@ -1,11 +1,13 @@
 import SinglePost from '@/components/post/SinglePost/singlePost'
 import { Tweet } from '@/graphql/types'
 import Loading from '@/shared/loading';
+import ScrollTop from '@/shared/ScrollTop';
 import React from 'react'
 
-const Latest = ({tweetList,query}:{tweetList:Tweet[],query:string}) => {
-  console.log(tweetList,query,"tweetlistinsearch")
-  if (!tweetList) {
+const Latest = ({searchResult,query,isLoading}:{searchResult:any,query:string,isLoading:any}) => {
+  
+  console.log(isLoading,"isLoading")
+  if (isLoading||!searchResult) {
     return (
       <div className="flex justify-center py-4">
         <Loading/>
@@ -13,7 +15,7 @@ const Latest = ({tweetList,query}:{tweetList:Tweet[],query:string}) => {
     );
   }
   
-  if (tweetList && !tweetList.length) {
+  if (searchResult&&searchResult?.latest && !searchResult.latest.length) {
     return (
       <div className="py-10 flex flex-col justify-center items-center">
         <h3 className="text-lg font-bold mb-4">No results for {query}</h3>
@@ -23,12 +25,15 @@ const Latest = ({tweetList,query}:{tweetList:Tweet[],query:string}) => {
       </div>
     );
   }
+  const tweetList=searchResult.latest
   return (
     <div>
+  <ScrollTop/>
+
     <div>
       {tweetList &&
         tweetList.length !== 0 &&
-        tweetList.map((tweet) => <SinglePost tweet={tweet} key={tweet.id} />)}
+        tweetList.map((tweet:any) => <SinglePost tweet={tweet} key={tweet.id} />)}
     </div>
   </div>
   )

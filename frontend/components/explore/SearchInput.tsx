@@ -4,7 +4,7 @@ import SearchBar from "./explore/searchbar";
 import DivisionBar from "@/shared/divisionbar";
 
 
-const SearchInput = ({query,setQuery,setSearchResults}:any) => {
+const SearchInput = () => {
 
 
   
@@ -13,9 +13,6 @@ const SearchInput = ({query,setQuery,setSearchResults}:any) => {
     <div>
       <div className="sticky top-0 z-[1000]">
         <SearchBar
-          query={query}
-          setQuery={setQuery}
-          onSearchResults={setSearchResults}
         />
         <DivisionBar type="x" />
       </div>

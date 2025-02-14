@@ -1,13 +1,15 @@
+"use client"
 import SingleFollowUser from "@/components/home/rightSide/SingleFollowUser";
 import SinglePost from "@/components/post/SinglePost/singlePost";
 import DivisionBar from "@/shared/divisionbar";
 import Loading from "@/shared/loading";
+import ScrollTop from "@/shared/ScrollTop";
+import { useSearchParams } from "next/navigation";
 import React from "react";
 
-const TopTab = ({ searchResult, query }: any) => {
-  console.log(searchResult, "awEXH EARUL");
+const TopTab = ({ searchResult,query,isLoading }: any) => {
 
-  if (!searchResult) {
+  if (isLoading||!searchResult) {
     return (
       <div className="flex justify-center py-4">
         <Loading />
@@ -29,8 +31,10 @@ const TopTab = ({ searchResult, query }: any) => {
       </div>
     );
   }
+  console.log(searchResult.hashtag,"hashtag")
   return (
     <div className="py-4 ">
+      <ScrollTop/>
       <div className="">
         {searchResult &&
           searchResult.length !== 0 &&
@@ -82,9 +86,7 @@ const TopTab = ({ searchResult, query }: any) => {
                 {searchResult.hashtag.length > 4 && (
                   <div className="">See all</div>
                 )}
-                <div className="py-6">
-                  <DivisionBar type="x" />
-                </div>
+               
               </div>
             )}
         </div>

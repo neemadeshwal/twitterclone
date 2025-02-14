@@ -140,3 +140,13 @@ p {
     padding: 0.75rem;
   }
 }
+.animate-moveLine{
+  left: -100%;  
+ animation:moveLine 15s ease-in-out infinite
+}
+
+@keyframes moveLine{
+    0% { left: -100% }  
+    50% {left:0}
+    100%   { left: 100% }
+}

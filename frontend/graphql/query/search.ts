@@ -18,7 +18,15 @@ export const getSearchByQuery = gql`
         id
         text
         tweets{
+          createdAt
+          hashtags{
+            id
+            text
+          }
           LikedBy{
+            id
+          }
+          commentAuthor{
             id
           }
           id

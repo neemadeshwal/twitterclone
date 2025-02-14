@@ -17,6 +17,7 @@ const ShowSearchPreview = ({
   setIsSearchPreviewOpen,
   allSearchResult,
   setQuery,
+  isLoading
 }: any) => {
   const [recentSearch, setRecentSearch] = useState<string[]>([]);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -65,7 +66,10 @@ const ShowSearchPreview = ({
       };
     };
   }, [setIsSearchPreviewOpen]);
+  console.log(allSearchResult,"alls")
+  console.log(isLoading,"alls load")
   return (
+    
     <div
       ref={previewRef}
       style={{
@@ -73,6 +77,7 @@ const ShowSearchPreview = ({
       }}
       className="bg-black  rounded-[10px] z-50 w-full absolute min-h-[100px] max-h-[300px] h-auto overflow-auto my-2 "
     >
+      {/* {isLoading&&allSearchResult&& <div className="absolute top-0 left-0 h-[2px] w-full bg-blue-500 animate-moveLine"></div>} */}
       {allSearchResult && allSearchResult.length !== 0 ? (
         <div>
           {allSearchResult.hashtag.length !== 0 &&

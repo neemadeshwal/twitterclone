@@ -26,7 +26,7 @@ const ExploreTabs = () => {
               <button className="py-4 px-4 w-full hover:bg-[#1d1d1dbb]">
                 {label}
               </button>
-              {pathname === `/explore/tabs${id}` && (
+              {(pathname === `/explore/tabs${id}`||(pathname==="/explore"&&id=="/for_you")) && (
                 <div className="absolute bottom-0 bg-blue-500 w-[50%] left-[28%] h-1 rounded-full" />
               )}
             </Link>

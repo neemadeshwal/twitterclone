@@ -35,8 +35,6 @@ const SearchPage = () => {
         query={query}
         setQuery={setQuery}
 
-          currentTab={searchbarTab}
-          onTabChange={setSearchBarTab}
           onSearchResults={setSearchResults}
         
         />
