@@ -16,7 +16,7 @@ import { repostTweet } from "@/graphql/mutation/repost";
 import CurrentUser from "@/shared/currentUser";
 import { HiOutlinePhotograph } from "react-icons/hi";
 import { MdOutlineGifBox } from "react-icons/md";
-import { createComment } from "@/graphql/mutation/comment";
+import { createCommentMutate } from "@/graphql/mutation/comment";
 import SingleComment from "@/components/postDetail/singleComment";
 
 const PostDetail = ({tweet:singleTweet}:any) => {
@@ -27,7 +27,7 @@ const PostDetail = ({tweet:singleTweet}:any) => {
   const [tweetComment, setTweetComment] = useState("");
   const {user}=useCurrentUser()
   const commentMutation = useMutation({
-    mutationFn: createComment,
+    mutationFn: createCommentMutate,
     onSuccess: (response: any) => {
       console.log(response);
       setTweetComment("");
@@ -229,7 +229,7 @@ const PostDetail = ({tweet:singleTweet}:any) => {
           <div className="py-2  w-full">
             <div className="w-full  px-2 flex gap-3 py-4">
               <div className="">
-                <CurrentUser />
+                <CurrentUser user={user}/>
               </div>
               <div className="w-full flex items-start gap-2  ">
                 <div className="gray font-[500] text-[14px] ">

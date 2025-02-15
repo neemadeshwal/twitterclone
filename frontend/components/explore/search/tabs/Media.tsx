@@ -1,9 +1,17 @@
 import Loading from "@/shared/loading";
 import ScrollTop from "@/shared/ScrollTop";
 import Image from "next/image";
-import React from "react";
+import { SearchResultProps } from "../searchTabs";
 
-const MediaTab = ({ query, searchResult, isLoading }: any) => {
+const MediaTab = ({
+  query,
+  searchResult,
+  isLoading,
+}: {
+  query: string;
+  searchResult: SearchResultProps;
+  isLoading: boolean;
+}) => {
   if (isLoading || !searchResult) {
     return (
       <div className="flex justify-center py-10">
@@ -11,12 +19,7 @@ const MediaTab = ({ query, searchResult, isLoading }: any) => {
       </div>
     );
   }
-  if (
-    searchResult &&
-    searchResult?.media &&
-    !searchResult.media.length &&
-    !searchResult.media.mediaArray
-  ) {
+  if (searchResult && searchResult?.media && !searchResult.media.length) {
     return (
       <div className="py-10 flex flex-col justify-center items-center">
         <h3 className="text-lg font-bold mb-4">No results for {query}</h3>
@@ -30,7 +33,7 @@ const MediaTab = ({ query, searchResult, isLoading }: any) => {
     <div>
       <ScrollTop />
       <div className="grid grid-flow-row grid-cols-3 gap-1 px-1 py-1">
-        {searchResult.media.map((mediaItem: any) => {
+        {searchResult.media.map((mediaItem) => {
           return (
             <div key={mediaItem.id} className="">
               {mediaItem.mediaArray.map((item: string) => {

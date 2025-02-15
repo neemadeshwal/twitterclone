@@ -1,20 +1,27 @@
+import Image from "next/image";
+
+import { Tweet } from "@/graphql/types";
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
 import AuthorProfile from "@/shared/AuthorProfile";
 import { Icons } from "@/utils/icons";
-import Image from "next/image";
-import React from "react";
 
-const SingleTweetHighlight = ({ tweet }: { tweet: any }) => {
 
- 
+
+const SingleTweetHighlight = ({ tweet }: { tweet: Tweet}) => {
+
   return (
-    <div key={tweet.key}>
+    <div key={tweet.id}>
       <div className="flex justify-between">
         <div>
-          <h2>{tweet.content?tweet.content.slice(0,50):"....."}</h2>
+          <h2>{tweet.content&&tweet.content.slice(0,50)}</h2>
+          <div>{tweet.hashtags.length>0&&tweet.hashtags.map((hashtag)=>{
+            return(
+              <div className="text-blue-500 text-[14px]" key={hashtag.id}>{hashtag.text}</div>
+            )
+          })}</div>
           <div className="flex gap-1 gray text-[14px] items-center">
            <div className="flex -space-x-[0.9rem]">
-            {tweet.LikedBy.length!==0&&tweet.LikedBy.slice(0,3).map((item:any,index:number)=>{
+            {tweet.LikedBy.length!==0&&tweet.LikedBy.map((item:any,index:number)=>{
              return(
                 <div className=" ring-2 ring-black rounded-full  scale-75" key={item.id}  style={{
                   zIndex: tweet.LikedBy.length - index

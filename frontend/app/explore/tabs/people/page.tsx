@@ -1,10 +1,7 @@
-import PeopleTab from '@/components/explore/explore/tabs/peopleTab'
-import React from 'react'
+import PeopleTab from "@/components/explore/explore/tabs/peopleTab";
 
 const People = () => {
-  return (
-    <PeopleTab/>
-  )
-}
+  return <PeopleTab />;
+};
 
-export default People
+export default People;

@@ -1,13 +1,11 @@
-"use client"
 import SingleFollowUser from "@/components/home/rightSide/SingleFollowUser";
 import SinglePost from "@/components/post/SinglePost/singlePost";
 import DivisionBar from "@/shared/divisionbar";
 import Loading from "@/shared/loading";
 import ScrollTop from "@/shared/ScrollTop";
-import { useSearchParams } from "next/navigation";
-import React from "react";
+import { SearchResultProps } from "../searchTabs";
 
-const TopTab = ({ searchResult,query,isLoading }: any) => {
+const TopTab = ({ searchResult,query,isLoading }:{searchResult:SearchResultProps,query:string,isLoading:boolean}) => {
 
   if (isLoading||!searchResult) {
     return (
@@ -31,13 +29,11 @@ const TopTab = ({ searchResult,query,isLoading }: any) => {
       </div>
     );
   }
-  console.log(searchResult.hashtag,"hashtag")
   return (
     <div className="py-4 ">
       <ScrollTop/>
       <div className="">
         {searchResult &&
-          searchResult.length !== 0 &&
           searchResult.people.length !== 0 && (
             <div className="">
               <div className="py-6 pt-0 px-6">
@@ -64,7 +60,6 @@ const TopTab = ({ searchResult,query,isLoading }: any) => {
           )}
         <div className="">
           {searchResult &&
-            searchResult.length !== 0 &&
             searchResult.hashtag.length !== 0 && (
               <div>
                 {searchResult.hashtag
@@ -92,7 +87,6 @@ const TopTab = ({ searchResult,query,isLoading }: any) => {
         </div>
         <div>
           {searchResult &&
-            searchResult.length !== 0 &&
             searchResult.post.length !== 0 && (
               <div>
                 {searchResult.post.slice(0, 4).map((tweet: any) => {

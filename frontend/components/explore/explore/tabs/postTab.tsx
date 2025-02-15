@@ -1,5 +1,3 @@
-import { useAllTweet } from "@/hooks/tweet";
-import React, { useEffect, useState } from "react";
 import SinglePost from "@/components/post/SinglePost/singlePost";
 import { getAllPostData } from "@/lib/ServerFetchApi/ServerSideFunc";
 import Loading from "@/shared/loading";
@@ -28,9 +26,9 @@ const PostTab = async () => {
   return (
     <div>
       <div>
-        {tweetList &&
-          tweetList.length !== 0 &&
-          tweetList.map((tweet) => <SinglePost tweet={tweet} key={tweet.id} />)}
+        {tweetList.map((tweet) => (
+          <SinglePost tweet={tweet} key={tweet.id} />
+        ))}
       </div>
     </div>
   );

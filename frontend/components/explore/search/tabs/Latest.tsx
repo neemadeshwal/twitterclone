@@ -1,12 +1,10 @@
 import SinglePost from '@/components/post/SinglePost/singlePost'
-import { Tweet } from '@/graphql/types'
 import Loading from '@/shared/loading';
 import ScrollTop from '@/shared/ScrollTop';
-import React from 'react'
+import { SearchResultProps } from '../searchTabs';
 
-const Latest = ({searchResult,query,isLoading}:{searchResult:any,query:string,isLoading:any}) => {
+const Latest = ({searchResult,query,isLoading}:{searchResult:SearchResultProps,query:string,isLoading:boolean}) => {
   
-  console.log(isLoading,"isLoading")
   if (isLoading||!searchResult) {
     return (
       <div className="flex justify-center py-4">
@@ -25,14 +23,14 @@ const Latest = ({searchResult,query,isLoading}:{searchResult:any,query:string,is
       </div>
     );
   }
+
   const tweetList=searchResult.latest
   return (
     <div>
   <ScrollTop/>
 
     <div>
-      {tweetList &&
-        tweetList.length !== 0 &&
+      {
         tweetList.map((tweet:any) => <SinglePost tweet={tweet} key={tweet.id} />)}
     </div>
   </div>

@@ -4,9 +4,11 @@ import HashtagContainer from "../HashtagContainer";
 const TweetContent = ({
   tweetContent,
   setTweetContent,
+  isComment
 }: {
   tweetContent: string;
   setTweetContent: any;
+  isComment?:boolean
 }) => {
   const [isHashTagDialogOpen, setHashTagDialog] = useState(false);
   const [hashtagPart, setHashtagPart] = useState("");
@@ -38,7 +40,7 @@ const TweetContent = ({
           onChange={(e) => handleContentChange(e.target.value)}
           rows={2}
           className={`text-[20px] resize-none overflow-visible bg-transparent   outline-none border-0 w-full placeholder:text-gray-600`}
-          placeholder="What is happening?!"
+          placeholder={`${isComment?"Post Your Reply":"What is happening?!"}`}
         ></textarea>
         {isHashTagDialogOpen && (
           <div className="relative">

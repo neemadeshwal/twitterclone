@@ -1,20 +1,19 @@
-import React from "react";
 import SingleFollowUser from "@/components/home/rightSide/SingleFollowUser";
 import { getCurrentUser } from "@/graphql/types";
 import { getAllUsersData } from "@/lib/ServerFetchApi/ServerSideFunc";
 import Loading from "@/shared/loading";
 
-const PeopleTab =async () => {
+const PeopleTab = async () => {
   const userList = await getAllUsersData();
 
-  if(!userList){
+  if (!userList) {
     return (
       <div className="flex justify-center py-10">
         <Loading />
       </div>
     );
   }
-  if (userList&& !userList.length) {
+  if (userList && !userList.length) {
     return (
       <div className="rounded-[20px] p-4">
         <p className="text-gray-500 text-sm">No Users yet</p>
@@ -29,11 +28,9 @@ const PeopleTab =async () => {
           <h3 className="text-[18px] font-[800]">People</h3>
         </div>
         <div className="flex flex-col gap-5">
-          {userList &&
-            userList.length !== 0 &&
-            userList.map((item: getCurrentUser) => {
-              return <SingleFollowUser key={item.id} singleUser={item} />;
-            })}
+          {userList.map((item: getCurrentUser) => {
+            return <SingleFollowUser key={item.id} singleUser={item} />;
+          })}
         </div>
       </div>
     </div>

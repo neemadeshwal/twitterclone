@@ -78,6 +78,7 @@ export const getSingleTweetQuery = gql(`
                 id 
             content
             mediaArray
+            createdAt
             savedPost{
                 id
                 userId
@@ -343,6 +344,10 @@ export const getForYouQuery=gql(`
                 content,
                 createdAt,
                 mediaArray
+                hashtags{
+                    id
+                    text
+                }
                 author{
                     id
                         firstName

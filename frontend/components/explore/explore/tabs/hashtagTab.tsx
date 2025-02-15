@@ -12,6 +12,7 @@ const HashtagTab = async () => {
       </div>
     );
   }
+
   if (allTweet && !allTweet.length) {
     return (
       <div className="rounded-[20px] p-4">
@@ -34,9 +35,9 @@ const HashtagTab = async () => {
   return (
     <div>
       <div>
-        {tweetList &&
-          tweetList.length !== 0 &&
-          tweetList.map((tweet) => <SinglePost tweet={tweet} key={tweet.id} />)}
+        {tweetList.map((tweet) => (
+          <SinglePost tweet={tweet} key={tweet.id} />
+        ))}
       </div>
     </div>
   );

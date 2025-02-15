@@ -23,7 +23,7 @@ export const REPLY_COMMENT = gql`
     }
   }
 `;
-export const createComment = async (payload: CreateCommentProps) => {
+export const createCommentMutate = async (payload: CreateCommentProps) => {
   const data = await graphqlClient.request(CREATE_COMMENT, { payload });
   return data;
 };

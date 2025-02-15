@@ -14,7 +14,7 @@ import { FaSearch, FaRegUser, FaUser } from "react-icons/fa";
 import { CiMail } from "react-icons/ci";
 import { BsTwitterX } from "react-icons/bs";
 import { BsFeather } from "react-icons/bs";
-import { BiX } from "react-icons/bi";
+import { BiSearch, BiX } from "react-icons/bi";
 import { BsEmojiSmile } from "react-icons/bs";
 import { FiMap, FiMapPin } from "react-icons/fi";
 import { HiOutlinePhotograph } from "react-icons/hi";
@@ -45,6 +45,7 @@ export const Icons={
     GifIcon:MdOutlineGifBox,
     RadioIcon:RiListRadio,
     VerticalDots:IoEllipsisVertical,
-    Dot:LuDot
+    Dot:LuDot,
+    SearchIcon:BiSearch
 
 }

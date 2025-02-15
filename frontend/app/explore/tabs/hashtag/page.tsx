@@ -1,10 +1,7 @@
-import HashtagTab from '@/components/explore/explore/tabs/hashtagTab'
-import React from 'react'
+import HashtagTab from "@/components/explore/explore/tabs/hashtagTab";
 
 const Hashtag = () => {
-  return (
-    <HashtagTab/>
-  )
-}
+  return <HashtagTab />;
+};
 
-export default Hashtag
+export default Hashtag;

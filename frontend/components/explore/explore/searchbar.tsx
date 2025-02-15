@@ -1,81 +1,12 @@
-// SearchBar.tsx
 "use client";
 import { useSearchquery } from "@/hooks/search";
 import React, { useEffect, useRef, useState } from "react";
-import { BiSearch, BiX } from "react-icons/bi";
 import ShowSearchPreview from "./showSearchPreview";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import ExploreTabs from "./exploreTabs";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Icons } from "@/utils/icons";
 
-interface SearchBarProps {
-  onSearchResults: (results: any) => void;
-  query:any;
-  setQuery:any;
-}
-
-
-
-const SearchBar = ({
-}) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const { allSearchResult,isLoading } = useSearchquery(debouncedQuery);
-  const searchParams=useSearchParams()
-
-
-  const urlQuery = searchParams.get("q");
-  const [query,setQuery]=useState(urlQuery||"")
-
- 
-
-  useEffect(() => {
-    if (urlQuery) {
-      setQuery(urlQuery);
-    }
-  }, [urlQuery]);
-  useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, 200); // Reduced from 2000ms for better responsiveness
-
-    return () => clearTimeout(debounceTimer);
-  }, [query]);
-
-  useEffect(() => {
-    if (isSearchFocused && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isSearchFocused]);
-
-  const router=useRouter()
-
-  const handleSearch = async(e: React.KeyboardEvent) => {
-    if (!query || e.key !== "Enter") return;
-      e.preventDefault();
-
-      if (debouncedQuery !== query) {
-        await new Promise(resolve => setTimeout(resolve, 600)); // Wait slightly longer than debounce time
-      }
-    setShowSearchResults(true);
-    setShowPreview(false);
-    setIsSearchFocused(false);
-
-    addRecentSearch(query);
-
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set('q', query);
-    
-    searchParams.delete('tab');
-    
-    router.push(`/search?${searchParams.toString()}`);
-
-  
-  };
-
+const useRecentSearches = () => {
   const addRecentSearch = (searchTerm: string) => {
     if (!searchTerm) return;
 
@@ -89,16 +20,132 @@ const SearchBar = ({
       );
     }
   };
-  
+  return { addRecentSearch };
+};
+
+const SearchInput = ({
+  query,
+  setQuery,
+  isSearchFocused,
+  inputRef,
+  handleSearch,
+  setIsSearchFocused,
+  setShowPreview,
+}: {
+  query: string;
+  setQuery: (query: string) => void;
+  isSearchFocused: boolean;
+  inputRef: React.RefObject<HTMLInputElement>;
+  handleSearch: (e: React.KeyboardEvent) => void;
+  setIsSearchFocused: (value: boolean) => void;
+  setShowPreview: (value: boolean) => void;
+}) => {
+  return (
+    <div
+      className={`relative py-1 ${
+        isSearchFocused ? "ml-10 w-[90%]" : "w-full"
+      }`}
+    >
+      <input
+        ref={inputRef}
+        value={query}
+        onChange={(e) => {
+          console.log(e.target.value);
+          setQuery(e.target.value);
+        }}
+        onKeyDown={handleSearch}
+        placeholder="Search"
+        onClick={() => {
+          setIsSearchFocused(true);
+          setShowPreview(true);
+        }}
+        className={`w-full rounded-full px-12 py-2 outline-0 ${
+          isSearchFocused
+            ? "bg-black border-[#1d9bf0] border"
+            : "bg-[#262626c0] border-gray-700"
+        }`}
+      />
+
+      {query && isSearchFocused && (
+        <button
+          onClick={() => setQuery("")}
+          className="x-bgcolor rounded-full absolute right-3 top-[25%]"
+        >
+          <Icons.XIcon className="text-black w-6 h-6" />
+        </button>
+      )}
+
+      <Icons.SearchIcon
+        className={`absolute top-[30%] left-4 text-[22px] ${
+          isSearchFocused ? "x-textcolor" : "gray"
+        }`}
+      />
+    </div>
+  );
+};
+
+const SearchBar = ({}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
+  const { allSearchResult, isLoading } = useSearchquery(debouncedQuery);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const { addRecentSearch } = useRecentSearches();
+
+  const urlQuery = searchParams.get("q");
+  const [query, setQuery] = useState(urlQuery || "");
+
+  useEffect(() => {
+    if (urlQuery) {
+      setQuery(urlQuery);
+    }
+  }, [urlQuery]);
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 200);
+
+    return () => clearTimeout(debounceTimer);
+  }, [query]);
+
+  useEffect(() => {
+    if (isSearchFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isSearchFocused]);
+
+  const handleSearch = async (e: React.KeyboardEvent) => {
+    if (!query || e.key !== "Enter") return;
+    e.preventDefault();
+
+    if (debouncedQuery !== query) {
+      await new Promise((resolve) => setTimeout(resolve, 600)); // Wait slightly longer than debounce time
+    }
+    setShowPreview(false);
+    setIsSearchFocused(false);
+
+    addRecentSearch(query);
+
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.set("q", query);
+
+    searchParams.delete("tab");
+
+    router.push(`/search?${searchParams.toString()}`);
+  };
 
   const handleBack = () => {
     setShowPreview(false);
-    const queryParams=searchParams.get("q")
-  
-    if(queryParams){
-    setQuery(queryParams)}
-    router.back()
+    const queryParams = searchParams.get("q");
 
+    if (queryParams) {
+      setQuery(queryParams);
+    }
+    router.back();
   };
 
   return (
@@ -114,55 +161,24 @@ const SearchBar = ({
 
       <div className="backdrop-blur-md pt-1 bg-[#000000b0]">
         <div className="px-12 relative">
-          <div
-            className={`relative py-1 ${
-              isSearchFocused ? "ml-10 w-[90%]" : "w-full"
-            }`}
-          >
-            <input
-              ref={inputRef}
-              value={query}
-              onChange={(e) => {console.log(e.target.value);setQuery(e.target.value)}}
-              onKeyDown={handleSearch}
-              placeholder="Search"
-              onClick={() => {
-                setIsSearchFocused(true);
-                setShowPreview(true);
-              }}
-              className={`w-full rounded-full px-12 py-2 outline-0 ${
-                isSearchFocused
-                  ? "bg-black border-[#1d9bf0] border"
-                  : "bg-[#262626c0] border-gray-700"
-              }`}
+          <SearchInput
+            query={query}
+            setQuery={setQuery}
+            isSearchFocused={isSearchFocused}
+            inputRef={inputRef}
+            handleSearch={handleSearch}
+            setIsSearchFocused={setIsSearchFocused}
+            setShowPreview={setShowPreview}
+          />
+          {showPreview && (
+            <ShowSearchPreview
+              isSearchPreviewOpen={isSearchFocused}
+              setIsSearchPreviewOpen={setShowPreview}
+              allSearchResult={allSearchResult}
+              setQuery={setQuery}
+              isLoading={isLoading}
             />
-
-            {query && isSearchFocused && (
-              <button
-                onClick={() => setQuery("")}
-                className="x-bgcolor rounded-full absolute right-3 top-[25%]"
-              >
-                <BiX className="text-black w-6 h-6" />
-              </button>
-            )}
-
-            <BiSearch
-              className={`absolute top-[30%] left-4 text-[22px] ${
-                isSearchFocused ? "x-textcolor" : "gray"
-              }`}
-            />
-
-            {showPreview && (
-              <ShowSearchPreview
-                showSearchPreview={isSearchFocused}
-                setIsSearchPreviewOpen={setShowPreview}
-                allSearchResult={allSearchResult}
-                setQuery={setQuery}
-                isLoading={isLoading}
-              />
-            )}
-          </div>
-
-         
+          )}
         </div>
       </div>
     </div>
@@ -171,4 +187,3 @@ const SearchBar = ({
 
 export default SearchBar;
 
-// TopTab.tsx

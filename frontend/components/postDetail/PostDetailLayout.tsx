@@ -1,17 +1,13 @@
-import React from "react";
 import DivisionBar from "@/shared/divisionbar";
-import RightSidebar from "@/components/home/rightSide/rightside";
-import Sidebar from "@/components/home/leftSide/sidebar";
-import HorizontalSidebar from "@/components/home/horizontalSidebar";
+import RightSidebar from "../home/rightSide/rightside";
+import MiddlePost from "../home/middlePost/middlePost";
+import Sidebar from "../home/leftSide/sidebar";
+import HorizontalSidebar from "../home/horizontalSidebar";
 import { getCurrentUserData } from "@/lib/ServerFetchApi/ServerSideFunc";
-import ExploreComponent from "./ExploreComponent";
-const ExploreLayoutComponent = async ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  const user = await getCurrentUserData();
+import PostDetail from "./postDetail";
 
+const PostDetailLayout = async () => {
+  const user = await getCurrentUserData();
   return (
     <div className="min-h-screen flex flex-col sm:flex-row">
       <div className="flex-1 flex flex-col sm:flex-row px-0  md:px-[100px] lg:px-[20px] xl1300:px-[40px]">
@@ -27,9 +23,8 @@ const ExploreLayoutComponent = async ({
         </aside>
 
         <main className=" w-full sm:w-[80%] md:w-[95%]  md:max-w-[700px] lg:max-w-full lg:w-[60%] xl1300:w-[50%] ">
-          <ExploreComponent />
-
-          {children}
+         <PostDetail user={user}/>
+          
         </main>
 
         <div className="hidden lg:block">
@@ -37,17 +32,18 @@ const ExploreLayoutComponent = async ({
         </div>
 
         <div className="hidden lg:block   lg:w-[33%] xl1300:w-[30%] ">
-          <div className="sticky top-0 h-auto">
-            <RightSidebar />
-          </div>
+         <div className="sticky top-0 h-auto">
+         <RightSidebar />
+
+         </div>
         </div>
       </div>
 
       <nav className="sm:hidden">
-        <HorizontalSidebar currentUser={user} />
+        <HorizontalSidebar currentUser={user}/>
       </nav>
     </div>
   );
 };
 
-export default ExploreLayoutComponent;
+export default PostDetailLayout;
