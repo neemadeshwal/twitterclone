@@ -1,4 +1,4 @@
-import ExploreLayoutComponent from '@/components/explore/ExploreLayout'
+import ExploreLayoutComponent from '@/components/explore/explore/ExploreLayout'
 
 const ExploreLayout = ({children}:{children:React.ReactNode}) => {
   return (

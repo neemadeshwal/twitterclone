@@ -59,6 +59,8 @@ export interface createTweetMutateProps {
   content: string;
   mediaArray: string[];
 }
+
+
 export interface Tweet {
   id: string;
   content: string;

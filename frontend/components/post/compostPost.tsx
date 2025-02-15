@@ -13,8 +13,9 @@ import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 import CharacterCircle from "@/shared/CharacterCircle";
 import { TWEET_CHARACTER_LIMIT } from "@/lib/constants";
 import useOutsideClick from "@/shared/closeContainer";
+import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
 
-const ComposePost = ({ user }: { user: getCurrentUser | null }) => {
+const ComposePost = ({ user,isComment,tweetId }: { user: getCurrentUser | null ,isComment?:boolean,tweetId?:string}) => {
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
   const [tweetContent, setTweetContent] = useState("");
@@ -31,6 +32,13 @@ const ComposePost = ({ user }: { user: getCurrentUser | null }) => {
     },
   });
 
+  const {createComment}=useCommentMutation({
+    onSuccess:()=>{
+      setTweetContent("");
+      setFiles([]);
+    }
+  })
+
   async function onSubmit() {
     const body = {
       content: tweetContent,
@@ -38,6 +46,20 @@ const ComposePost = ({ user }: { user: getCurrentUser | null }) => {
     };
     try {
       await createTweet(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function onCommentSubmit() {
+    console.log("hello comment in ")
+    console.log(tweetId)
+    const body = {
+      comment: tweetContent,
+      mediaArray: files,
+      tweetId:tweetId??""
+    };
+    try {
+      await createComment(body);
     } catch (error) {
       console.log(error);
     }
@@ -50,6 +72,7 @@ const ComposePost = ({ user }: { user: getCurrentUser | null }) => {
           <CurrentUser user={user} />
           <div className="w-full mt-2 px-2">
             <TweetContent
+            isComment={isComment}
               tweetContent={tweetContent}
               setTweetContent={setTweetContent}
             />
@@ -63,12 +86,14 @@ const ComposePost = ({ user }: { user: getCurrentUser | null }) => {
             {files.length !== 0 && (
               <MediaUpload files={files} setFiles={setFiles} />
             )}
-
+          {!isComment&&
             <DivisionBar type="x" />
+          
+          }
           </div>
         </div>
         <div>
-          <div className="pl-14 flex pt-3 pb-0 justify-between">
+          <div className={`pl-14 flex ${isComment?"pt-0":"pt-3"} pb-0 justify-between`}>
             <TweetAction
               setTweetContent={setTweetContent}
               setFiles={setFiles}
@@ -84,14 +109,28 @@ const ComposePost = ({ user }: { user: getCurrentUser | null }) => {
                   />
                 </div>
               )}
-
+             
+             {
+              (isComment&&tweetId)?
               <button
-                onClick={onSubmit}
-                className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
-                disabled={files.length == 0 && tweetContent.trim() == ""}
-              >
-                Post
-              </button>
+              onClick={onCommentSubmit}
+              className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
+              disabled={files.length == 0 && tweetContent.trim() == ""}
+            >
+              Reply
+            </button>
+            :
+             <button
+             onClick={onSubmit}
+             className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
+             disabled={files.length == 0 && tweetContent.trim() == ""}
+           >
+            Post
+           </button>
+             }
+
+
+             
             </div>
           </div>
         </div>

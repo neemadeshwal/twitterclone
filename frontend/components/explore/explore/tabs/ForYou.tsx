@@ -6,8 +6,8 @@ import RecommendedUser from "@/components/home/rightSide/recommendedUser";
 import Loading from "@/shared/loading";
 import { getForYouData } from "@/lib/ServerFetchApi/ServerSideFunc";
 
-const ForYou = async() => {
-  const allForYou =await getForYouData()
+const ForYou = async () => {
+  const allForYou = await getForYouData();
   if (
     !allForYou?.forYouTweet ||
     !allForYou?.forYouHashtag ||
@@ -25,11 +25,11 @@ const ForYou = async() => {
       <div className="min-h-screen w-full">
         <div>
           <div>
-            {allForYou?.forYouTweet && allForYou.forYouTweet.length !== 0 && (
+            { allForYou.forYouTweet.length !== 0 && (
               <div className="py-4">
                 <div>
                   <div className="flex flex-col gap-6 px-4">
-                    {allForYou?.forYouTweet.map((item: any) => {
+                    {allForYou?.forYouTweet.slice(0,5).map((item: any) => {
                       return (
                         <SingleTweetHighlight tweet={item} key={item.id} />
                       );
@@ -66,10 +66,10 @@ const ForYou = async() => {
           </div>
           <div>
             <div>
-              {allForYou?.forYouUser && allForYou.forYouUser.length !== 0 && (
+              {allForYou.forYouUser.length !== 0 && (
                 <RecommendedUser
                   isBio={true}
-                  userList={allForYou?.forYouUser}
+                  userList={allForYou?.forYouUser.slice(0,5)}
                 />
               )}
             </div>

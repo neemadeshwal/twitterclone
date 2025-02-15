@@ -1,10 +1,7 @@
-import PostTab from '@/components/explore/explore/tabs/postTab'
-import React from 'react'
+import PostTab from "@/components/explore/explore/tabs/postTab";
 
 const Post = () => {
-  return (
-    <PostTab/>
-  )
-}
+  return <PostTab />;
+};
 
-export default Post
+export default Post;

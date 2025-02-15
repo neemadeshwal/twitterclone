@@ -1,12 +1,12 @@
 import DivisionBar from "@/shared/divisionbar";
-import React from "react";
-import RightSidebar from "@/components/home/rightSide/rightside";
-import Sidebar from "@/components/home/leftSide/sidebar";
-import HorizontalSidebar from "@/components/home/horizontalSidebar";
+import RightSidebar from "../home/rightSide/rightside";
+import MiddlePost from "../home/middlePost/middlePost";
+import Sidebar from "../home/leftSide/sidebar";
+import HorizontalSidebar from "../home/horizontalSidebar";
 import { getCurrentUserData } from "@/lib/ServerFetchApi/ServerSideFunc";
-import SearchPage from "./searchPage";
+import PostDetail from "./postDetail";
 
-const Explore = async () => {
+const PostDetailLayout = async () => {
   const user = await getCurrentUserData();
   return (
     <div className="min-h-screen flex flex-col sm:flex-row">
@@ -23,7 +23,8 @@ const Explore = async () => {
         </aside>
 
         <main className=" w-full sm:w-[80%] md:w-[95%]  md:max-w-[700px] lg:max-w-full lg:w-[60%] xl1300:w-[50%] ">
-          {/* <SearchPage /> */}
+         <PostDetail user={user}/>
+          
         </main>
 
         <div className="hidden lg:block">
@@ -45,4 +46,4 @@ const Explore = async () => {
   );
 };
 
-export default Explore;
+export default PostDetailLayout;

@@ -61,6 +61,20 @@ export function getDateTime(timeStamp: string) {
   }
 }
 
+export function formatFullDate(timestamp: string) {
+  // Convert the timestamp string to a Date object
+  const date = new Date(timestamp);
+
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const hour12 = hours % 12 || 12; // Convert to 12-hour format
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes; // Add leading zero if needed
+
+  // Format date in the required format: "11:32 AM · Feb 15, 2025"
+  return `${hour12}:${formattedMinutes} ${ampm} · ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}
+
 // Example usage:
 export const formatTimeAgo = (timeData: {
   type: string;

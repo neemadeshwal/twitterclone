@@ -1,10 +1,7 @@
-import ForYou from '@/components/explore/explore/tabs/ForYou'
-import React from 'react'
+import ForYou from "@/components/explore/explore/tabs/ForYou";
 
 const ForYouFn = () => {
-  return (
-    <ForYou/>
-  )
-}
+  return <ForYou />;
+};
 
-export default ForYouFn
+export default ForYouFn;

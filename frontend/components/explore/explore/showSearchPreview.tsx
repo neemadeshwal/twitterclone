@@ -1,10 +1,10 @@
 import { HashTag } from "@/graphql/types";
 import DivisionBar from "@/shared/divisionbar";
+import { Icons } from "@/utils/icons";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import { BiSearch, BiX } from "react-icons/bi";
 
-interface peopleProps {
+interface PeopleProps {
   userName: string;
   profileImgUrl?: string;
   firstName: string;
@@ -12,44 +12,121 @@ interface peopleProps {
   id: string;
 }
 
-const ShowSearchPreview = ({
+interface SearchPreviewProps {
+  isSearchPreviewOpen: boolean;
+  setIsSearchPreviewOpen: (isOpen: boolean) => void;
+  allSearchResult: {
+    hashtag: HashTag[];
+    people: PeopleProps[];
+  } | null;
+  setQuery: (query: string) => void;
+  isLoading: boolean;
+}
+
+// Separate component for profile image
+const ProfileImage = ({ user }: { user: PeopleProps }) => {
+  if (!user.profileImgUrl) {
+    return (
+      <div className="flex items-center justify-center capitalize cursor-pointer">
+        <p className="bg-green-900 rounded-full w-8 h-8 flex items-center justify-center">
+          {user.firstName.slice(0, 1)}
+        </p>
+      </div>
+    );
+  }
+
+  if (user.profileImgUrl.startsWith("#")) {
+    return (
+      <div className="flex items-center justify-center capitalize cursor-pointer">
+        <p
+          style={{ backgroundColor: user.profileImgUrl }}
+          className="rounded-full w-8 h-8 flex items-center justify-center"
+        >
+          {user.firstName.slice(0, 1)}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={user.profileImgUrl}
+      alt={`${user.firstName}'s profile`}
+      width={32}
+      height={32}
+      className="rounded-full"
+    />
+  );
+};
+
+// Separate component for hashtag item
+const HashtagItem = ({ hashtag }: { hashtag: HashTag }) => (
+  <div className="flex gap-3 items-center hover-bg cursor-pointer py-3 px-6">
+    <div>
+      <Icons.SearchIcon className="w-6 h-6" />
+    </div>
+    <div className="leading-[20px]">
+      <p>{hashtag.text}</p>
+      <p className="gray capitalize text-[14px]">trending</p>
+    </div>
+  </div>
+);
+
+// Separate component for person item
+const PersonItem = ({ person }: { person: PeopleProps }) => (
+  <div className="hover-bg cursor-pointer py-3 px-6">
+    <div className="flex gap-2 items-center">
+      <ProfileImage user={person} />
+      <div>
+        <h3 className="text-[16px] font-[500] capitalize hover:underline underline-white cursor-pointer">
+          {person.firstName} {person.lastName}
+        </h3>
+        <p className="gray text-[14px] font-[300] break-all">
+          @{person.userName}
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+// Custom hook for recent searches
+const useRecentSearches = () => {
+  const [recentSearch, setRecentSearch] = useState<string[]>([]);
+
+  const deleteAllRecentSearch = () => {
+    localStorage.removeItem("recentSearch");
+    setRecentSearch([]);
+  };
+
+  const deleteSearchByName = (name: string) => {
+    const newArr = recentSearch.filter((item) => item !== name);
+    setRecentSearch(newArr);
+    localStorage.setItem("recentSearch", JSON.stringify(newArr));
+  };
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("recentSearch");
+      if (stored) {
+        setRecentSearch(JSON.parse(stored));
+      }
+    } catch (error) {
+      console.error("Error loading recent searches:", error);
+    }
+  }, []);
+
+  return { recentSearch, deleteAllRecentSearch, deleteSearchByName };
+};
+
+const ShowSearchPreview: React.FC<SearchPreviewProps> = ({
   isSearchPreviewOpen,
   setIsSearchPreviewOpen,
   allSearchResult,
   setQuery,
-  isLoading
-}: any) => {
-  const [recentSearch, setRecentSearch] = useState<string[]>([]);
+  isLoading,
+}) => {
   const previewRef = useRef<HTMLDivElement>(null);
-  const deleteAllRecentSearch = () => {
-    const getRecentSearch = localStorage.getItem("recentSearch");
-    if (!getRecentSearch) {
-      return;
-    }
-    localStorage.removeItem("recentSearch");
-  };
-  const deleteSearchByName = (name: string) => {
-    const getRecentSearch = localStorage.getItem("recentSearch");
-    if (!getRecentSearch) {
-      return;
-    }
-    const parseSearch = JSON.parse(getRecentSearch);
-    if (!Array.isArray(parseSearch)) {
-      return;
-    }
-    const newArr = parseSearch.filter((item) => item !== name);
-    setRecentSearch(newArr);
-
-    localStorage.setItem("recentSearch", JSON.stringify(newArr));
-  };
-  useEffect(() => {
-    const getRecentSearch = localStorage.getItem("recentSearch");
-    console.log(getRecentSearch, "recent search");
-    if (!getRecentSearch) {
-      return;
-    }
-    setRecentSearch(JSON.parse(getRecentSearch));
-  }, []);
+  const { recentSearch, deleteAllRecentSearch, deleteSearchByName } = useRecentSearches();
 
   useEffect(() => {
     const handleClosePreview = (event: MouseEvent) => {
@@ -59,104 +136,40 @@ const ShowSearchPreview = ({
       ) {
         setIsSearchPreviewOpen(false);
       }
-      document.addEventListener("mousedown", handleClosePreview);
-
-      return () => {
-        document.removeEventListener("mousedown", handleClosePreview);
-      };
     };
+
+    document.addEventListener("mousedown", handleClosePreview);
+    return () => document.removeEventListener("mousedown", handleClosePreview);
   }, [setIsSearchPreviewOpen]);
-  console.log(allSearchResult,"alls")
-  console.log(isLoading,"alls load")
+
   return (
-    
     <div
       ref={previewRef}
-      style={{
-        boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)",
-      }}
-      className="bg-black  rounded-[10px] z-50 w-full absolute min-h-[100px] max-h-[300px] h-auto overflow-auto my-2 "
+      style={{ boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)" }}
+      className="bg-black rounded-[10px] z-50 w-full absolute min-h-[100px] max-h-[300px] h-auto overflow-auto my-2"
     >
-      {/* {isLoading&&allSearchResult&& <div className="absolute top-0 left-0 h-[2px] w-full bg-blue-500 animate-moveLine"></div>} */}
-      {allSearchResult && allSearchResult.length !== 0 ? (
+      {allSearchResult && allSearchResult.hashtag.length + allSearchResult.people.length > 0 ? (
         <div>
-          {allSearchResult.hashtag.length !== 0 &&
-            allSearchResult.hashtag.map((item: HashTag) => {
-              return (
-                <div
-                  className="flex gap-3 items-center hover-bg cursor-pointer py-3 px-6"
-                  key={item.id}
-                >
-                  <div>
-                    <BiSearch className="w-6 h-6" />
-                  </div>
-                  <div className="leading-[20px]">
-                    <p>{item.text}</p>
-                    <p className="gray capitalize text-[14px]">trending</p>
-                  </div>
-                </div>
-              );
-            })}
+          {allSearchResult.hashtag.length > 0 && (
+            <>
+              {allSearchResult.hashtag.map((item) => (
+                <HashtagItem key={item.id} hashtag={item} />
+              ))}
+              <div className="py-1">
+                <DivisionBar type="x" />
+              </div>
+            </>
+          )}
 
-          <div className="py-1">
-            <DivisionBar type="x" />
-          </div>
-          {allSearchResult.people.length !== 0 &&
-            allSearchResult.people.map((item: peopleProps) => {
-              return (
-                <div
-                  className=" hover-bg cursor-pointer py-3 px-6"
-                  key={item.id}
-                >
-                  <div className="flex gap-2 items-center">
-                    <div>
-                      {item.profileImgUrl ? (
-                        <div>
-                          {item.profileImgUrl.startsWith("#") ? (
-                            <div className=" flex items-center justify-center capitalize  cursor-pointer">
-                              <p
-                                style={{
-                                  backgroundColor: item?.profileImgUrl,
-                                }}
-                                className=" rounded-full w-8 h-8 flex items-center justify-center "
-                              >
-                                {item?.firstName.slice(0, 1)}
-                              </p>
-                            </div>
-                          ) : (
-                            <Image
-                              src={item?.profileImgUrl}
-                              alt=""
-                              width={100}
-                              height={100}
-                              className="w-8 h-8 rounded-full"
-                            />
-                          )}
-                        </div>
-                      ) : (
-                        <div className=" flex items-center justify-center capitalize  cursor-pointer">
-                          <p className="bg-green-900 rounded-full w-10 h-10 flex items-center justify-center ">
-                            {item?.firstName.slice(0, 1)}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-[16px] font-[500] capitalize hover:underline underline-white cursor-pointer">
-                        {item?.firstName} {item?.lastName}
-                      </h3>
-                      <p className="gray text-[14px] font-[300] break-all">
-                        @{item?.userName}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+          {allSearchResult.people.length > 0 && 
+            allSearchResult.people.map((item) => (
+              <PersonItem key={item.id} person={item} />
+            ))
+          }
         </div>
-      ) : recentSearch.length !== 0 ? (
-        <div className="py-3 ">
-          <div className=" flex justify-between items-center px-4">
+      ) : recentSearch.length > 0 ? (
+        <div className="py-3">
+          <div className="flex justify-between items-center px-4">
             <p className="capitalize text-[18px] font-[600]">recent</p>
             <button
               onClick={deleteAllRecentSearch}
@@ -166,23 +179,28 @@ const ShowSearchPreview = ({
             </button>
           </div>
           <div className="py-2">
-            {recentSearch.map((item) => {
-              return (
+            {recentSearch.map((item) => (
+              <div
+                key={item}
+                className="hover-bg flex px-4 items-center cursor-pointer py-3 justify-between"
+              >
                 <div
+                  className="flex items-center gap-4 flex-1"
                   onClick={() => setQuery(item)}
-                  key={item}
-                  className="hover-bg flex px-4 items-center cursor-pointer py-3 justify-between"
                 >
-                  <div className="flex items-center gap-4">
-                    <BiSearch className="w-6 h-6" />
-                    <p>{item}</p>
-                  </div>
-                  <div onClick={() => deleteSearchByName(item)}>
-                    <BiX className="x-textcolor w-6 h-6" />
-                  </div>
+                  <Icons.Search className="w-6 h-6" />
+                  <p>{item}</p>
                 </div>
-              );
-            })}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteSearchByName(item);
+                  }}
+                >
+                  <Icons.XIcon className="x-textcolor w-6 h-6" />
+                </button>
+              </div>
+            ))}
           </div>
         </div>
       ) : (

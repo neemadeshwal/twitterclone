@@ -4,9 +4,7 @@ import RightSidebar from "@/components/home/rightSide/rightside";
 import Sidebar from "@/components/home/leftSide/sidebar";
 import HorizontalSidebar from "@/components/home/horizontalSidebar";
 import { getCurrentUserData } from "@/lib/ServerFetchApi/ServerSideFunc";
-import SearchInput from "./SearchInput";
-import ExploreTabs from "./explore/exploreTabs";
-import ExploreComponent from "./explore/ExploreComponent";
+import ExploreComponent from "./ExploreComponent";
 const ExploreLayoutComponent = async({ children }: { children: React.ReactNode }) => {
    const user = await getCurrentUserData();
  

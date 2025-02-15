@@ -1,9 +1,7 @@
-import TrendingTab from '@/components/explore/explore/tabs/TrendingTab'
+import TrendingTab from "@/components/explore/explore/tabs/TrendingTab";
 
 const Page = () => {
-  return (
-    <TrendingTab/>
-  )
-}
+  return <TrendingTab />;
+};
 
-export default Page
+export default Page;
