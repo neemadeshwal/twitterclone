@@ -4,7 +4,7 @@ import Image from "next/image";
 import React from "react";
 
 const MediaTab = ({ query, searchResult, isLoading }: any) => {
-  if (isLoading||!searchResult) {
+  if (isLoading || !searchResult) {
     return (
       <div className="flex justify-center py-10">
         <Loading />
@@ -15,8 +15,8 @@ const MediaTab = ({ query, searchResult, isLoading }: any) => {
     searchResult &&
     searchResult?.media &&
     !searchResult.media.length &&
-    !searchResult.media.mediaArray.length
-    ) {
+    !searchResult.media.mediaArray
+  ) {
     return (
       <div className="py-10 flex flex-col justify-center items-center">
         <h3 className="text-lg font-bold mb-4">No results for {query}</h3>
@@ -28,30 +28,27 @@ const MediaTab = ({ query, searchResult, isLoading }: any) => {
   }
   return (
     <div>
-      <ScrollTop/>
+      <ScrollTop />
       <div className="grid grid-flow-row grid-cols-3 gap-1 px-1 py-1">
-        {searchResult.media.map((mediaItem:any)=>{
-          return(
+        {searchResult.media.map((mediaItem: any) => {
+          return (
             <div key={mediaItem.id} className="">
-              {
-                mediaItem.mediaArray.map((item: string) => {
-                  return (
-                    <div className="" key={item}>
-                      <Image
-                        src={item}
-                        alt=""
-                        width={500}
-                        height={500}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  );
-                })}
-              
+              {mediaItem.mediaArray.map((item: string) => {
+                return (
+                  <div className="" key={item}>
+                    <Image
+                      src={item}
+                      alt=""
+                      width={500}
+                      height={500}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                );
+              })}
             </div>
-          )
+          );
         })}
-        
       </div>
     </div>
   );

@@ -1,11 +1,7 @@
-import ExploreLayoutComponent from '@/components/explore/ExploreLayout'
+import ExploreLayoutComponent from "@/components/explore/explore/ExploreLayout";
 
-const ExploreLayout = ({children}:{children:React.ReactNode}) => {
-  return (
-    <ExploreLayoutComponent>
-        {children}
-    </ExploreLayoutComponent>
-  )
-}
+const ExploreLayout = ({ children }: { children: React.ReactNode }) => {
+  return <ExploreLayoutComponent>{children}</ExploreLayoutComponent>;
+};
 
-export default ExploreLayout
+export default ExploreLayout;
