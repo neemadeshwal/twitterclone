@@ -10,7 +10,7 @@ import {
   HiOutlineDotsCircleHorizontal,
   HiOutlineDotsHorizontal,
 } from "react-icons/hi";
-import { FaSearch, FaRegUser, FaUser } from "react-icons/fa";
+import { FaSearch, FaRegUser, FaUser,FaArrowLeft } from "react-icons/fa";
 import { CiMail } from "react-icons/ci";
 import { BsTwitterX } from "react-icons/bs";
 import { BsFeather } from "react-icons/bs";
@@ -22,6 +22,7 @@ import { LuFolderClock } from "react-icons/lu";
 import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
 import { LuDot } from "react-icons/lu";
+
 export const Icons={
     Home:GoHome,
     HomeActive:MdHomeFilled,
@@ -46,6 +47,7 @@ export const Icons={
     RadioIcon:RiListRadio,
     VerticalDots:IoEllipsisVertical,
     Dot:LuDot,
-    SearchIcon:BiSearch
+    SearchIcon:BiSearch,
+    ArrowLeft:FaArrowLeft
 
 }

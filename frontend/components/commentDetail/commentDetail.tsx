@@ -21,7 +21,7 @@ import { toggleLikeComment, toggleLikeTweet } from "@/graphql/mutation/like";
 import CurrentUser from "@/shared/currentUser";
 import SinglePost from "../post/SinglePost/singlePost";
 // import SingleComment from "./SingleComment";
-import { createComment, replyOnComment } from "@/graphql/mutation/comment";
+import { replyOnComment } from "@/graphql/mutation/comment";
 import PostActivity from "@/shared/postActivity";
 import { useGetCommentById } from "@/hooks/comment";
 import SingleComment from "../postDetail/singleComment";

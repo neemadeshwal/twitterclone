@@ -92,10 +92,10 @@ export const getUserByIdQuery = gql(`
       content
       commentAuthor{
                 id
-                comment
-                userId
+                content
+                authorId
                 tweetId
-                user{
+                author{
                   profileImgUrl
                   firstName
                   lastName
@@ -104,9 +104,9 @@ export const getUserByIdQuery = gql(`
                   id
                 }
                 parent{
-                  comment
+                  content
                   mediaArray
-                  user{
+                  author{
                     id
                     email
                     userName
@@ -116,9 +116,9 @@ export const getUserByIdQuery = gql(`
                 }
                 parentId
                 replies{
-                  userId
+                  authorId
                   id
-                  comment
+                  content
                   mediaArray
                   
                 }
@@ -133,7 +133,7 @@ export const getUserByIdQuery = gql(`
         firstName
         
       }
-     LikedBy{
+     likedBy{
       id
       userId
     
@@ -141,11 +141,11 @@ export const getUserByIdQuery = gql(`
       
     }
     commentTweets {
-      comment
+      content
       id
-      userId
+      authorId
       tweetId
-      user{
+      author{
         firstName
         userName
         lastName
@@ -208,8 +208,8 @@ export const getUserByIdQuery = gql(`
         commentAuthor {
           tweetId
           id
-          comment
-          user{
+          content
+          author{
             firstName
             userName
           }
@@ -217,7 +217,7 @@ export const getUserByIdQuery = gql(`
         content
         id
        mediaArray
-        LikedBy {
+        likedBy {
           tweet {
             authorId
           }

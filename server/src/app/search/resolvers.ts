@@ -48,7 +48,7 @@ const queries = {
         content: { contains: query, mode: "insensitive" },
       },
       orderBy: {
-        LikedBy: {
+        likedBy: {
           _count: "desc",
         },
       },

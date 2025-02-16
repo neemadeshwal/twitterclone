@@ -39,8 +39,8 @@ export const getAllTweetQuery = gql(`
             }
             commentAuthor{
                     id
-                    comment
-                    userId
+                    content
+                    authorId
                     tweetId
                 }
             author{
@@ -50,7 +50,7 @@ export const getAllTweetQuery = gql(`
                 profileImgUrl
                 id
             }
-            LikedBy{
+            likedBy{
                 id
                 userId
                 tweetId
@@ -112,8 +112,8 @@ export const getSingleTweetQuery = gql(`
             
             commentAuthor{
                     id
-                    comment
-                    userId
+                    content
+                    authorId
                     tweetId
                     parentId
                     savedPost{
@@ -121,24 +121,24 @@ export const getSingleTweetQuery = gql(`
                         commentId
                     }
                     replies{
-                        comment
-                        userId
+                        content
+                        authorId
                         id
                         parent{
-                            comment
+                            content
                             id
                         }
                         parentId
                     }
                     parent{
-                        comment
+                        content
                         id
-                        userId
+                        authorId
                         likes{
                             userId
                             id
                         }
-                        user{
+                        author{
                             id
                             firstName
                             lastName
@@ -152,7 +152,7 @@ export const getSingleTweetQuery = gql(`
                         userId
                         tweetId
                     }
-                    user{
+                    author{
                         id
                         firstName
                         lastName
@@ -167,7 +167,7 @@ export const getSingleTweetQuery = gql(`
                 profileImgUrl
                 id
             }
-            LikedBy{
+            likedBy{
                 id
                 userId
                 tweetId
@@ -239,8 +239,8 @@ export const getUserFollowingTweet=gql(`
             }
             commentAuthor{
                     id
-                    comment
-                    userId
+                    content
+                    authorId
                     tweetId
                 }
             author{
@@ -250,7 +250,7 @@ export const getUserFollowingTweet=gql(`
                 profileImgUrl
                 id
             }
-            LikedBy{
+            likedBy{
                 id
                 userId
                 tweetId
@@ -296,7 +296,7 @@ export const getAllTrendingQuery=gql(`
                         profileImgUrl
                 }
 
-                LikedBy{
+                likedBy{
                     id
                    
 
@@ -356,7 +356,7 @@ export const getForYouQuery=gql(`
                         profileImgUrl
                 }
 
-                LikedBy{
+                likedBy{
                     id
                    
 

@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DEACTIVATED
+}
+
 model User {
   id            String      @id @default(cuid())
   firstName     String
@@ -16,7 +22,7 @@ model User {
   profileImgUrl String?
   coverImgUrl   String?
   bio           String?
-  dateOfBirth   String?
+  dateOfBirth   DateTime?
   location      String?
   userName      String      @unique
   createdAt     DateTime    @default(now())
@@ -28,6 +34,10 @@ model User {
   repostList    Repost[]
   savedPost     SavedPost[]
   posts         Tweet[]
+  status        UserStatus  @default(ACTIVE)
+
+  @@index([email])
+  @@index([userName])
 }
 
 model Tweet {
@@ -38,11 +48,13 @@ model Tweet {
   updatedAt     DateTime    @updatedAt
   mediaArray    String[]
   commentAuthor Comment[]
-  LikedBy       Like[]
+  likedBy       Like[]
   repostTweet   Repost[]
   savedPost     SavedPost[]
   author        User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
   hashtags      Hashtag[]   @relation("hashtag")
+
+  @@index([createdAt])
 }
 
 model Like {
@@ -50,8 +62,8 @@ model Like {
   userId    String
   tweetId   String?
   commentId String?
-   createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
   tweet     Tweet?   @relation(fields: [tweetId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -62,9 +74,9 @@ model Like {
 
 model Comment {
   id            String      @id @default(cuid())
-  comment       String
+  content       String
   tweetId       String?
-  userId        String
+  authorId      String
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   parentId      String?
@@ -72,29 +84,35 @@ model Comment {
   parent        Comment?    @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies       Comment[]   @relation("CommentReplies")
   tweet         Tweet?      @relation(fields: [tweetId], references: [id], onDelete: Cascade)
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  author        User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
   likes         Like[]
   repostComment Repost[]
   savedPost     SavedPost[]
+  hashtags      Hashtag[]   @relation("hashtag")
+
+  @@index([createdAt])
 }
 
 model Follows {
   followerId  String
   followingId String
-   createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  follower    User   @relation("followers", fields: [followerId], references: [id], onDelete: Cascade)
-  following   User   @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  follower    User     @relation("followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@id([followerId, followingId])
 }
 
 model Hashtag {
-  id     String  @id @default(cuid())
-  text   String  @unique
-   createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  tweets Tweet[] @relation("hashtag")
+  id        String    @id @default(cuid())
+  text      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  tweets    Tweet[]   @relation("hashtag")
+  comments  Comment[] @relation("hashtag")
+
+  @@index([text])
 }
 
 model Repost {
@@ -102,8 +120,8 @@ model Repost {
   userId    String
   tweetId   String?
   commentId String?
-   createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
   tweet     Tweet?   @relation(fields: [tweetId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -117,8 +135,8 @@ model SavedPost {
   userId    String
   tweetId   String?
   commentId String?
-   createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
   tweet     Tweet?   @relation(fields: [tweetId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

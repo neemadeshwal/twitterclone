@@ -8,7 +8,7 @@ type Tweet{
     authorId:String
     author:User
     mediaArray:[String]
-    LikedBy:[Like]
+    likedBy:[Like]
     commentAuthor:[Comment]
     repostTweet:[Repost]
     hashtags:[HashTag]

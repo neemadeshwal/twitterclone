@@ -247,13 +247,16 @@ const mutations = {
     }
     const hashedPassword = await hashPassword(password);
 
+    let [month, day, year] = parsedVerifiedUser.dateOfBirth.split("/");
+    let formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00Z`;
+
     const newUser = await prismaClient.user.create({
       data: {
         email: email,
         firstName: parsedVerifiedUser.firstName,
         lastName: parsedVerifiedUser.lastName ?? "",
         userName: userName!,
-        dateOfBirth: parsedVerifiedUser.dateOfBirth ?? "",
+        dateOfBirth: formattedDate,
         password: hashedPassword,
         profileImgUrl: getRandomDarkHexColor(),
       },
@@ -429,8 +432,8 @@ const extraResolvers = {
     },
     commentTweets: async (parent: User) => {
       const commentTweets = await prismaClient.comment.findMany({
-        where: { userId: parent.id },
-        include: { user: true, tweet: true },
+        where: { authorId: parent.id },
+        include: { author: true, tweet: true },
       });
       return commentTweets;
     },

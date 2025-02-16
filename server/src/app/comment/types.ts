@@ -2,29 +2,32 @@ export const types = `#graphql
 
 type Comment{
     id:String
-    comment:String
+    content:String
     mediaArray:[String]
-    userId:String
+    authorId:String
     tweetId:String
-    user:User
+    author:User
     tweet:Tweet
     likes:[Like]
     parent:Comment
     replies:[Comment]
     parentId:String
     repostComment:[Repost]
+    createdAt:DateTime
+    updatedAt:DateTime
     savedPost:[savedPost]
+    
 
     
 }
 
 input createCommentInput{
-    comment:String
+    content:String
     tweetId:String
     mediaArray:[String]
 }
 input replyOnCommentInput{
-    comment:String
+    content:String
     commentId:String
     mediaArray:[String]
 

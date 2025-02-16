@@ -3,7 +3,7 @@ import { GraphqlContext } from "../../interfaces";
 
 interface CommentProps {
   id: string;
-  userId: string;
+  authorId: string;
   tweetId: string;
 }
 
@@ -47,23 +47,23 @@ const mutations = {
     parent: any,
     {
       payload,
-    }: { payload: { comment: string; mediaArray: string[]; tweetId: string } },
+    }: { payload: { content: string; mediaArray: string[]; tweetId: string } },
     ctx: GraphqlContext
   ) => {
     if (!ctx.user) {
       throw new Error("Unauthorized.No token present");
     }
-    const { comment, tweetId, mediaArray } = payload;
+    const { content, tweetId, mediaArray } = payload;
 
-    if (!comment || !tweetId) {
+    if (!content || !tweetId) {
       throw new Error("Please provide comment or tweetid");
     }
 
     const Comment = prismaClient.comment.create({
       data: {
-        comment,
+        content,
         tweetId,
-        userId: ctx.user?.id,
+        authorId: ctx.user?.id,
         mediaArray,
       },
     });
@@ -74,14 +74,14 @@ const mutations = {
     {
       payload,
     }: {
-      payload: { comment: string; commentId: string; mediaArray: string[] };
+      payload: { content: string; commentId: string; mediaArray: string[] };
     },
     ctx: GraphqlContext
   ) => {
     if (!ctx.user) {
       throw new Error("Unauthorized");
     }
-    const { commentId, comment, mediaArray } = payload;
+    const { commentId, content, mediaArray } = payload;
     if (!commentId) {
       throw new Error("comment id not present.");
     }
@@ -95,10 +95,10 @@ const mutations = {
     }
     const replyComment = await prismaClient.comment.create({
       data: {
-        comment,
+        content,
         mediaArray,
         parentId: commentId,
-        userId: ctx.user.id,
+        authorId: ctx.user.id,
       },
     });
     return replyComment;
@@ -107,9 +107,9 @@ const mutations = {
 
 const extraResolvers = {
   Comment: {
-    user: async (parent: CommentProps) => {
+    author: async (parent: CommentProps) => {
       const users = await prismaClient.user.findUnique({
-        where: { id: parent.userId },
+        where: { id: parent.authorId },
       });
       return users;
     },

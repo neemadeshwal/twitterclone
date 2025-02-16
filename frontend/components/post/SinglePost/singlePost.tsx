@@ -1,62 +1,37 @@
 "use client";
-import React, { useEffect, useState, memo } from "react";
-
+import React, { useEffect, useState, memo, use } from "react";
 
 import DivisionBar from "@/shared/divisionbar";
 import { Tweet } from "@/graphql/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toggleLikeTweet } from "@/graphql/mutation/like";
 import { useCurrentUser, useGetUserById } from "@/hooks/user";
 import { useRouter } from "next/navigation";
-import { repostTweet } from "@/graphql/mutation/repost";
-import { useSocket } from "@/context/socketContext";
 import PostActions from "./PostActions";
 import AuthorDetail from "@/shared/singlePost/AuthorDetail";
 import AuthorProfile from "@/shared/AuthorProfile";
 import PostContent from "./PostContent";
 import HoverWrapper from "@/shared/singlePost/HoverWrapper";
 import PostControlDialog from "@/shared/singlePost/postControlDialog";
+import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 
 const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
   const [repost, setRepost] = useState(false);
   const queryClient = useQueryClient();
-  const router = useRouter();
-  const { user } = useCurrentUser();  
-  
+  const { user } = useCurrentUser();
 
   useEffect(() => {
     queryClient.refetchQueries({ queryKey: ["all-tweet"] });
   }, []);
 
-  const mutation = useMutation({
-    mutationFn: toggleLikeTweet,
-    onSuccess: (response: any) => {
-      console.log(response);
-      queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-
-  const repostMutation = useMutation({
-    mutationFn: repostTweet,
-    onSuccess: (response: any) => {
-      console.log(response);
-      queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+  const { repostTweet, likeTweet } = useTweetMutation();
 
   async function handleRepostTweet() {
     const body = {
       tweetId: tweet.id,
     };
     try {
-      await repostMutation.mutateAsync(body);
+      await repostTweet(body);
     } catch (error) {
       console.log(error);
     }
@@ -68,7 +43,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
       tweetId: tweet.id,
     };
     try {
-      await mutation.mutateAsync(body);
+      await likeTweet(body);
     } catch (error) {
       console.log(error);
     }
@@ -83,39 +58,36 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
     }
   }, [tweet, user]);
 
-
-
-
-
   return (
     <div className="w-full cursor-pointer  py-3">
       <div className="flex gap-0 w-full relative px-4 ">
-       
         <div className="pr-4">
           <HoverWrapper userId={tweet?.author.id}>
-          <AuthorProfile author={tweet?.author}/>
-
+            <AuthorProfile author={tweet?.author} />
           </HoverWrapper>
         </div>
         <div className="w-full">
-          
-        <AuthorDetail author={tweet?.author} createdAt={tweet?.createdAt}/>
-        <PostControlDialog tweet={tweet} />
-        <div className="w-full pl-0 px-4">
-        
-          <PostContent author={tweet?.author} tweetId={tweet?.id} content={tweet?.content} mediaArray={tweet?.mediaArray} hashtags={tweet?.hashtags}/>
-          <PostActions
-            tweet={tweet}
-            liked={liked}
-            repost={repost}
-            handleRepostTweet={handleRepostTweet}
-            handleTweetLike={handleTweetLike}
-          />
-        </div>
+          <AuthorDetail author={tweet?.author} createdAt={tweet?.createdAt} />
+          <PostControlDialog tweet={tweet} />
+          <div className="w-full pl-0 px-4">
+            <PostContent
+              author={tweet?.author}
+              tweetId={tweet?.id}
+              content={tweet?.content}
+              mediaArray={tweet?.mediaArray}
+              hashtags={tweet?.hashtags}
+            />
+            <PostActions
+              tweet={tweet}
+              liked={liked}
+              repost={repost}
+              handleRepostTweet={handleRepostTweet}
+              handleTweetLike={handleTweetLike}
+            />
+          </div>
         </div>
       </div>
       <DivisionBar type="x" />
-
     </div>
   );
 });

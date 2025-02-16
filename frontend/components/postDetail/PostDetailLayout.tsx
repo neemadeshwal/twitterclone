@@ -6,7 +6,11 @@ import HorizontalSidebar from "../home/horizontalSidebar";
 import { getCurrentUserData } from "@/lib/ServerFetchApi/ServerSideFunc";
 import PostDetail from "./postDetail";
 
-const PostDetailLayout = async () => {
+const PostDetailLayout = async ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const user = await getCurrentUserData();
   return (
     <div className="min-h-screen flex flex-col sm:flex-row">
@@ -23,8 +27,7 @@ const PostDetailLayout = async () => {
         </aside>
 
         <main className=" w-full sm:w-[80%] md:w-[95%]  md:max-w-[700px] lg:max-w-full lg:w-[60%] xl1300:w-[50%] ">
-         <PostDetail user={user}/>
-          
+          {children}
         </main>
 
         <div className="hidden lg:block">
@@ -32,15 +35,14 @@ const PostDetailLayout = async () => {
         </div>
 
         <div className="hidden lg:block   lg:w-[33%] xl1300:w-[30%] ">
-         <div className="sticky top-0 h-auto">
-         <RightSidebar />
-
-         </div>
+          <div className="sticky top-0 h-auto">
+            <RightSidebar />
+          </div>
         </div>
       </div>
 
       <nav className="sm:hidden">
-        <HorizontalSidebar currentUser={user}/>
+        <HorizontalSidebar currentUser={user} />
       </nav>
     </div>
   );

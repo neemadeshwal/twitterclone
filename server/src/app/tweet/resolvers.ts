@@ -33,7 +33,7 @@ const queries = {
       where: { id },
       include: {
         author: true,
-        LikedBy: true,
+        likedBy: true,
         commentAuthor: true,
         hashtags: true,
       },
@@ -101,7 +101,7 @@ const queries = {
       where:{
         OR: [
           {
-            LikedBy: {
+            likedBy: {
               some: {}
             }
           },
@@ -118,13 +118,13 @@ const queries = {
         ]
       },
         orderBy:{
-          LikedBy:{
+          likedBy:{
             _count:'desc'
           }
         },
         take:5,
         include:{
-          LikedBy:{
+          likedBy:{
             include:{
               user:true
             }
@@ -186,7 +186,7 @@ const queries = {
             createdAt: 'desc'
           },
           include: {
-            LikedBy: true,
+            likedBy: true,
             commentAuthor: true
           }
         },
@@ -229,7 +229,7 @@ const queries = {
             {
               OR: [
                 {
-                  LikedBy: {
+                  likedBy: {
                     some: {}
                   }
                 },
@@ -250,7 +250,7 @@ const queries = {
         include: {
           author: true
           ,
-          LikedBy: {
+          likedBy: {
             where: {
               createdAt: {
                 gte: last24Hours
@@ -282,7 +282,7 @@ const queries = {
     
       // Calculate engagement score for each tweet
       const tweetsWithScore = tweets.map((tweet:any) => {
-        const recentLikes = tweet.LikedBy.length;
+        const recentLikes = tweet.likedBy.length;
         const recentComments = tweet.commentAuthor.length;
         const recentReposts = tweet.repostTweet.length;
     
@@ -335,7 +335,7 @@ const queries = {
               },
             },
             include: {
-              LikedBy: true,
+              likedBy: true,
               commentAuthor: true,
               repostTweet: true,
             },
@@ -348,7 +348,7 @@ const queries = {
         let engagementScore = 0;
     
         hashtag.tweets.forEach((tweet) => {
-          const recentLikes = tweet.LikedBy.length;
+          const recentLikes = tweet.likedBy.length;
           const recentComments = tweet.commentAuthor.length;
           const recentReposts = tweet.repostTweet.length;
     
@@ -403,7 +403,7 @@ const queries = {
                 },
               },
               include: {
-                LikedBy: true,
+                likedBy: true,
                 commentAuthor: true,
                 repostTweet: true,
               },
@@ -417,7 +417,7 @@ const queries = {
           let totalEngagement = 0;
       
           user.posts.forEach((tweet) => {
-            const recentLikes = tweet.LikedBy.length;
+            const recentLikes = tweet.likedBy.length;
             const recentComments = tweet.commentAuthor.length;
             const recentReposts = tweet.repostTweet.length;
       
@@ -628,7 +628,7 @@ const extraResolvers = {
 
       return author;
     },
-    LikedBy: async (parent: Tweet) => {
+    likedBy: async (parent: Tweet) => {
       const LikedBy = await prismaClient.like.findMany({
         where: {
           tweetId: parent.id,

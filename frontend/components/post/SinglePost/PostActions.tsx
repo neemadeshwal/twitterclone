@@ -12,7 +12,9 @@ const PostActions = ({
   repost,
   handleRepostTweet,
   handleTweetLike,
+  isComment,
 }: any) => {
+  console.log(tweet, "tweet check in action");
   return (
     <div>
       <div className="flex justify-between py-2 pt-3 pb-4">
@@ -26,13 +28,19 @@ const PostActions = ({
           }  sm:gap-1 items-center gray text-[13px] font-[400]`}
         >
           <div className="p-2 rounded-full group-hover:bg-[#1e3429a5] ">
-            <LuRepeat2 className={` ${repost&&"text-[#00ba7c]"} text-[16px] sm:text-[20px]`} />
+            <LuRepeat2
+              className={` ${
+                repost && "text-[#00ba7c]"
+              } text-[16px] sm:text-[20px]`}
+            />
           </div>
-          <p 
-            className={` ${repost&&"text-[#00ba7c]"}
+          <p
+            className={` ${repost && "text-[#00ba7c]"}
                  ml-0 pl-0 -right-[0.3rem]  absolute`}
           >
-            {tweet?.repostTweet.length}
+            {isComment
+              ? tweet?.repostComment.length
+              : tweet?.repostTweet.length}
           </p>
         </div>
         <div
@@ -55,7 +63,7 @@ const PostActions = ({
               liked && "text-red-500"
             } -right-[0.3rem]  absolute`}
           >
-            {tweet?.LikedBy.length}
+            {isComment ? tweet?.likes.length : tweet?.likedBy.length}
           </p>
         </div>
 

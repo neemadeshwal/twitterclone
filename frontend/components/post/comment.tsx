@@ -1,5 +1,5 @@
 "use client";
-import { createComment } from "@/graphql/mutation/comment";
+import { createCommentMutate } from "@/graphql/mutation/comment";
 import { getCurrentUser, Tweet } from "@/graphql/types";
 import { useCurrentUser } from "@/hooks/user";
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
@@ -28,7 +28,7 @@ const Comment = ({
   const [tweetComment, setTweetComment] = useState("");
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: createComment,
+    mutationFn: createCommentMutate,
     onSuccess: (response: any) => {
       console.log(response);
       setTweetComment("");
@@ -47,7 +47,7 @@ const Comment = ({
 
   const handleComment = async () => {
     const body = {
-      comment: tweetComment,
+      content: tweetComment,
       tweetId: tweet.id,
       mediaArray: [],
     };
@@ -58,6 +58,7 @@ const Comment = ({
       console.log(error);
     }
   };
+  console.log(tweet, "tweet in commetn");
 
   return (
     <div>
@@ -71,7 +72,7 @@ const Comment = ({
           <BsChat className="text-[16px] sm:text-[20px] " />
         </div>
         <p className="ml-0 pl-0 -right-[0.3rem] absolute">
-          {tweet?.commentAuthor.length}
+          {tweet?.commentAuthor?.length}
         </p>
       </div>
       {showDialogBox && (

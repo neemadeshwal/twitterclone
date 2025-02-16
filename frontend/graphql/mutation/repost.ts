@@ -17,14 +17,14 @@ const REPOST_COMMENT = gql`
   }
 `;
 
-export const repostComment = async (payload: { commentId: string }) => {
+export const repostCommentMutate = async (payload: { commentId: string }) => {
   console.log("repost commetn tjjl");
   console.log(payload, "payload");
   const data = await graphqlClient.request(REPOST_COMMENT, { payload });
   return data;
 };
 
-export const repostTweet = async (payload: { tweetId: string }) => {
+export const repostTweetMutate = async (payload: { tweetId: string }) => {
   const data = await graphqlClient.request(REPOST_TWEET, { payload });
   return data;
 };

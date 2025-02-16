@@ -7,8 +7,8 @@ const CREATE_COMMENT = gql`
   mutation CreateComment($payload: createCommentInput!) {
     createComment(payload: $payload) {
       id
-      comment
-      userId
+      content
+      authorId
       tweetId
     }
   }
@@ -18,8 +18,18 @@ export const REPLY_COMMENT = gql`
   mutation ReplyComment($payload: replyOnCommentInput!) {
     replyOnComment(payload: $payload) {
       id
-      comment
-      userId
+      content
+      authorId
+    }
+  }
+`;
+
+export const DELETE_COMMENT = gql`
+  mutation DeleteComment($payload: deleteCommentInput!) {
+    deleteComment(payload: $payload) {
+      id
+      content
+      authorId
     }
   }
 `;
@@ -28,11 +38,16 @@ export const createCommentMutate = async (payload: CreateCommentProps) => {
   return data;
 };
 
-export const replyOnComment = async (payload: {
-  comment: string;
+export const replyOnCommentMutate = async (payload: {
+  content: string;
   commentId: string;
   mediaArray: string[];
 }) => {
   const data = await graphqlClient.request(REPLY_COMMENT, { payload });
+  return data;
+};
+
+export const deleteCommentMutate = async (payload: { commentId: string }) => {
+  const data = await graphqlClient.request(DELETE_COMMENT, { payload });
   return data;
 };

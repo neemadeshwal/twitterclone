@@ -1,6 +1,6 @@
 "use client";
 import { deleteTweetMutate } from "@/graphql/mutation/tweet";
-import { Tweet } from "@/graphql/types";
+import { Comment, Tweet } from "@/graphql/types";
 import { useCurrentUser } from "@/hooks/user";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -13,18 +13,18 @@ import { MdDelete, MdEditDocument } from "react-icons/md";
 import { PiSpeakerSimpleSlash } from "react-icons/pi";
 import PostContainer from "./postContainer";
 import DeletePostContainer from "./DeletePostContainer";
-import Link from "next/link";
 
 const PostActivity = ({
   setPostControlDialogOpen,
   isDrawer,
   singleTweet,
-  setIsTriggerDrawerOpen,
+  isComment,
 }: {
   setPostControlDialogOpen: any;
-  singleTweet: Tweet;
+  singleTweet: Tweet | Comment;
   isDrawer?: boolean;
   setIsTriggerDrawerOpen?: any;
+  isComment?: boolean;
 }) => {
   const postRef = useRef<HTMLDivElement>(null);
   const { user } = useCurrentUser();
@@ -33,8 +33,8 @@ const PostActivity = ({
   const queryClient = useQueryClient();
   const router = useRouter();
   const [editPost, setEditPost] = useState(false);
-  const[deleteDialog,setDeleteDialog]=useState(false)
-  
+  const [deleteDialog, setDeleteDialog] = useState(false);
+
   const [isContainerOpen, setIsContainerOpen] = useState(false);
 
   useEffect(() => {
@@ -75,24 +75,27 @@ const PostActivity = ({
       <div className="flex flex-col gap-6">
         {isUserPost ? (
           <div className=" flex flex-col gap-6">
-             <button
-      onClick={(e) => {
-        e.stopPropagation();
-        setDeleteDialog(true);
-      }}
-      className="flex gap-3 items-center font-[600] text-red-500"
-    >
-      <MdDelete className="font-[600] text-[20px]" />
-      Delete
-    </button>
-    <button  
-    onClick={(e)=>{e.stopPropagation();setEditPost(true);setIsContainerOpen(true)}}
-    
-    className="flex gap-3 items-center font-[600]">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeleteDialog(true);
+              }}
+              className="flex gap-3 items-center font-[600] text-red-500"
+            >
+              <MdDelete className="font-[600] text-[20px]" />
+              Delete
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditPost(true);
+                setIsContainerOpen(true);
+              }}
+              className="flex gap-3 items-center font-[600]"
+            >
               <MdEditDocument className="font-[600] text-[17px]" />
               Edit
             </button>
-           
           </div>
         ) : (
           <div className=" flex flex-col gap-6">
@@ -111,18 +114,36 @@ const PostActivity = ({
             </button>
           </div>
         )}
-          <button  onClick={()=>router.push(`/${singleTweet?.author.userName}/status/${singleTweet?.id}`)}  className="flex gap-3 items-center font-[600]">
+        <button
+          onClick={() =>
+            router.push(
+              `/${singleTweet?.author.userName}/status/${singleTweet?.id}`
+            )
+          }
+          className="flex gap-3 items-center font-[600]"
+        >
           <IoIosStats className="font-[600] text-[17px]" />
           View post engagements
         </button>
-       
       </div>
-      {editPost&&isContainerOpen && <PostContainer ref={postRef} setPostControlDialogOpen={setPostControlDialogOpen} isEdit={editPost} editTweet={singleTweet} isContainerOpen={isContainerOpen} setIsContainerOpen={setIsContainerOpen} />}
-      {deleteDialog&& <DeletePostContainer
-              postId={singleTweet.id}
-              setDeleteDialog={setDeleteDialog}
-              setPostControlDialogOpen={setPostControlDialogOpen}
-            />}
+      {editPost && isContainerOpen && (
+        <PostContainer
+          ref={postRef}
+          setPostControlDialogOpen={setPostControlDialogOpen}
+          isEdit={editPost}
+          editTweet={singleTweet}
+          isContainerOpen={isContainerOpen}
+          setIsContainerOpen={setIsContainerOpen}
+        />
+      )}
+      {deleteDialog && (
+        <DeletePostContainer
+          postId={singleTweet.id}
+          isComment={isComment}
+          setDeleteDialog={setDeleteDialog}
+          setPostControlDialogOpen={setPostControlDialogOpen}
+        />
+      )}
     </div>
   );
 };

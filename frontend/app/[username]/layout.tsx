@@ -1,10 +1,7 @@
-import PostDetailLayout from '@/components/postDetail/PostDetailLayout'
-import React from 'react'
+import PostDetailLayout from "@/components/postDetail/PostDetailLayout";
 
-const layout = () => {
-  return (
-    <PostDetailLayout/>
-  )
-}
+const ExploreLayout = ({ children }: { children: React.ReactNode }) => {
+  return <PostDetailLayout>{children}</PostDetailLayout>;
+};
 
-export default layout
+export default ExploreLayout;

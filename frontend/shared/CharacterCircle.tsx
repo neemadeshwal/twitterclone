@@ -13,17 +13,9 @@ const CharacterCircle: React.FC<CircleProps> = ({
   const circumference = 2 * Math.PI * radius; // Circumference of the circle
   const percentage = Math.min(tweetContentLength / characterLimit, 1); // The percentage of the circle filled
 
-  console.log(characterLimit);
   const strokeDasharray = circumference;
   const strokeDashoffset = circumference - percentage * circumference;
 
-  console.log(
-    tweetContentLength,
-    strokeDasharray,
-    strokeDashoffset,
-    percentage,
-    "tweetvvggg"
-  );
   return (
     <div className="relative">
       <svg width="40" height="40">

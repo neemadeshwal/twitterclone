@@ -2,7 +2,7 @@ import UserDetail from "@/components/getUser/getUserDetail";
 import React from "react";
 
 const Page = () => {
-  return <UserDetail />;
+  return null;
 };
 
 export default Page;

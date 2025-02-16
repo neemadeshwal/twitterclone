@@ -141,24 +141,26 @@ export interface toggleLikeTweetProps {
 }
 
 export interface CreateCommentProps {
-  comment: string;
+  content: string;
   tweetId: string;
   mediaArray: string[];
 }
 
 export interface Comment {
-  comment: string;
+  content: string;
   id: string;
-  userId: string;
+  authorId: string;
   mediaArray: string[];
   tweetId: string;
   tweet: Tweet[];
-  user: getCurrentUser;
+  author: getCurrentUser;
   likes: Like[];
   replies: Comment[];
   parentId: string;
   parent: Comment;
   repostComment: Repost[];
+  hashtags:HashTag[]
+  createdAt:string;
 }
 
 export interface getUserByIdProps {

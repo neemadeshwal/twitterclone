@@ -1,7 +1,9 @@
 // hooks/useTweetMutation.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createTweetMutate} from "@/graphql/mutation/tweet";
-import { createTweetMutateProps } from "@/graphql/types";
+import { createTweetMutate, deleteTweetMutate} from "@/graphql/mutation/tweet";
+import { createTweetMutateProps, toggleLikeTweetProps } from "@/graphql/types";
+import {  toggleLikeTweet } from "@/graphql/mutation/like";
+import { repostTweetMutate } from "@/graphql/mutation/repost";
 
 interface UseTweetMutationProps {
   onSuccess?: () => void;
@@ -11,10 +13,13 @@ interface UseTweetMutationProps {
 export const useTweetMutation = ({ onSuccess, onError }: UseTweetMutationProps = {}) => {
   const queryClient = useQueryClient();
 
-  const { mutateAsync, isPending } = useMutation({
+  const createTweetMutation = useMutation({
     mutationFn: (body: createTweetMutateProps) => createTweetMutate(body),
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
+      queryClient.invalidateQueries({ 
+        queryKey: ["single-tweet"]
+      });
       onSuccess?.();
     },
     onError: (error) => {
@@ -23,13 +28,72 @@ export const useTweetMutation = ({ onSuccess, onError }: UseTweetMutationProps =
     },
   });
 
+  const likeTweetMutation=useMutation({
+    mutationFn:(body:toggleLikeTweetProps)=>toggleLikeTweet(body),
+    onSuccess:(response)=>{
+      queryClient.invalidateQueries({queryKey:["all-tweet"]});
+      queryClient.invalidateQueries({ 
+        queryKey: ["single-tweet"]
+      });
+      onSuccess?.()
+  },
+  onError:(error)=>{
+    console.log(error)
+    onError?.(error)
+  }
+  })
+  const repostTweetMutation=useMutation({
+    mutationFn:(body:{tweetId:string})=>repostTweetMutate(body),
+    onSuccess:(response)=>{
+      queryClient.invalidateQueries({queryKey:["all-tweet"]});
+      queryClient.invalidateQueries({ 
+        queryKey: ["single-tweet"]
+      });
+    }
+  })
+  const deleteTweetMutation=useMutation({
+    mutationFn:(body:{tweetId:string})=>deleteTweetMutate(body),
+    onSuccess:(response)=>{
+      queryClient.invalidateQueries({queryKey:["all-tweet"]});
+      queryClient.invalidateQueries({ 
+        queryKey: ["single-tweet"]
+      });
+    }
+  })
+
   const createTweet = async (body: createTweetMutateProps) => {
     try {
-      await mutateAsync(body);
+      await createTweetMutation.mutateAsync(body);
     } catch (error) {
       console.log(error);
     }
   };
+  const likeTweet=async(body:toggleLikeTweetProps)=>{
+    try{
+     await likeTweetMutation.mutateAsync(body)
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
+  const repostTweet=async(body:{tweetId:string})=>{
+    try{
+        await repostTweetMutation.mutateAsync(body)
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
+  const deleteTweet=async(body:{tweetId:string})=>{
+    try{
+      await deleteTweetMutation.mutateAsync(body)
 
-  return { createTweet, isPending };
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
+
+
+  return { createTweet,likeTweet,repostTweet,deleteTweet,isDeletingTweet:deleteTweetMutation.isPending,isRepostingTweet:repostTweetMutation.isPending,isCreatingTweet:createTweetMutation.isPending,isLikingTweet:likeTweetMutation.isPending };
 };
