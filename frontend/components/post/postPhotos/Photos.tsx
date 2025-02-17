@@ -11,7 +11,6 @@ import { FaArrowLeft, FaArrowRight, FaHeart } from "react-icons/fa";
 import SharePost from "@/shared/sharePost";
 import SavePost from "@/shared/savePost";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { repostTweet } from "@/graphql/mutation/repost";
 import { toggleLikeTweet } from "@/graphql/mutation/like";
 import Link from "next/link";
 import {
@@ -32,6 +31,8 @@ const Photos = ({
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(
     Number(photoNum) - 1
   );
+
+  console.log(photoNum, tweet, setShowFullPhoto, showFullPhoto, currentUrl);
   const [showPhoto, setShowPhoto] = useState("");
   const [isSliding, setIsSliding] = useState(false);
   const [liked, setLiked] = useState(false);
@@ -42,13 +43,6 @@ const Photos = ({
 
   const mutation = useMutation({
     mutationFn: toggleLikeTweet,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
-    },
-  });
-
-  const repostMutation = useMutation({
-    mutationFn: repostTweet,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
     },
@@ -96,15 +90,6 @@ const Photos = ({
     setLiked((prev) => !prev);
     try {
       await mutation.mutateAsync({ tweetId: tweet.id });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleRepostTweet = async () => {
-    if (!tweet?.id) return;
-    try {
-      await repostMutation.mutateAsync({ tweetId: tweet.id });
     } catch (error) {
       console.log(error);
     }
@@ -186,12 +171,9 @@ const Photos = ({
       <div className="fixed w-[60%] bottom-0">
         <div className="flex justify-between py-2 pt-4 pb-4 w-[60%] mx-auto">
           <div className="flex items-center">
-            <Comment iconColor="white" tweet={tweet} user={user!} />
+            <Comment iconColor="white" tweet={tweet} />
           </div>
-          <div
-            onClick={handleRepostTweet}
-            className="flex gap-1 items-center white text-[13px] font-[400]"
-          >
+          <div className="flex gap-1 items-center white text-[13px] font-[400]">
             {repost ? (
               <LuRepeat2 className="text-[20px] text-[#00ba7c]" />
             ) : (
@@ -218,7 +200,7 @@ const Photos = ({
             iconColor="white"
             link={`http://localhost:5000/${tweet.author.userName}/status/${tweet.id}`}
           />
-          <SavePost iconColor="white" singleTweet={tweet} user={user} />
+          <SavePost singleTweet={tweet} />
         </div>
       </div>
     </div>

@@ -4,8 +4,8 @@ import { useCurrentUser } from "@/hooks/user";
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
 import CurrentUser from "@/shared/currentUser";
 import UserProfile from "@/shared/AuthorProfile";
-import React, {  useState } from "react";
-import {  BiX } from "react-icons/bi";
+import React, { useState } from "react";
+import { BiX } from "react-icons/bi";
 import { BsChat, BsEmojiSmile } from "react-icons/bs";
 import { FaArrowLeft } from "react-icons/fa";
 import { FiMapPin } from "react-icons/fi";
@@ -18,19 +18,18 @@ import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
 const CommentComponent = ({
   tweet,
   iconColor,
-  isComment
+  isComment,
 }: {
-  tweet: Tweet|Comment;
+  tweet: Tweet | Comment;
   iconColor?: string;
-  isComment?:boolean
+  isComment?: boolean;
 }) => {
   const [showDialogBox, setShowDialogBox] = useState(false);
   const [tweetComment, setTweetComment] = useState("");
 
-  const {createComment,replyOnComment}=useCommentMutation({})
- 
-  
-  const handleReplyOnComment=async()=>{
+  const { createComment, replyOnComment } = useCommentMutation({});
+
+  const handleReplyOnComment = async () => {
     const body = {
       content: tweetComment,
       commentId: tweet.id,
@@ -38,11 +37,12 @@ const CommentComponent = ({
     };
     try {
       await replyOnComment(body);
+      setShowDialogBox(false);
+      setTweetComment("");
     } catch (error) {
       console.log(error);
     }
-  }
-  
+  };
 
   const handleComment = async () => {
     const body = {
@@ -53,20 +53,22 @@ const CommentComponent = ({
 
     try {
       await createComment(body);
+      setShowDialogBox(false);
+      setTweetComment("");
     } catch (error) {
       console.log(error);
     }
   };
   const getCount = () => {
     if (!tweet) return 0;
-    
+
     if (isComment) {
       return (tweet as Comment).replies?.length || 0;
     } else {
       return (tweet as Tweet).commentAuthor?.length || 0;
     }
   };
-const {user}=useCurrentUser()
+  const { user } = useCurrentUser();
   return (
     <div>
       <div
@@ -78,12 +80,7 @@ const {user}=useCurrentUser()
         <div className="p-2 rounded-full group-hover:bg-[#1e2034a5] ">
           <BsChat className="text-[16px] sm:text-[20px] " />
         </div>
-        <p className="ml-0 pl-0 -right-[0.3rem] absolute">
-          {
-           getCount()
-          }
-          
-        </p>
+        <p className="ml-0 pl-0 -right-[0.3rem] absolute">{getCount()}</p>
       </div>
       {showDialogBox && (
         <div className="fixed top-0 left-0 w-full h-full z-[1000] dimBg flex items-center justify-center">
@@ -106,7 +103,7 @@ const {user}=useCurrentUser()
             </div>
             <div className="absolute top-2 md:hidden right-2 rounded-full z-50 p-1 hover:bg-[#0f0f0f] cursor-pointer">
               <button
-                onClick={isComment?handleReplyOnComment:handleComment}
+                onClick={isComment ? handleReplyOnComment : handleComment}
                 className="py-[0.4rem] rounded-full x-bgcolor px-6"
               >
                 Reply
@@ -241,7 +238,9 @@ const {user}=useCurrentUser()
                         </div>
                         <div>
                           <button
-                            onClick={handleComment}
+                            onClick={
+                              isComment ? handleReplyOnComment : handleComment
+                            }
                             className="py-2 rounded-full hidden md:inline-block x-bgcolor px-4"
                           >
                             Reply

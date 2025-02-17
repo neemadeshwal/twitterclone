@@ -4,7 +4,6 @@ import MiddlePost from "../home/middlePost/middlePost";
 import Sidebar from "../home/leftSide/sidebar";
 import HorizontalSidebar from "../home/horizontalSidebar";
 import { getCurrentUserData } from "@/lib/ServerFetchApi/ServerSideFunc";
-import PostDetail from "./postDetail";
 
 const PostDetailLayout = async ({
   children,
