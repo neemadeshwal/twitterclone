@@ -19,10 +19,12 @@ const ComposePost = ({
   user,
   isComment,
   tweetId,
+  isParentComment
 }: {
   user: getCurrentUser | null;
   isComment?: boolean;
   tweetId?: string;
+  isParentComment?: boolean
 }) => {
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
@@ -46,8 +48,32 @@ const ComposePost = ({
       setFiles([]);
     },
   });
+  
+  const { replyOnComment } = useCommentMutation({
+    onSuccess: () => {
+      setTweetContent("");
+      setFiles([]);
+    },
+  });
+
+  async function replyOnCommentSubmit() {
+    setLoading(true);
+    const body = {
+      content: tweetContent,
+      mediaArray: files,
+      commentId: tweetId ?? "",
+    };
+    try {
+      await replyOnComment(body);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function onSubmit() {
+    setLoading(true);
     const body = {
       content: tweetContent,
       mediaArray: files,
@@ -56,11 +82,13 @@ const ComposePost = ({
       await createTweet(body);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
+
   async function onCommentSubmit() {
-    console.log("hello comment in ");
-    console.log(tweetId);
+    setLoading(true);
     const body = {
       content: tweetContent,
       mediaArray: files,
@@ -70,13 +98,15 @@ const ComposePost = ({
       await createComment(body);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div className="w-full relative">
       <div className="w-full p-6 px-0 sm:px-4 pb-4">
-        <div className="flex  gap-2 w-full">
+        <div className="flex gap-2 w-full">
           <CurrentUser user={user} />
           <div className="w-full mt-2 px-2">
             <TweetContent
@@ -120,18 +150,28 @@ const ComposePost = ({
               )}
 
               {isComment && tweetId ? (
-                <button
-                  onClick={onCommentSubmit}
-                  className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
-                  disabled={files.length == 0 && tweetContent.trim() == ""}
-                >
-                  Reply
-                </button>
+                isParentComment ? (
+                  <button
+                    onClick={replyOnCommentSubmit}
+                    className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
+                    disabled={loading || (files.length === 0 && tweetContent.trim() === "")}
+                  >
+                    Reply
+                  </button>
+                ) : (
+                  <button
+                    onClick={onCommentSubmit}
+                    className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
+                    disabled={loading || (files.length === 0 && tweetContent.trim() === "")}
+                  >
+                    Reply
+                  </button>
+                )
               ) : (
                 <button
                   onClick={onSubmit}
                   className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
-                  disabled={files.length == 0 && tweetContent.trim() == ""}
+                  disabled={loading || (files.length === 0 && tweetContent.trim() === "")}
                 >
                   Post
                 </button>
@@ -144,7 +184,7 @@ const ComposePost = ({
       {isEmojiTableOpen && (
         <div
           ref={emojiCloseRef}
-          className="absolute  rounded-[8px] shadow-[0_0_6px_rgba(255,255,255,0.6)] mx-[10%] z-[1000]"
+          className="absolute rounded-[8px] shadow-[0_0_6px_rgba(255,255,255,0.6)] mx-[10%] z-[1000]"
         >
           <div>
             <Picker

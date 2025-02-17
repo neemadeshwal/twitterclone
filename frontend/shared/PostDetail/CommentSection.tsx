@@ -5,9 +5,18 @@ import React from "react";
 
 interface CommentSectionProps {
   user: authorType | null;
-  tweet: Tweet;
+  tweet: Tweet|Comment;
+  isComment?:boolean
+  isParentComment?:boolean
 }
-const CommentSection = ({ user, tweet }: CommentSectionProps) => {
+const CommentSection = ({ user, tweet,isComment,isParentComment }: CommentSectionProps) => {
+  const commentData = isComment
+    ? "replies" in tweet
+      ? tweet.replies
+      : []  
+    : "commentAuthor" in tweet
+    ? tweet.commentAuthor
+    : []
   return (
     <div>
       <div className="">
@@ -18,14 +27,15 @@ const CommentSection = ({ user, tweet }: CommentSectionProps) => {
                 Replying to{" "}
                 <p className="x-textcolor inline">@{tweet?.author?.userName}</p>
               </div>
-              <ComposePost isComment={true} user={user} tweetId={tweet.id} />
+              <ComposePost isComment={true} isParentComment={isParentComment} user={user} tweetId={tweet.id} />
             </div>
           </div>
         </div>
       </div>
 
       <div>
-        {tweet.commentAuthor.map((item) => {
+        
+        {commentData.length>0&&commentData.map((item:Comment) => {
           return <SingleComment key={item.id} comment={item} />;
         })}
       </div>

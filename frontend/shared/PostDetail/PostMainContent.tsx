@@ -1,9 +1,9 @@
 import PostContent from "@/components/post/SinglePost/PostContent";
-import { Tweet } from "@/graphql/types";
+import { Comment, Tweet } from "@/graphql/types";
 import { formatFullDate } from "@/lib/timeStamp";
 import React from "react";
 
-const PostMainContent = ({ singleTweet }: { singleTweet: Tweet }) => {
+const PostMainContent = ({ singleTweet }: { singleTweet: Tweet|Comment }) => {
   return (
     <div>
       <div className="px-3">

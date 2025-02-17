@@ -161,6 +161,7 @@ export interface Comment {
   repostComment: Repost[];
   hashtags:HashTag[]
   createdAt:string;
+  savedPost:Comment[]
 }
 
 export interface getUserByIdProps {

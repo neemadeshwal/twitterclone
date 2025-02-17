@@ -1,14 +1,11 @@
 "use client";
-import { createCommentMutate } from "@/graphql/mutation/comment";
-import { getCurrentUser, Tweet } from "@/graphql/types";
+import { Comment, Tweet } from "@/graphql/types";
 import { useCurrentUser } from "@/hooks/user";
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
 import CurrentUser from "@/shared/currentUser";
 import UserProfile from "@/shared/AuthorProfile";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { BiLeftArrow, BiX } from "react-icons/bi";
+import React, {  useState } from "react";
+import {  BiX } from "react-icons/bi";
 import { BsChat, BsEmojiSmile } from "react-icons/bs";
 import { FaArrowLeft } from "react-icons/fa";
 import { FiMapPin } from "react-icons/fi";
@@ -16,34 +13,36 @@ import { HiOutlinePhotograph } from "react-icons/hi";
 import { LuDot, LuFolderClock } from "react-icons/lu";
 import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
+import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
 
-const Comment = ({
+const CommentComponent = ({
   tweet,
   iconColor,
+  isComment
 }: {
-  tweet: Tweet;
+  tweet: Tweet|Comment;
   iconColor?: string;
+  isComment?:boolean
 }) => {
   const [showDialogBox, setShowDialogBox] = useState(false);
   const [tweetComment, setTweetComment] = useState("");
-  const queryClient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: createCommentMutate,
-    onSuccess: (response: any) => {
-      console.log(response);
-      setTweetComment("");
-      setShowDialogBox(false);
-      queryClient.invalidateQueries({
-        queryKey: ["all-tweet"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["single-tweet"],
-      });
-    },
-    onError: (error) => {
+
+  const {createComment,replyOnComment}=useCommentMutation({})
+ 
+  
+  const handleReplyOnComment=async()=>{
+    const body = {
+      content: tweetComment,
+      commentId: tweet.id,
+      mediaArray: [],
+    };
+    try {
+      await replyOnComment(body);
+    } catch (error) {
       console.log(error);
-    },
-  });
+    }
+  }
+  
 
   const handleComment = async () => {
     const body = {
@@ -53,13 +52,21 @@ const Comment = ({
     };
 
     try {
-      await mutation.mutateAsync(body);
+      await createComment(body);
     } catch (error) {
       console.log(error);
     }
   };
-  console.log(tweet, "tweet in commetn");
-
+  const getCount = () => {
+    if (!tweet) return 0;
+    
+    if (isComment) {
+      return (tweet as Comment).replies?.length || 0;
+    } else {
+      return (tweet as Tweet).commentAuthor?.length || 0;
+    }
+  };
+const {user}=useCurrentUser()
   return (
     <div>
       <div
@@ -72,7 +79,10 @@ const Comment = ({
           <BsChat className="text-[16px] sm:text-[20px] " />
         </div>
         <p className="ml-0 pl-0 -right-[0.3rem] absolute">
-          {tweet?.commentAuthor?.length}
+          {
+           getCount()
+          }
+          
         </p>
       </div>
       {showDialogBox && (
@@ -96,7 +106,7 @@ const Comment = ({
             </div>
             <div className="absolute top-2 md:hidden right-2 rounded-full z-50 p-1 hover:bg-[#0f0f0f] cursor-pointer">
               <button
-                onClick={handleComment}
+                onClick={isComment?handleReplyOnComment:handleComment}
                 className="py-[0.4rem] rounded-full x-bgcolor px-6"
               >
                 Reply
@@ -194,7 +204,7 @@ const Comment = ({
                   <div className=" w-full">
                     <div className="w-full mt-2 xs:text-lg sm:text-xl px-2 flex items-start gap-4">
                       <div className="">
-                        <CurrentUser />
+                        <CurrentUser user={user} />
                       </div>
                       <textarea
                         value={tweetComment}
@@ -250,4 +260,4 @@ const Comment = ({
   );
 };
 
-export default Comment;
+export default CommentComponent;

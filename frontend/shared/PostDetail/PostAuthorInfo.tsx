@@ -1,10 +1,10 @@
 import React from "react";
 import HoverWrapper from "../singlePost/HoverWrapper";
 import AuthorProfile from "../AuthorProfile";
-import { Tweet } from "@/graphql/types";
+import { Tweet,Comment } from "@/graphql/types";
 import PostControlDialog from "../singlePost/postControlDialog";
 
-const PostAuthorInfo = ({ tweet }: { tweet: Tweet }) => {
+const PostAuthorInfo = ({ tweet }: { tweet: Tweet|Comment }) => {
   return (
     <div>
       <div className="flex justify-between p-2 items-start">

@@ -1,6 +1,5 @@
 import { graphqlClient } from "@/clients/api";
 import { gql } from "@apollo/client";
-import { toggleLikeTweetProps } from "../types";
 
 const TOGGLE_LIKETWEET = gql`
   mutation ToggleLikeTweet($payload: toggleLikeTweetInput!) {

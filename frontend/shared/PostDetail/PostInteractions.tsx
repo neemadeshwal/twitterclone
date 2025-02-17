@@ -1,13 +1,15 @@
 import React from "react";
 import DivisionBar from "../divisionbar";
 import PostActions from "@/components/post/SinglePost/PostActions";
+import { Comment, Tweet } from "@/graphql/types";
 
 interface PostInteractionsProps {
-  tweet: any;
+  tweet: Tweet|Comment;
   liked: boolean;
   repost: boolean;
   handleTweetLike: () => void;
   handleRepostTweet: () => void;
+  isComment?:boolean
 }
 const PostInteractions = ({
   tweet,
@@ -15,6 +17,7 @@ const PostInteractions = ({
   repost,
   handleRepostTweet,
   handleTweetLike,
+  isComment
 }: PostInteractionsProps) => {
   return (
     <div>
@@ -26,6 +29,8 @@ const PostInteractions = ({
           repost={repost}
           handleRepostTweet={handleRepostTweet}
           handleTweetLike={handleTweetLike}
+          isComment={isComment}
+          
         />
         <DivisionBar type="x" />
       </div>

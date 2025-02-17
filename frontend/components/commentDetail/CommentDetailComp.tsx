@@ -1,12 +1,12 @@
 import React from "react";
-import PostDetail from "../postDetail/postDetail";
 import { getCurrentUserData } from "@/lib/ServerFetchApi/ServerSideFunc";
+import CommentDetail from "./commentDetail";
 
 const CommentDetailComp = async () => {
   const user = await getCurrentUserData();
   return (
     <div>
-      <PostDetail user={user} isComment={true} />
+      <CommentDetail user={user}  />
     </div>
   );
 };

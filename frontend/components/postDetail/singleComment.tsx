@@ -25,11 +25,14 @@ const SingleComment = ({
 
   const { likeComment, replyOnComment, repostComment } = useCommentMutation({});
 
-  async function handleCommentLike(commentId: string) {
+  async function handleCommentLike() {
     setLiked((prevVal) => !prevVal);
 
+    if (!singleComment || !singleComment.id) {
+      return;
+    }
     const body = {
-      commentId,
+      commentId:singleComment.id,
     };
     try {
       await likeComment(body);
@@ -92,6 +95,7 @@ const SingleComment = ({
               content={comment?.content}
               mediaArray={comment?.mediaArray}
               hashtags={comment?.hashtags}
+              isComment={true}
             />
             <PostActions
               tweet={comment}

@@ -1,34 +1,54 @@
 "use client";
-import { toggleBookmarkTweet } from "@/graphql/mutation/bookmark";
-import { Bookmarks, Tweet } from "@/graphql/types";
+
+import { Bookmarks, Comment, Tweet } from "@/graphql/types";
+import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
+import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 import { useCurrentUser } from "@/hooks/user";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 
-const SavePost = ({
-  singleTweet,
-}: {
-  singleTweet: any;
-}) => {
-  const queryClient = useQueryClient();
+interface SavePostProps {
+  singleTweet: Tweet | Comment;
+  isComment?: boolean;
+}
+
+const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
   const user = useCurrentUser();
   const [saveBookmark, setSaveBookmark] = useState(false);
-  
-  const saveBookmarkMutation = useMutation({
-    mutationFn: toggleBookmarkTweet,
-    onSuccess: (response: any) => {
-      console.log(response);
-      queryClient.invalidateQueries({ queryKey: ["all-bookmark"] });
-    },
-    onError: (error) => {
-      console.log(error);
-    },
+
+  const { saveComment } = useCommentMutation({
+    onError: () => {
+      // Revert the bookmark state on error
+      setSaveBookmark((prev) => !prev);
+    }
   });
 
-  console.log(saveBookmark,"savebookmark")
+  const { saveTweet } = useTweetMutation({
+    onError: () => {
+      // Revert the bookmark state on error
+      setSaveBookmark((prev) => !prev);
+    }
+  });
 
-  async function handleSaveBookmark() {
+  async function handleSaveComment() {
+    if (!singleTweet || !singleTweet.id) {
+      return;
+    }
+
+    setSaveBookmark((prevVal) => !prevVal);
+
+    const body = {
+      commentId: singleTweet.id
+    };
+
+    try {
+      await saveComment(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function handleSaveTweet() {
     if (!singleTweet || !singleTweet.id) {
       return;
     }
@@ -40,7 +60,7 @@ const SavePost = ({
     };
 
     try {
-      await saveBookmarkMutation.mutateAsync(body);
+      await saveTweet(body);
     } catch (error) {
       console.log(error);
     }
@@ -50,23 +70,34 @@ const SavePost = ({
     if (!singleTweet || !user) {
       return;
     }
-    const isSaved = singleTweet.savedPost?.some(
-      (post: Bookmarks) => post.tweetId === singleTweet.id
-    );
-    setSaveBookmark(isSaved);
-  }, []);
+
+    let isSaved;
+    if(isComment){
+     isSaved = singleTweet.savedPost?.some(
+        (post:any) => post.commentId === singleTweet.id
+      );
+    }
+    else{
+       isSaved = singleTweet.savedPost?.some(
+        (post:any) => post.tweetId === singleTweet.id
+      );
+    }
+
+   
+
+    setSaveBookmark(!!isSaved);
+  }, [singleTweet, user]);
 
   return (
     <div className="flex gap-1 items-center text-[13px] font-[400]">
       <div
-        onClick={handleSaveBookmark}  
-        className={`flex gap-1 items-center cursor-pointer text-[13px] font-[400] `}
+        onClick={isComment ? handleSaveComment : handleSaveTweet}
+        className="flex gap-1 items-center cursor-pointer text-[13px] font-[400]"
       >
         {saveBookmark ? (
-            <div className="p-2 text-blue-500 ">
-
+          <div className="p-2 text-blue-500">
             <FaBookmark className="text-[16px] sm:text-[20px] text-blue-500" />
-            </div>
+          </div>
         ) : (
           <div className="p-2 rounded-full gray hover:text-blue-500 hover:bg-[#1e2034a5]">
             <FaRegBookmark className="text-[16px] gray sm:text-[20px]" />

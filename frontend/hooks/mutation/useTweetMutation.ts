@@ -4,6 +4,7 @@ import { createTweetMutate, deleteTweetMutate} from "@/graphql/mutation/tweet";
 import { createTweetMutateProps, toggleLikeTweetProps } from "@/graphql/types";
 import {  toggleLikeTweet } from "@/graphql/mutation/like";
 import { repostTweetMutate } from "@/graphql/mutation/repost";
+import { toggleBookmarkTweet } from "@/graphql/mutation/bookmark";
 
 interface UseTweetMutationProps {
   onSuccess?: () => void;
@@ -51,6 +52,16 @@ export const useTweetMutation = ({ onSuccess, onError }: UseTweetMutationProps =
       });
     }
   })
+
+  const saveTweetMutation=useMutation({
+    mutationFn:(body:{tweetId:string})=>toggleBookmarkTweet(body),
+    onSuccess:(response)=>{
+      queryClient.invalidateQueries({queryKey:["all-tweet"]});
+      queryClient.invalidateQueries({ 
+        queryKey: ["single-tweet"]
+      });
+    }
+  })
   const deleteTweetMutation=useMutation({
     mutationFn:(body:{tweetId:string})=>deleteTweetMutate(body),
     onSuccess:(response)=>{
@@ -84,6 +95,15 @@ export const useTweetMutation = ({ onSuccess, onError }: UseTweetMutationProps =
       console.log(error)
     }
   }
+  const saveTweet=async(body:{tweetId:string})=>{
+    try{
+      await saveTweetMutation.mutateAsync(body)
+
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
   const deleteTweet=async(body:{tweetId:string})=>{
     try{
       await deleteTweetMutation.mutateAsync(body)
@@ -95,5 +115,5 @@ export const useTweetMutation = ({ onSuccess, onError }: UseTweetMutationProps =
   }
 
 
-  return { createTweet,likeTweet,repostTweet,deleteTweet,isDeletingTweet:deleteTweetMutation.isPending,isRepostingTweet:repostTweetMutation.isPending,isCreatingTweet:createTweetMutation.isPending,isLikingTweet:likeTweetMutation.isPending };
+  return { createTweet,likeTweet,repostTweet,deleteTweet,saveTweet,isDeletingTweet:deleteTweetMutation.isPending,isRepostingTweet:repostTweetMutation.isPending,isCreatingTweet:createTweetMutation.isPending,isLikingTweet:likeTweetMutation.isPending };
 };

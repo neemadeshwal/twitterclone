@@ -9,17 +9,19 @@ const PostContent = ({
   mediaArray,
   author,
   tweetId,
+  isComment
 }: {
   content: string;
   hashtags: any;
   mediaArray: string[];
   author: authorType;
   tweetId: string;
+  isComment?:boolean
 }) => {
   return (
     <div>
       <div className="mt-1">
-        <Link href={`/${author.userName}/status/${tweetId}`}>{content}</Link>
+        <Link href={`/${author.userName}/${isComment?"comment":"status"}/${tweetId}`}>{content}</Link>
 
         {hashtags && hashtags?.length !== 0 && (
           <div className="mt-2">

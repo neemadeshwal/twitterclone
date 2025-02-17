@@ -14,12 +14,14 @@ const PostActions = ({
   handleTweetLike,
   isComment,
 }: any) => {
-  console.log(tweet, "tweet check in action");
+
+  const shareLink=isComment? `http://localhost:5000/${tweet.author.userName}/comment/${tweet.id}`
+  : `http://localhost:5000/${tweet.author.userName}/status/${tweet.id}`;
   return (
     <div>
       <div className="flex justify-between py-2 pt-3 pb-4">
         <div className="flex items-center justify-center">
-          <Comment tweet={tweet} />
+          <Comment tweet={tweet} isComment={isComment} />
         </div>
         <div
           onClick={handleRepostTweet}
@@ -66,11 +68,16 @@ const PostActions = ({
             {isComment ? tweet?.likes.length : tweet?.likedBy.length}
           </p>
         </div>
-
-        <SharePost
-          link={`http://localhost:5000/${tweet.author.userName}/status/${tweet.id}`}
+        {
+         
+          <SharePost
+        
+          link={shareLink}
         />
-        <SavePost singleTweet={tweet} />
+        }
+
+       
+        <SavePost isComment={isComment} singleTweet={tweet} />
       </div>
     </div>
   );
