@@ -4,13 +4,15 @@ import MiddlePost from "../home/middlePost/middlePost";
 import Sidebar from "../home/leftSide/sidebar";
 import HorizontalSidebar from "../home/horizontalSidebar";
 import { getCurrentUserData } from "@/lib/ServerFetchApi/ServerSideFunc";
+import { authorType } from "@/graphql/types";
 
-const PostDetailLayout = async ({
+const PostDetailLayoutWrapper = ({
   children,
+  user
 }: {
   children: React.ReactNode;
+  user:authorType|null
 }) => {
-  const user = await getCurrentUserData();
   return (
     <div className="min-h-screen flex flex-col sm:flex-row">
       <div className="flex-1 flex flex-col sm:flex-row px-0  md:px-[100px] lg:px-[20px] xl1300:px-[40px]">
@@ -47,4 +49,4 @@ const PostDetailLayout = async ({
   );
 };
 
-export default PostDetailLayout;
+export default PostDetailLayoutWrapper;

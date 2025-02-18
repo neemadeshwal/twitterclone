@@ -1,17 +1,8 @@
-"use client";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import Image from 'next/image'
+import React, { useEffect, useState } from 'react'
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { BiX } from "react-icons/bi";
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
-import Comment from "../comment";
-import { useCurrentUser } from "@/hooks/user";
-import { LuRepeat2 } from "react-icons/lu";
-import { CiHeart } from "react-icons/ci";
-import { FaArrowLeft, FaArrowRight, FaHeart } from "react-icons/fa";
-import SharePost from "@/shared/sharePost";
-import SavePost from "@/shared/savePost";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toggleLikeTweet } from "@/graphql/mutation/like";
 import Link from "next/link";
 import {
   Carousel,
@@ -20,49 +11,20 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Comment, Tweet } from '@/graphql/types';
 
-const Photos = ({
-  photoNum,
-  tweet,
-  setShowFullPhoto,
-  showFullPhoto,
-  currentUrl,
-}: any) => {
+const Photos = ({tweet,photoNum,setShowFullPhoto,currentUrl,showFullPhoto}:{tweet:Tweet|Comment,photoNum:number,showFullPhoto:boolean,currentUrl:string,setShowFullPhoto:any}) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(
     Number(photoNum) - 1
   );
-
-  console.log(photoNum, tweet, setShowFullPhoto, showFullPhoto, currentUrl);
-  const [showPhoto, setShowPhoto] = useState("");
-  const [isSliding, setIsSliding] = useState(false);
-  const [liked, setLiked] = useState(false);
-  const [repost, setRepost] = useState(false);
-
-  const queryClient = useQueryClient();
-  const { user } = useCurrentUser();
-
-  const mutation = useMutation({
-    mutationFn: toggleLikeTweet,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
-    },
-  });
-
+    const [isSliding, setIsSliding] = useState(false);
+      const [showPhoto, setShowPhoto] = useState("");
+    
+  
   useEffect(() => {
-    if (tweet?.LikedBy && user) {
-      setLiked(tweet.LikedBy.some((like: any) => like.userId === user.id));
-    }
-    if (tweet?.repostTweet && user) {
-      setRepost(
-        tweet.repostTweet.some((repost: any) => repost.userId === user.id)
-      );
-    }
-  }, [tweet, user]);
-
-  useEffect(() => {
-    if (photoNum && tweet?.photoArray) {
+    if (photoNum && tweet?.mediaArray) {
       setCurrentPhotoIndex(Number(photoNum) - 1);
-      setShowPhoto(tweet.photoArray[Number(photoNum) - 1]);
+      setShowPhoto(tweet.mediaArray[Number(photoNum) - 1]);
     }
   }, [photoNum, tweet]);
 
@@ -73,10 +35,10 @@ const Photos = ({
     const newIndex =
       direction === "prev"
         ? Math.max(0, currentPhotoIndex - 1)
-        : Math.min(tweet.photoArray.length - 1, currentPhotoIndex + 1);
+        : Math.min(tweet.mediaArray.length - 1, currentPhotoIndex + 1);
 
     setCurrentPhotoIndex(newIndex);
-    setShowPhoto(tweet.photoArray[newIndex]);
+    setShowPhoto(tweet.mediaArray[newIndex]);
   };
 
   const handleTransitionEnd = () => {
@@ -85,28 +47,14 @@ const Photos = ({
     window.history.replaceState({ ...window.history.state }, "", newUrl);
   };
 
-  const handleTweetLike = async () => {
-    if (!tweet?.id) return;
-    setLiked((prev) => !prev);
-    try {
-      await mutation.mutateAsync({ tweetId: tweet.id });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   if (!showPhoto) return null;
 
   return (
-    <div
-      className={`${
-        showFullPhoto ? "w-[100%]" : "w-[64%]"
-      } overflow-hidden flex justify-center items-start relative`}
-    >
-      <div className="flex w-screen  h-screen bg-black">
+    <div>
+       <div className="flex w-screen  h-screen bg-black">
         <Carousel>
           <CarouselContent>
-            {tweet?.photoArray.map((image: string) => (
+            {tweet?.mediaArray.map((image: string) => (
               <CarouselItem key={image}>
                 <div className=" ">
                   <Image
@@ -157,7 +105,7 @@ const Photos = ({
             <FaArrowLeft />
           </div>
         )}
-        {currentPhotoIndex < tweet.photoArray.length - 1 && (
+        {currentPhotoIndex < tweet.mediaArray.length - 1 && (
           <div
             onClick={() => handleNavigation("next")}
             className="absolute right-10 bg-black/50 rounded-full cursor-pointer p-2 top-[50%]"
@@ -167,44 +115,8 @@ const Photos = ({
         )}
       </div>
 
-      {/* Rest of your component (Bottom bar) remains the same */}
-      <div className="fixed w-[60%] bottom-0">
-        <div className="flex justify-between py-2 pt-4 pb-4 w-[60%] mx-auto">
-          <div className="flex items-center">
-            <Comment iconColor="white" tweet={tweet} />
-          </div>
-          <div className="flex gap-1 items-center white text-[13px] font-[400]">
-            {repost ? (
-              <LuRepeat2 className="text-[20px] text-[#00ba7c]" />
-            ) : (
-              <LuRepeat2 className="text-[20px] white" />
-            )}
-            <p className={`${repost ? "text-[#00ba7c]" : "white"}`}>
-              {tweet?.repostTweet.length}
-            </p>
-          </div>
-          <div
-            onClick={handleTweetLike}
-            className="flex gap-1 items-center text-[13px] cursor-pointer font-[400]"
-          >
-            {liked ? (
-              <FaHeart className="text-[20px] heart-animation text-red-500" />
-            ) : (
-              <CiHeart className="text-[20px] white" />
-            )}
-            <p className={liked ? "text-red-500" : "white"}>
-              {tweet?.LikedBy.length}
-            </p>
-          </div>
-          <SharePost
-            iconColor="white"
-            link={`http://localhost:5000/${tweet.author.userName}/status/${tweet.id}`}
-          />
-          <SavePost singleTweet={tweet} />
-        </div>
-      </div>
     </div>
-  );
-};
+  )
+}
 
-export default Photos;
+export default Photos
