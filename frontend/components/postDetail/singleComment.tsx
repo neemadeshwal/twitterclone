@@ -32,7 +32,7 @@ const SingleComment = ({
       return;
     }
     const body = {
-      commentId:singleComment.id,
+      commentId: singleComment.id,
     };
     try {
       await likeComment(body);
@@ -96,6 +96,7 @@ const SingleComment = ({
               mediaArray={comment?.mediaArray}
               hashtags={comment?.hashtags}
               isComment={true}
+              showMedia={true}
             />
             <PostActions
               tweet={comment}

@@ -14,9 +14,9 @@ const PostActions = ({
   handleTweetLike,
   isComment,
 }: any) => {
-
-  const shareLink=isComment? `http://localhost:5000/${tweet?.author.userName}/comment/${tweet.id}`
-  : `http://localhost:5000/${tweet?.author.userName}/status/${tweet?.id}`;
+  const shareLink = isComment
+    ? `http://localhost:5000/${tweet?.author.userName}/comment/${tweet?.id}`
+    : `http://localhost:5000/${tweet?.author.userName}/status/${tweet?.id}`;
   return (
     <div>
       <div className="flex justify-between py-2 pt-3 pb-4">
@@ -68,15 +68,8 @@ const PostActions = ({
             {isComment ? tweet?.likes.length : tweet?.likedBy.length}
           </p>
         </div>
-        {
-         
-          <SharePost
-        
-          link={shareLink}
-        />
-        }
+        {<SharePost link={shareLink} />}
 
-       
         <SavePost isComment={isComment} singleTweet={tweet} />
       </div>
     </div>

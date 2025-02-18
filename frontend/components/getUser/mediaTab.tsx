@@ -4,8 +4,8 @@ import React from "react";
 
 const MediaTab = ({ mediaPost }: { mediaPost: Tweet[] }) => {
   const mediaListArr = mediaPost.reduce<string[][]>((acc, item) => {
-    if (item.photoArray.length !== 0 || item.videoArray.length !== 0) {
-      const singleItem = [...item.photoArray, ...item.videoArray];
+    if (item.mediaArray.length !== 0) {
+      const singleItem = [...item.mediaArray];
       acc.push(singleItem);
     }
     return acc;

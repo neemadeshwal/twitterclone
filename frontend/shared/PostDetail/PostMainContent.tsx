@@ -3,7 +3,13 @@ import { Comment, Tweet } from "@/graphql/types";
 import { formatFullDate } from "@/lib/timeStamp";
 import React from "react";
 
-const PostMainContent = ({ singleTweet,showMedia }: { singleTweet: Tweet|Comment,showMedia?:boolean }) => {
+const PostMainContent = ({
+  singleTweet,
+  showMedia,
+}: {
+  singleTweet: Tweet | Comment;
+  showMedia?: boolean;
+}) => {
   return (
     <div>
       <div className="px-3">

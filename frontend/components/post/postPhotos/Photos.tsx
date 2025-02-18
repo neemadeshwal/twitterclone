@@ -1,5 +1,5 @@
-import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { BiX } from "react-icons/bi";
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
@@ -11,16 +11,28 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Comment, Tweet } from '@/graphql/types';
+import { Comment, Tweet } from "@/graphql/types";
+import { useRouter } from "next/navigation";
 
-const Photos = ({tweet,photoNum,setShowFullPhoto,currentUrl,showFullPhoto}:{tweet:Tweet|Comment,photoNum:number,showFullPhoto:boolean,currentUrl:string,setShowFullPhoto:any}) => {
+const Photos = ({
+  tweet,
+  photoNum,
+  setShowFullPhoto,
+  currentUrl,
+  showFullPhoto,
+}: {
+  tweet: Tweet | Comment;
+  photoNum: number;
+  showFullPhoto: boolean;
+  currentUrl: string;
+  setShowFullPhoto: any;
+}) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(
     Number(photoNum) - 1
   );
-    const [isSliding, setIsSliding] = useState(false);
-      const [showPhoto, setShowPhoto] = useState("");
-    
-  
+  const [isSliding, setIsSliding] = useState(false);
+  const [showPhoto, setShowPhoto] = useState("");
+
   useEffect(() => {
     if (photoNum && tweet?.mediaArray) {
       setCurrentPhotoIndex(Number(photoNum) - 1);
@@ -47,16 +59,18 @@ const Photos = ({tweet,photoNum,setShowFullPhoto,currentUrl,showFullPhoto}:{twee
     window.history.replaceState({ ...window.history.state }, "", newUrl);
   };
 
+  const router = useRouter();
+
   if (!showPhoto) return null;
 
   return (
     <div>
-       <div className="flex w-screen  h-screen bg-black">
+      <div className="flex w-screen  h-screen bg-black">
         <Carousel>
           <CarouselContent>
             {tweet?.mediaArray.map((image: string) => (
               <CarouselItem key={image}>
-                <div className=" ">
+                <div className={`${!showFullPhoto && "flex justify-center"}`}>
                   <Image
                     style={{
                       transform: `translateX(-${currentPhotoIndex * 100}%)`,
@@ -71,7 +85,7 @@ const Photos = ({tweet,photoNum,setShowFullPhoto,currentUrl,showFullPhoto}:{twee
                     } transition-transform duration-500 ease-in-out ${
                       showFullPhoto
                         ? "h-[90vh] w-screen object-contain"
-                        : "h-[90vh]  object-contain"
+                        : "h-[90vh] p-14 w-screen object-contain"
                     } `}
                   />
                 </div>
@@ -83,10 +97,11 @@ const Photos = ({tweet,photoNum,setShowFullPhoto,currentUrl,showFullPhoto}:{twee
         </Carousel>
       </div>
 
-      <div className="absolute top-5 left-5 text-[30px]">
-        <Link href="/">
-          <BiX />
-        </Link>
+      <div
+        onClick={() => router.back()}
+        className="absolute top-5 left-5 text-[30px]"
+      >
+        <BiX />
       </div>
 
       <div
@@ -114,9 +129,8 @@ const Photos = ({tweet,photoNum,setShowFullPhoto,currentUrl,showFullPhoto}:{twee
           </div>
         )}
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default Photos
+export default Photos;

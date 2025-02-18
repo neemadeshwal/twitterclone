@@ -12,15 +12,21 @@ import PostMainContent from "@/shared/PostDetail/PostMainContent";
 import PostInteractions from "@/shared/PostDetail/PostInteractions";
 import CommentSection from "@/shared/PostDetail/CommentSection";
 
-const PostDetail = ({ user,postId }: { user: authorType | null,postId?:string }) => {
+const PostDetail = ({
+  user,
+  postId,
+}: {
+  user: authorType | null;
+  postId?: string;
+}) => {
   const pathname = usePathname();
   const idArr = pathname.split("/");
   const id = idArr[idArr.length - 1];
 
   const [liked, setLiked] = useState(false);
-  const { singleTweet } = useGetSingleTweet(postId??id);
+  const { singleTweet } = useGetSingleTweet(postId ?? id);
 
-  const [repost, setRepost] = useState(false); 
+  const [repost, setRepost] = useState(false);
 
   const { likeTweet, repostTweet } = useTweetMutation({});
 
@@ -65,6 +71,8 @@ const PostDetail = ({ user,postId }: { user: authorType | null,postId?:string })
     }
   }, [singleTweet, user]);
 
+  console.log(postId, "postid");
+
   if (!singleTweet) {
     return (
       <div className="flex justify-center py-10">
@@ -75,15 +83,14 @@ const PostDetail = ({ user,postId }: { user: authorType | null,postId?:string })
   return (
     <div>
       <div>
-        {
-          !postId&&
-        <PostHeader />
-
-        }
+        {!postId && <PostHeader />}
         <PostAuthorInfo tweet={singleTweet} />
 
         <div className="px-3 pr-5 py-2"></div>
-        <PostMainContent showMedia={postId?false:true} singleTweet={singleTweet} />
+        <PostMainContent
+          showMedia={postId ? false : true}
+          singleTweet={singleTweet}
+        />
         <PostInteractions
           tweet={singleTweet}
           liked={liked}

@@ -76,6 +76,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
               content={tweet?.content}
               mediaArray={tweet?.mediaArray}
               hashtags={tweet?.hashtags}
+              showMedia={true}
             />
             <PostActions
               tweet={tweet}

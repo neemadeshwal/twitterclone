@@ -16,42 +16,40 @@ const TweetPhotos = ({
   showFullPhoto,
   currentUrl,
 }: any) => {
- 
-
   const [liked, setLiked] = useState(false);
   const [repost, setRepost] = useState(false);
 
   const { user } = useCurrentUser();
 
-    const { likeTweet, repostTweet } = useTweetMutation({});
-  
-    async function handleRepostTweet() {
-      if (!tweet || !tweet.id) {
-        return;
-      }
-      const body = {
-        tweetId: tweet.id,
-      };
-      try {
-        await repostTweet(body);
-      } catch (error) {
-        console.log(error);
-      }
+  const { likeTweet, repostTweet } = useTweetMutation({});
+
+  async function handleRepostTweet() {
+    if (!tweet || !tweet.id) {
+      return;
     }
-    async function handleTweetLike() {
-      setLiked((prevVal) => !prevVal);
-      if (!tweet?.id) {
-        return;
-      }
-      const body = {
-        tweetId: tweet.id,
-      };
-      try {
-        await likeTweet(body);
-      } catch (error) {
-        console.log(error);
-      }
+    const body = {
+      tweetId: tweet.id,
+    };
+    try {
+      await repostTweet(body);
+    } catch (error) {
+      console.log(error);
     }
+  }
+  async function handleTweetLike() {
+    setLiked((prevVal) => !prevVal);
+    if (!tweet?.id) {
+      return;
+    }
+    const body = {
+      tweetId: tweet.id,
+    };
+    try {
+      await likeTweet(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useEffect(() => {
     if (tweet?.likedBy && user) {
       setLiked(tweet.likedBy.some((like: any) => like.userId === user.id));
@@ -63,26 +61,23 @@ const TweetPhotos = ({
     }
   }, [tweet, user]);
 
- 
-  
-
-console.log(tweet)
+  console.log(tweet);
   return (
     <div
       className={`${
         showFullPhoto ? "w-[100%]" : "w-[64%]"
       } overflow-hidden flex justify-center items-start relative`}
     >
-        <Photos
+      <Photos
         currentUrl={currentUrl}
         photoNum={photoNum}
         showFullPhoto={showFullPhoto}
         setShowFullPhoto={setShowFullPhoto}
         tweet={tweet}
-        />
-     
+      />
+
       <div className="fixed w-[60%] bottom-0">
-      <PostInteractions
+        <PostInteractions
           tweet={tweet}
           liked={liked}
           repost={repost}

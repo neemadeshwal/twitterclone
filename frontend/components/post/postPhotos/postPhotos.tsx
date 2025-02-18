@@ -8,6 +8,7 @@ import TweetPhotos from "./TweetPhotos";
 import CommentPhotos from "./CommentPhotos";
 import CommentDetail from "@/components/commentDetail/commentDetail";
 import { useCurrentUser } from "@/hooks/user";
+import { useGetCommentById } from "@/hooks/comment";
 
 const PostPhotos = () => {
   const pathname = usePathname();
@@ -22,9 +23,11 @@ const PostPhotos = () => {
 
   const isComment = idArr[idArr.length - 4] === "comment";
 
-  const { singleTweet } = useGetSingleTweet(id);
+  const { singleComment } = useGetCommentById(isComment ? id : "");
+  const { singleTweet } = useGetSingleTweet(!isComment ? id : "");
 
-  console.log(isComment, "isComment");
+  const post = isComment ? singleComment : singleTweet;
+
   const { user } = useCurrentUser();
 
   return (
@@ -37,7 +40,7 @@ const PostPhotos = () => {
               photoNum={photoNum}
               showFullPhoto={showFullPhoto}
               setShowFullPhoto={setShowFullPhoto}
-              tweet={singleTweet}
+              tweet={post}
               isComment={true}
             />
           ) : (
@@ -46,20 +49,21 @@ const PostPhotos = () => {
               photoNum={photoNum}
               showFullPhoto={showFullPhoto}
               setShowFullPhoto={setShowFullPhoto}
-              tweet={singleTweet}
+              tweet={post}
             />
           )}
 
           <div className="">
             <DivisionBar type="y" />
           </div>
-          {!showFullPhoto && (isComment ? (
-            <CommentDetail user={user!} />
-          ) : (
-            <div className="overflow-y-auto h-screen">
-            <PostDetail user={user!} postId={singleTweet?.id} />
-            </div>
-          ))}
+          {!showFullPhoto &&
+            (isComment ? (
+              <CommentDetail user={user!} commentId={post?.id} />
+            ) : (
+              <div className="overflow-y-auto h-screen">
+                <PostDetail user={user!} postId={post?.id} />
+              </div>
+            ))}
         </div>
       </div>
     </div>

@@ -24,9 +24,7 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
 
   const media =
     user.posts.length !== 0 &&
-    user.posts.filter(
-      (post) => post.photoArray.length !== 0 || post.videoArray.length !== 0
-    );
+    user.posts.filter((post) => post.mediaArray.length !== 0);
   console.log(media, "media");
   return (
     <div>
@@ -116,7 +114,7 @@ const ProfileDisplay = ({ user }: { user: getCurrentUser }) => {
 
           <div className="flex gap-4 text-[14px] gray capitalize px-4">
             <div>
-              <span className="text-white">{user?.following.length}</span>{" "}
+              <span className="text-white">{user?.followingList.length}</span>{" "}
               Following
             </div>
             <div>
