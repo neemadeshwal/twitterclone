@@ -65,7 +65,7 @@ export interface Tweet {
   id: string;
   content: string;
   author: getCurrentUser;
-  LikedBy: Like[];
+  likedBy: Like[];
   commentAuthor: Comment[];
   authorId: string;
   savedPost: Bookmarks[];

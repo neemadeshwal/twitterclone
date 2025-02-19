@@ -14,6 +14,8 @@ type Like{
     tweetId:String
     user:User
     tweet:Tweet
+    comment:Comment
+    commentId:String
     
 }
 `;

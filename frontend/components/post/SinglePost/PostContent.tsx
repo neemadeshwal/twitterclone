@@ -25,7 +25,7 @@ const PostContent = ({
     <div>
       <div className="mt-1">
         <Link
-          href={`/${author.userName}/${
+          href={`/${author?.userName}/${
             isComment ? "comment" : "status"
           }/${tweetId}`}
         >

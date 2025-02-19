@@ -3,6 +3,8 @@ import React from "react";
 import SinglePost from "../post/SinglePost/singlePost";
 
 const PostTab = ({ postlist }: { postlist: Tweet[] }) => {
+  console.log(postlist, "postlist");
+
   return (
     <div>
       <div>

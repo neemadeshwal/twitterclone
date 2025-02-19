@@ -20,14 +20,14 @@ const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
     onError: () => {
       // Revert the bookmark state on error
       setSaveBookmark((prev) => !prev);
-    }
+    },
   });
 
   const { saveTweet } = useTweetMutation({
     onError: () => {
       // Revert the bookmark state on error
       setSaveBookmark((prev) => !prev);
-    }
+    },
   });
 
   async function handleSaveComment() {
@@ -38,7 +38,7 @@ const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
     setSaveBookmark((prevVal) => !prevVal);
 
     const body = {
-      commentId: singleTweet.id
+      commentId: singleTweet.id,
     };
 
     try {
@@ -72,18 +72,15 @@ const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
     }
 
     let isSaved;
-    if(isComment){
-     isSaved = singleTweet.savedPost?.some(
-        (post:any) => post.commentId === singleTweet.id
+    if (isComment) {
+      isSaved = singleTweet.savedPost?.some(
+        (post: any) => post.commentId === singleTweet.id
+      );
+    } else {
+      isSaved = singleTweet.savedPost?.some(
+        (post: any) => post.tweetId === singleTweet.id
       );
     }
-    else{
-       isSaved = singleTweet.savedPost?.some(
-        (post:any) => post.tweetId === singleTweet.id
-      );
-    }
-
-   
 
     setSaveBookmark(!!isSaved);
   }, [singleTweet, user]);

@@ -426,7 +426,7 @@ const extraResolvers = {
     likedTweets: async (parent: User) => {
       const likedTweets = await prismaClient.like.findMany({
         where: { userId: parent.id },
-        include: { user: true, tweet: true },
+        include: { user: true, tweet: true,comment:true },
       });
       return likedTweets;
     },

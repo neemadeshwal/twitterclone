@@ -18,6 +18,9 @@ import { toggleBookmarkComment } from "@/graphql/mutation/bookmark";
         onSuccess: (response) => {
           queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
           queryClient.invalidateQueries({queryKey:["single-comment"]})
+          queryClient.invalidateQueries({ 
+            queryKey: ["user-detail"]
+          });
           onSuccess?.();
         },
         onError: (error) => {

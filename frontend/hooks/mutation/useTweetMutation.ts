@@ -21,6 +21,9 @@ export const useTweetMutation = ({ onSuccess, onError }: UseTweetMutationProps =
       queryClient.invalidateQueries({ 
         queryKey: ["single-tweet"]
       });
+      queryClient.invalidateQueries({ 
+        queryKey: ["user-detail"]
+      });
       onSuccess?.();
     },
     onError: (error) => {
@@ -36,6 +39,9 @@ export const useTweetMutation = ({ onSuccess, onError }: UseTweetMutationProps =
       queryClient.invalidateQueries({ 
         queryKey: ["single-tweet"]
       });
+      queryClient.invalidateQueries({ 
+        queryKey: ["user-detail"]
+      });
       onSuccess?.()
   },
   onError:(error)=>{
@@ -50,6 +56,9 @@ export const useTweetMutation = ({ onSuccess, onError }: UseTweetMutationProps =
       queryClient.invalidateQueries({ 
         queryKey: ["single-tweet"]
       });
+      queryClient.invalidateQueries({ 
+        queryKey: ["user-detail"]
+      });
     }
   })
 
@@ -60,6 +69,9 @@ export const useTweetMutation = ({ onSuccess, onError }: UseTweetMutationProps =
       queryClient.invalidateQueries({ 
         queryKey: ["single-tweet"]
       });
+      queryClient.invalidateQueries({ 
+        queryKey: ["user-detail"]
+      });
     }
   })
   const deleteTweetMutation=useMutation({
@@ -68,6 +80,9 @@ export const useTweetMutation = ({ onSuccess, onError }: UseTweetMutationProps =
       queryClient.invalidateQueries({queryKey:["all-tweet"]});
       queryClient.invalidateQueries({ 
         queryKey: ["single-tweet"]
+      });
+      queryClient.invalidateQueries({ 
+        queryKey: ["user-detail"]
       });
     }
   })

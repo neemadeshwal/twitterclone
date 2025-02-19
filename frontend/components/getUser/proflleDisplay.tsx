@@ -8,13 +8,18 @@ import MediaTab from "./mediaTab";
 import ProfileHeader from "./ProfileHeader";
 import ProfileInfo from "./ProfileInfo";
 import ProfileTabs, { TabType } from "./profileTabs";
+import LikeTab from "./likesTab";
 
 const ProfileDisplay = ({ user }: { user: authorType }) => {
   const [activeTab, setActiveTab] = useState<TabType>("post");
   const [editProfileDialog, setEditProfileDialog] = useState(false);
 
-  const likedTweets = user.likedTweets.map(item => item.tweet);
-  const mediaPosts = user.posts.filter(post => post.mediaArray.length > 0);
+  const likedTweets = user.likedTweets.map((item) => {
+    if (item.tweetId || item.commentId) {
+      return item;
+    }
+  });
+  const mediaPosts = user.posts.filter((post) => post.mediaArray.length > 0);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -23,9 +28,11 @@ const ProfileDisplay = ({ user }: { user: authorType }) => {
       case "replies":
         return <CommentTab comment={user.commentTweets} />;
       case "likes":
-        return <PostTab postlist={likedTweets} />;
+        return <LikeTab postlist={likedTweets} />;
       case "media":
-        return mediaPosts.length > 0 ? <MediaTab mediaPost={mediaPosts} /> : null;
+        return mediaPosts.length > 0 ? (
+          <MediaTab mediaPost={mediaPosts} />
+        ) : null;
       default:
         return <div>No content available</div>;
     }
@@ -33,22 +40,19 @@ const ProfileDisplay = ({ user }: { user: authorType }) => {
 
   return (
     <div>
-      <ProfileHeader 
-        user={user} 
-        onEditProfile={() => setEditProfileDialog(true)} 
+      <ProfileHeader
+        user={user}
+        onEditProfile={() => setEditProfileDialog(true)}
       />
-      
+
       <div>
         <ProfileInfo user={user} />
-        
+
         <div className="py-1">
-          <ProfileTabs 
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
+          <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
           <DivisionBar type="x" />
         </div>
-        
+
         {renderTabContent()}
       </div>
 

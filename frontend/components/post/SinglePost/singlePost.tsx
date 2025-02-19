@@ -20,10 +20,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   const queryClient = useQueryClient();
   const { user } = useCurrentUser();
 
-  useEffect(() => {
-    queryClient.refetchQueries({ queryKey: ["all-tweet"] });
-  }, []);
-
+  console.log(tweet, "post twweet");
   const { repostTweet, likeTweet } = useTweetMutation();
 
   async function handleRepostTweet() {
@@ -50,8 +47,8 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   }
 
   useEffect(() => {
-    if (tweet.LikedBy && user) {
-      setLiked(tweet.LikedBy.some((like) => like.userId === user.id));
+    if (tweet.likedBy && user) {
+      setLiked(tweet.likedBy.some((like) => like.userId === user.id));
     }
     if (tweet.repostTweet && user) {
       setRepost(tweet.repostTweet.some((repost) => repost.userId === user.id));
@@ -62,7 +59,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
     <div className="w-full cursor-pointer  py-3">
       <div className="flex gap-0 w-full relative px-4 ">
         <div className="pr-4">
-          <HoverWrapper userId={tweet?.author.userName}>
+          <HoverWrapper userId={tweet?.author?.userName}>
             <AuthorProfile author={tweet?.author} />
           </HoverWrapper>
         </div>

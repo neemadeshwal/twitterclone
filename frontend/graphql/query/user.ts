@@ -73,6 +73,9 @@ export const getUserByUserNameQuery = gql(`
     posts {
       createdAt
       authorId
+      savedPost{
+        id
+      }
       repostTweet{
                 userId
                 tweetId
@@ -181,9 +184,25 @@ export const getUserByUserNameQuery = gql(`
     likedTweets {
       id
       tweetId
+      comment{
+        author {
+          firstName
+          id
+          userName
+          lastName
+          email
+        }
+        authorId
+        id
+        content
+        createdAt
+      }
+      commentId
       tweet {
         author {
           firstName
+          userName
+          lastName
           id
           email
         }

@@ -61,8 +61,8 @@ const PostDetail = ({
     if (!singleTweet) {
       return;
     }
-    if (singleTweet.LikedBy && user) {
-      setLiked(singleTweet.LikedBy.some((like) => like.userId === user.id));
+    if (singleTweet.likedBy && user) {
+      setLiked(singleTweet.likedBy.some((like) => like.userId === user.id));
     }
     if (singleTweet.repostTweet && user) {
       setRepost(
