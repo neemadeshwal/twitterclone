@@ -1,6 +1,6 @@
 export const queries = `#graphql
 
 getCurrentUser:User
-getUserById(payload:GetUserByIdInput!):User
+getUserByUserName(payload:GetUserByUserNameInput!):User
 getAllUsers:[User]
 `;

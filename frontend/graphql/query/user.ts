@@ -39,9 +39,9 @@ export const getCurrentUserQuery = gql(`
   }
 `);
 
-export const getUserByIdQuery = gql(`
-  query GetUserById($payload:GetUserByIdInput!){
-    getUserById(payload:$payload){
+export const getUserByUserNameQuery = gql(`
+  query GetUserByUserName($payload:GetUserByUserNameInput!){
+    getUserByUserName(payload:$payload){
       email
     firstName
     lastName
@@ -71,6 +71,7 @@ export const getUserByIdQuery = gql(`
     }
     
     posts {
+      createdAt
       authorId
       repostTweet{
                 userId

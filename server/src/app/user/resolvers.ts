@@ -46,21 +46,21 @@ const queries = {
     }
     return user;
   },
-  getUserById: async (
+  getUserByUserName: async (
     parent: any,
-    { payload }: { payload: { id: string } },
+    { payload }: { payload: { userName: string } },
     ctx: GraphqlContext
   ) => {
     if (!ctx.user) {
       throw new Error("no token present");
     }
-    const { id } = payload;
-    if (!id) {
+    const { userName } = payload;
+    if (!userName) {
       throw new Error("No id present");
     }
 
     const user = await prismaClient.user.findUnique({
-      where: { id },
+      where: { userName },
       include: { posts: true, likedTweets: true, commentTweets: true,followers:true },
     });
     if (!user) {

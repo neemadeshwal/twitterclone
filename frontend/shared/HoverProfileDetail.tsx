@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useCurrentUser, useGetUserById } from "@/hooks/user";
+import { useCurrentUser, useGetUserByUserName } from "@/hooks/user";
 import AuthorProfile from "./AuthorProfile";
 import FollowUserBtn from "./followUserBtn";
 
 const HoverProfileDetail = ({ hoverId }: { hoverId: string }) => {
   const [commonFollowers, setCommonFollowers] = useState<any>([]);
   const [isVisible, setIsVisible] = useState(false);
-  const { user: hoveredUser, isLoading } = useGetUserById(hoverId);
+  const { user: hoveredUser, isLoading } = useGetUserByUserName(hoverId);
   const { user } = useCurrentUser();
 
   useEffect(() => {

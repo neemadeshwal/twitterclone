@@ -4,7 +4,7 @@ import React, { useEffect, useState, memo, use } from "react";
 import DivisionBar from "@/shared/divisionbar";
 import { Tweet } from "@/graphql/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCurrentUser, useGetUserById } from "@/hooks/user";
+import { useCurrentUser, useGetUserByUserName } from "@/hooks/user";
 import { useRouter } from "next/navigation";
 import PostActions from "./PostActions";
 import AuthorDetail from "@/shared/singlePost/AuthorDetail";
@@ -62,7 +62,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
     <div className="w-full cursor-pointer  py-3">
       <div className="flex gap-0 w-full relative px-4 ">
         <div className="pr-4">
-          <HoverWrapper userId={tweet?.author.id}>
+          <HoverWrapper userId={tweet?.author.userName}>
             <AuthorProfile author={tweet?.author} />
           </HoverWrapper>
         </div>

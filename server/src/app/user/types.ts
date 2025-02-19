@@ -72,8 +72,8 @@ input editProfileInput{
     profileImgUrl:String
     location:String
 }
-input GetUserByIdInput{
-    id:String
+input GetUserByUserNameInput{
+    userName:String
 }
 input getCredAndSendOtpInput{
     email:String

@@ -1,5 +1,5 @@
-import { getAllHashTagsProps, getAllTrending, getAllTrendingProps, GetAllTweetProps, getAllUsersQueryProps, getCurrentUser, getCurrentUserQueryProps, getForYou, getForYouProps, HashTag, Tweet } from "@/graphql/types";
-import { getAllUsersQuery, getCurrentUserQuery } from "@/graphql/query/user";
+import { authorType, getAllHashTagsProps, getAllTrending, getAllTrendingProps, GetAllTweetProps, getAllUsersQueryProps, getCurrentUser, getCurrentUserQueryProps, getForYou, getForYouProps, getUserByIdProps, HashTag, Tweet } from "@/graphql/types";
+import { getAllUsersQuery, getCurrentUserQuery,getUserByUserNameQuery } from "@/graphql/query/user";
 import { cookies } from "next/headers";
 import { GraphQLClient } from "graphql-request";
 import { SERVER_URL } from "../constants";
@@ -33,6 +33,17 @@ catch(error){
     return null
 
 }
+}
+export const getUserDetailData=async():Promise<authorType|null>=>{
+  try{
+    const client=await getGraphQLClient();
+    const data=await client.request<getUserByIdProps>(getUserByUserNameQuery)
+    return data.getUserById
+  }
+  catch(error){
+    console.error("Error fetching current user data:", error);
+    return null
+  }
 }
 
 export const getForYouData=async():Promise<getForYou|null>=>{

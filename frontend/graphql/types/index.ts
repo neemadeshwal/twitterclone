@@ -164,8 +164,8 @@ export interface Comment {
   savedPost:Comment[]
 }
 
-export interface getUserByIdProps {
-  getUserById: getCurrentUser;
+export interface getUserByUserNameProps {
+  getUserByUserName: getCurrentUser;
 }
 
 export interface getSingleTweetProps {
