@@ -191,6 +191,7 @@ export const getUserByUserNameQuery = gql(`
           userName
           lastName
           email
+          profileImgUrl
         }
         authorId
         id
@@ -199,12 +200,18 @@ export const getUserByUserNameQuery = gql(`
       }
       commentId
       tweet {
+        createdAt
+        savedPost{
+          id
+        }
         author {
           firstName
           userName
           lastName
           id
           email
+          profileImgUrl
+
         }
         authorId
         repostTweet{

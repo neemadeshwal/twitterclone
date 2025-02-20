@@ -133,6 +133,9 @@ export interface Like {
   tweetId: string;
   user: getCurrentUser;
   tweet: Tweet;
+  commentId:string;
+  comment:Comment;
+
 }
 
 export interface toggleLikeTweetProps {

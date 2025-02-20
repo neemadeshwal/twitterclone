@@ -10,8 +10,6 @@ import Loading from "@/shared/loading"
 
 const UserDetail = () => {
   const currentPathname=usePathname()
-  const[userData,setUserData]=useState([])
-  console.log(currentPathname,"currentpathanme")
   const {user}=useGetUserByUserName(currentPathname.slice(1))
 
   if(!user){

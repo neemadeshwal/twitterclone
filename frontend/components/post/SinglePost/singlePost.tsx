@@ -17,7 +17,6 @@ import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
   const [repost, setRepost] = useState(false);
-  const queryClient = useQueryClient();
   const { user } = useCurrentUser();
 
   console.log(tweet, "post twweet");

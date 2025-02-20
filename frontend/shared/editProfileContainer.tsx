@@ -29,6 +29,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { previewFile } from "@/lib/uploadFile";
 import { Button } from "@/components/ui/button";
 import { editProfile } from "@/graphql/mutation/user";
+import useOutsideClick from "./closeContainer";
 const formSchema = z.object({
   firstName: z.string().min(2, "firstname should be at least 2 characters."),
   lastName: z.string().optional(),
@@ -83,6 +84,8 @@ const EditProfileContainer = ({
       console.log(error);
     }
   }
+  useOutsideClick(postRef, () => setEditProfileDialog(false));
+
   useEffect(() => {
     const handlePostDialog = (event: MouseEvent) => {
       if (postRef.current && !postRef.current.contains(event.target as Node)) {
@@ -165,13 +168,15 @@ const EditProfileContainer = ({
   };
   return (
     <div
-      ref={postRef}
       style={{
         boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)",
       }}
       className="absolute text-white py-8 left-0 dimBg top-0 z-[100] w-full h-full flex items-center justify-center "
     >
-      <div className="w-[45%] h-full overflow-auto bg-black rounded-[20px]  py-3 ">
+      <div
+        ref={postRef}
+        className="w-[45%] h-full overflow-auto bg-black rounded-[20px]  py-3 "
+      >
         <div className="h-screen">
           <div className="sticky top-0 z-[100000] px-4 ">
             <div className="flex justify-between items-center backdrop-blur-sm z-[1000]   ">
