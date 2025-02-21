@@ -121,7 +121,7 @@ export const checkLoginPassword = async (payload: checkLoginPassProps) => {
   return data;
 };
 
-export const editProfile = async (payload: editProfileProps) => {
+export const editProfileMutate = async (payload: editProfileProps) => {
   const data = await graphqlClient.request(EDIT_PROFILE, { payload });
   return data;
 };

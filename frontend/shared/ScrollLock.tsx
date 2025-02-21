@@ -3,22 +3,24 @@ import React, { useEffect } from "react";
 
 const ScrollLock = ({ isOpen }: { isOpen: boolean }) => {
   useEffect(() => {
-    // Store the original overflow style
-    const originalStyle = window.getComputedStyle(document.body).overflow;
+    const originalStyles = {
+      overflow: window.getComputedStyle(document.body).overflow,
+      paddingRight: window.getComputedStyle(document.body).paddingRight,
+    };
     
     if (isOpen) {
-      // Prevent scroll
+      // Calculate scrollbar width
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      
+      // Lock body scroll but compensate for removed scrollbar
       document.body.style.overflow = 'hidden';
-      // Optional: prevent iOS Safari bounce effect
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
     }
 
-    // Cleanup function
     return () => {
-      document.body.style.overflow = originalStyle;
-      document.body.style.position = '';
-      document.body.style.width = '';
+      // Restore original styles
+      document.body.style.overflow = originalStyles.overflow;
+      document.body.style.paddingRight = originalStyles.paddingRight;
     };
   }, [isOpen]);
 
