@@ -6,6 +6,7 @@ import { checkHashedPassword, hashPassword } from "../../utils/hashPassword";
 import { sendOtp } from "../../utils/nodemailer";
 import { redis } from "../../utils/redis/redis";
 import { getRandomDarkHexColor } from "../../utils/getRandomColor";
+import UserService from "../../services/Resolver/User/user";
 
 interface getCredAndSendOtpPayload {
   firstName: string;
@@ -90,40 +91,7 @@ const mutations = {
     { payload }: { payload: getCredAndSendOtpPayload },
     ctx: any
   ) => {
-    const { firstName, lastName, dateOfBirth, email } = payload;
-
-    if (!firstName || !email) {
-      throw new Error("Please provide required credentials");
-    }
-    try {
-      const user = await prismaClient.user.findUnique({
-        where: { email: email },
-      });
-      if (user) {
-        throw new Error("User already exist.Please login");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-
-    const data = {
-      email,
-      firstName,
-      lastName,
-      dateOfBirth,
-    };
-    const expiryTime = 60 * 60 * 24;
-
-    await redis.set(
-      `unverifiedUser:${email}`,
-      JSON.stringify(data),
-      "EX",
-      expiryTime
-    );
-    const oldData = await redis.get(`unverifiedUser:${email}`);
-
-    const otpsend = await sendOtp(email);
-
+   const {email}=await UserService.getCredAndSendOtp(payload)
     return { email, next_page: "verifyotp" };
   },
   confirmedMail: async (
@@ -263,8 +231,17 @@ const mutations = {
     });
 
     const token = await JWTService.generateTokenFromUser(newUser);
+   
+    if (ctx && ctx.res) {
+      ctx.res.cookie("token", token, {
+        httpOnly: true,
+        maxAge: 3600000 * 48, // 48 hours
+      });
+    } else {
+      throw new Error("Response object is not available in the context");
+    }
     return {
-      token,
+      
       message: "create account successful",
       next_page: "signin",
     };
@@ -330,8 +307,17 @@ const mutations = {
     }
 
     const token = await JWTService.generateTokenFromUser(user);
+    if (ctx && ctx.res) {
+      ctx.res.cookie("token", token, {
+        httpOnly: true,
+        maxAge: 3600000 * 48, // 48 hours
+      });
+    } else {
+      throw new Error("Response object is not available in the context");
+    }
+   
 
-    return { token, message: "login successful", next_page: "signin" };
+    return {  message: "login successful", next_page: "signin" };
   },
   editProfile: async (
     parent: any,
@@ -373,7 +359,6 @@ const mutations = {
   resetPassword:async(parent:any,{payload}:{payload:{email:string,password:string}},ctx:any)=>{
 
     const{email,password}=payload;
-    console.log("passsword reseted succesfuly 1")
 
     if(!email||!password) throw new Error("No email password found.")
 
@@ -381,7 +366,6 @@ const mutations = {
     const user=await prismaClient.user.findUnique({
       where:{email}
     })
-  console.log("passsword reseted succesfuly 2")
 
 
     if(!user){
@@ -398,10 +382,17 @@ const mutations = {
       password:hashedPassword
     }
   })
-  console.log("passsword reseted succesfuly 3")
   const token = await JWTService.generateTokenFromUser(resetUserPassword);
+  if (ctx && ctx.res) {
+    ctx.res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 3600000 * 48, // 48 hours
+    });
+  } else {
+    throw new Error("Response object is not available in the context");
+  }
+  
   return {
-    token,
     message: "password reset successful",
     next_page: "signin",
   };

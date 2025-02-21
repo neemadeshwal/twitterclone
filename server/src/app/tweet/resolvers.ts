@@ -368,7 +368,6 @@ const queries = {
       .slice(0, 10);
   
   
-    console.log(trendingHashtag,"trending hastage")
     
       
         // Get timestamp for last 24 hours
@@ -410,7 +409,6 @@ const queries = {
             },
           },
         });
-        console.log(users,"users users")
       
         // Calculate total engagement score for each user
         const usersWithScore = users.map((user) => {
@@ -440,7 +438,6 @@ const queries = {
       
        
 
-        console.log(trendingUser,"trending user")
 
      return{trendingHashtag,trendingTweet,trendingUser}
 

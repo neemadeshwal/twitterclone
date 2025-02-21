@@ -1,11 +1,9 @@
 import { SavedPost } from "@prisma/client";
 import { prismaClient } from "../../client/db";
 import { GraphqlContext } from "../../interfaces";
-import { printSchema } from "graphql";
 
 const queries = {
   getAllBookmarks: async (parent: any, payload: any, ctx: GraphqlContext) => {
-    console.log(ctx,"ctx usreer")
     if (!ctx.user) {
       throw new Error("unauthozied.");
     }
@@ -20,7 +18,6 @@ const queries = {
         user:true
       }
     });
-    console.log(allBookMarks,"allbookmaarks")
     return allBookMarks;
   },
 };
@@ -105,7 +102,6 @@ const mutations = {
       },
     });
 
-    console.log(isCommentSaved, "iscommentsaved");
     if (isCommentSaved) {
       const deleteSavedComment = await prismaClient.savedPost.delete({
         where: {

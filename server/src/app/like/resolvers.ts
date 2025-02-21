@@ -1,7 +1,5 @@
 import { prismaClient } from "../../client/db";
 import { GraphqlContext } from "../../interfaces";
-import { initServer } from "../../app";
-// import { users } from "../../services/socket/event";
 
 interface LikeProps {
   id: string;
@@ -14,7 +12,6 @@ const mutations = {
     { payload }: { payload: { tweetId: string } },
     ctx: GraphqlContext
   ) => {
-    const { io } = await initServer();
     if (!ctx.user) {
       throw new Error("Unauthorized.Token not present.");
     }
@@ -60,8 +57,6 @@ const mutations = {
           tweetId: tweetId,
         },
       });
-      console.log("like this tweet");
-      console.log(findTweet.authorId, "tweet id");
 
       // if (users[findTweet.authorId]) {
       //   const authorSocketId = users[findTweet.authorId];  // Get the socket ID of the author

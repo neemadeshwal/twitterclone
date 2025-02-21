@@ -52,7 +52,6 @@ const mutations = {
       throw new Error("no user present.");
     }
     const { commentId } = payload;
-    console.log(commentId, "comment ommj id");
     if (!commentId) {
       throw new Error("no id present");
     }

@@ -22,7 +22,6 @@ const RESET_PASSWORD=gql`
 mutation resetPassword($payload:resetPasswordInput){
   resetPassword(payload:$payload){
     next_page
-    token
     message
   }
 }
@@ -42,7 +41,6 @@ const CREATE_ACCOUNT = gql`
     createAccount(payload: $payload) {
       next_page
       message
-      token
     }
   }
 `;
@@ -69,7 +67,6 @@ const CHECK_LOGIN_PASSWORD = gql`
     checkLoginPassword(payload: $payload) {
       message
       next_page
-      token
     }
   }
 `;

@@ -22,4 +22,5 @@ export const graphqlClient = new GraphQLClient(SERVER_URL as string, {
   headers: () => ({
     Authorization: isClient ? `Bearer ${token}` : "",
   }),
+  credentials:"include"
 });

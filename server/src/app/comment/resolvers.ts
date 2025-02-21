@@ -13,14 +13,12 @@ const queries = {
     { payload }: { payload: { commentId: string } },
     ctx: GraphqlContext
   ) => {
-    console.log("hey");
     if (!ctx.user) {
       throw new Error("Unauthorized.");
     }
 
     const { commentId } = payload;
 
-    console.log(commentId);
     if (!commentId) {
       throw new Error("No comment id presnt");
     }
@@ -38,7 +36,6 @@ const queries = {
     if (!isCommentExist) {
       throw new Error("No comment exist with this id.");
     }
-    console.log(isCommentExist, "iscoemmnt eixst");
     return isCommentExist;
   },
 };
