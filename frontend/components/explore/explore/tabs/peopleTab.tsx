@@ -15,8 +15,8 @@ const PeopleTab = async () => {
   }
   if (userList && !userList.length) {
     return (
-      <div className="rounded-[20px] p-4">
-        <p className="text-gray-500 text-sm">No Users yet</p>
+      <div className="rounded-[20px] p-4 py-12">
+        <p className="text-gray-400 text-lg">No Users yet</p>
       </div>
     );
   }

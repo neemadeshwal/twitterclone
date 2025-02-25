@@ -29,35 +29,26 @@ const AuthorDetail = ({
             </HoverWrapper>
           </div>
 
-          <div className="flex items-center sm:items-start">
+          <div className="flex items-start sm:items-start gap-px flex-col">
             <p className="capitalize font-[600] xs:hidden  md:text-[17px] text-[15px] leading-[20px]">
-              {author?.firstName}
+              {author?.firstName} {author?.lastName}
             </p>
-            <p className="xs:hidden gray text-[15px] leading-[19px] font-[400]">
+            <div className="flex">
+            <p className="xs:hidden gray text-[15px] block leading-[19px] font-[400]">
               @{author?.userName}
             </p>
-            <p>
-              <LuDot className="gray font-[300]" />
+            <p >
+              <LuDot className="gray font-[300] mt-1" />
             </p>
 
-            <p className="gray text-[14px] md:text-[16px] leading-[19px] font-[300]">
+            <p className="gray text-[14px] md:text-[16px] xs:mt-1 leading-[19px] font-[300]">
               {formatTimeAgo(getDateTime(createdAt))}
             </p>
+            </div>
           </div>
         </div>
 
-        {/* <DrawDialog
-              drawerTrigger={<IoEllipsisVertical className="gray" />}
-              drawerComp={
-                <PostActivity
-                  isDrawer={true}
-                  singleTweet={tweet}
-                  setPostControlDialogOpen={setPostControlDialogOpen}
-                  setIsTriggerDrawerOpen={setIsDrawerOpen}
-                />
-              }
-              setIsOpenProp={setIsDrawerOpen}
-            /> */}
+      
       </div>
     </div>
   );

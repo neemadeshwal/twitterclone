@@ -73,7 +73,7 @@ const DeletePostContainer = ({
   };
   const setCloseDialog = setDeleteDialog;
   return (
-    <div>
+    <div className="bg-red-500">
       <CenterDialog
         title={title}
         content={content}

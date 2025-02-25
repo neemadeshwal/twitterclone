@@ -63,6 +63,7 @@ const PostActivity = ({
     };
   }, [setPostControlDialogOpen]);
   return (
+    <div className="h-screen">
     <div
       ref={postRef}
       style={{
@@ -136,7 +137,9 @@ const PostActivity = ({
           setIsContainerOpen={setIsContainerOpen}
         />
       )}
-      {deleteDialog && (
+     
+    </div>
+    {deleteDialog && (
         <DeletePostContainer
           postId={singleTweet.id}
           isComment={isComment}
