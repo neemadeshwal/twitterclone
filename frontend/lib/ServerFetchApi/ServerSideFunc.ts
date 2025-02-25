@@ -1,4 +1,4 @@
-import { authorType, getAllHashTagsProps, getAllTrending, getAllTrendingProps, GetAllTweetProps, getAllUsersQueryProps, getCurrentUser, getCurrentUserQueryProps, getForYou, getForYouProps, getUserByIdProps, HashTag, Tweet } from "@/graphql/types";
+import { authorType, getAllHashTagsProps, getAllTrending, getAllTrendingProps, GetAllTweetProps, getAllUsersQueryProps, getCurrentUser, getCurrentUserQueryProps, getForYou, getForYouProps, getUserByUserNameProps, HashTag, Tweet } from "@/graphql/types";
 import { getAllUsersQuery, getCurrentUserQuery,getUserByUserNameQuery } from "@/graphql/query/user";
 import { cookies } from "next/headers";
 import { GraphQLClient } from "graphql-request";
@@ -6,17 +6,17 @@ import { SERVER_URL } from "../constants";
 import {  allHashTagQuery, getAllTrendingQuery, getAllTweetQuery, getForYouQuery} from "@/graphql/query/tweet";
 
 export const getGraphQLClient = async() => {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('token')?.value;
+  //   const cookieStore = await cookies();
+  //   const token = cookieStore.get('token')?.value;
   
-    if (!token) {
-      throw new Error('No authentication token found');
-    }
-  
+  //  console.log(token,"token")
+
+  //   if (!token) {
+  //     throw new Error('No authentication token found');
+  //   }
     return new GraphQLClient(SERVER_URL!, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      credentials: "include",
+      
     });
   };
 export const getCurrentUserData=async():Promise<getCurrentUser|null>=>{
@@ -37,8 +37,8 @@ catch(error){
 export const getUserDetailData=async():Promise<authorType|null>=>{
   try{
     const client=await getGraphQLClient();
-    const data=await client.request<getUserByIdProps>(getUserByUserNameQuery)
-    return data.getUserById
+    const data=await client.request<getUserByUserNameProps>(getUserByUserNameQuery)
+    return data.getUserByUserName
   }
   catch(error){
     console.error("Error fetching current user data:", error);
