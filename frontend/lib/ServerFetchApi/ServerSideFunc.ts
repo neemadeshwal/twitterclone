@@ -31,6 +31,7 @@ import {
 export const getGraphQLClient = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
+  console.log(token, "token");
 
   if (!token) {
     throw new Error("No authentication token found");
@@ -39,7 +40,8 @@ export const getGraphQLClient = async () => {
   return new GraphQLClient(SERVER_URL!, {
     credentials: "include",
     headers: {
-      Cookie: `token=${token}`, // Include the cookie in headers
+      Authorization: `Bearer ${token}`,
+      Cookie: `token=${token}`,
     },
   });
 };

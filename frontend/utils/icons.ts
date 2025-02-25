@@ -11,7 +11,7 @@ import {
   HiOutlineDotsHorizontal,
 } from "react-icons/hi";
 import { FaSearch, FaRegUser, FaUser,FaArrowLeft } from "react-icons/fa";
-import { CiMail } from "react-icons/ci";
+import { CiLogout, CiMail } from "react-icons/ci";
 import { BsTwitterX } from "react-icons/bs";
 import { BsFeather } from "react-icons/bs";
 import { BiSearch, BiX } from "react-icons/bi";
@@ -22,6 +22,7 @@ import { LuFolderClock } from "react-icons/lu";
 import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
 import { LuDot } from "react-icons/lu";
+import { PiBookmarkSimple,PiBookBookmarkFill,PiGear,PiGearFill } from "react-icons/pi";
 
 export const Icons={
     Home:GoHome,
@@ -48,6 +49,12 @@ export const Icons={
     VerticalDots:IoEllipsisVertical,
     Dot:LuDot,
     SearchIcon:BiSearch,
-    ArrowLeft:FaArrowLeft
+    ArrowLeft:FaArrowLeft,
+    Bookmark:PiBookmarkSimple,
+    BookMarkActive:PiBookBookmarkFill,
+    Settings:PiGear,
+    SettingsActive:PiGearFill,
+    Logout:CiLogout
+
 
 }
