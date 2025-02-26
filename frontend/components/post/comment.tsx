@@ -14,6 +14,7 @@ import { LuDot, LuFolderClock } from "react-icons/lu";
 import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
 import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
+import { useToast } from "@/hooks/use-toast";
 
 const CommentComponent = ({
   tweet,
@@ -26,9 +27,13 @@ const CommentComponent = ({
 }) => {
   const [showDialogBox, setShowDialogBox] = useState(false);
   const [tweetComment, setTweetComment] = useState("");
+  const {toast}=useToast()
 
   const { createComment, replyOnComment } = useCommentMutation({});
 
+  // const handleViewComment=()=>{
+  //   router.push()
+  // }
   const handleReplyOnComment = async () => {
     const body = {
       content: tweetComment,
@@ -37,12 +42,16 @@ const CommentComponent = ({
     };
     try {
       await replyOnComment(body);
+      toast({
+        description: "Your post is sent.View",
+      })
       setShowDialogBox(false);
       setTweetComment("");
     } catch (error) {
       console.log(error);
     }
   };
+
 
   const handleComment = async () => {
     const body = {
@@ -53,6 +62,10 @@ const CommentComponent = ({
 
     try {
       await createComment(body);
+      toast({
+        description: "Your post is sent.View",
+        
+      })
       setShowDialogBox(false);
       setTweetComment("");
     } catch (error) {

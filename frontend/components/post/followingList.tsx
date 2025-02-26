@@ -22,7 +22,7 @@ const FollowingList = () => {
     }
 
   return (
-    <div>
+    <div className="min-h-screen">
       <div>
         {userFollowingTweet &&
           userFollowingTweet.length !== 0 &&

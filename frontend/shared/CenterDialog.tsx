@@ -3,7 +3,7 @@ import React from 'react'
 const CenterDialog = ({title,content,actionBtn,setCloseDialog}:{title:string,content:string,actionBtn:{name:string,action:any},setCloseDialog:any}) => {
   return (
     <div>
-         <div className="z-[1000000] flex justify-center items-center w-screen h-screen fixed dimBg gray top-0 left-0 p-6">
+         <div className="z-[100000] flex justify-center items-center w-screen h-screen fixed dimBg gray top-0 left-0 p-6">
       <div className="h-auto z-[10000] p-6 w-auto rounded-[15px] bg-black flex flex-col gap-4 max-w-[290px]">
         <div className="flex flex-col gap-2 ">
           <h2 className="capitalize text-white text-[20px] font-[700]">

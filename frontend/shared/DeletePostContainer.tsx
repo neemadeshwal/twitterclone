@@ -7,13 +7,11 @@ import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 const DeletePostContainer = ({
   setDeleteDialog,
   postId: id,
-  ref,
   setPostControlDialogOpen,
   isComment,
 }: {
   setDeleteDialog: any;
   postId: string;
-  ref?: any;
   setPostControlDialogOpen: any;
   isComment?: boolean;
 }) => {
@@ -25,6 +23,7 @@ const DeletePostContainer = ({
       queryClient.refetchQueries({ queryKey: ["all-tweet"] });
     },
   });
+
   const { deleteTweet } = useTweetMutation({
     onSuccess: () => {
       setDeleteDialog(false);
@@ -32,15 +31,18 @@ const DeletePostContainer = ({
     },
   });
 
-  const handleDeletePost = async () => {
+  const handleDelete = async () => {
+    console.log("helllo")
     if (!id) {
       return;
     }
-    const body = {
-      tweetId: id,
-    };
+
     try {
-      await deleteTweet(body);
+      if (isComment) {
+        await deleteComment({ commentId: id });
+      } else {
+        await deleteTweet({ tweetId: id });
+      }
       setDeleteDialog(false);
       setPostControlDialogOpen(false);
     } catch (error) {
@@ -48,39 +50,21 @@ const DeletePostContainer = ({
     }
   };
 
-  const handleDeleteComment = async () => {
-    if (!id) {
-      return;
-    }
-    const body = {
-      commentId: id,
-    };
-    try {
-      await deleteComment(body);
-      setDeleteDialog(false);
-      setPostControlDialogOpen(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const title = "delete post?";
+  const title = "Delete post?";
   const content =
     "This can’t be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from search results.";
   const actionBtn = {
-    name: "delete",
-    action: isComment ? handleDeleteComment : handleDeletePost,
+    name: "Delete",
+    action: handleDelete,
   };
-  const setCloseDialog = setDeleteDialog;
+
   return (
-    <div className="bg-red-500">
-      <CenterDialog
-        title={title}
-        content={content}
-        actionBtn={actionBtn}
-        setCloseDialog={setCloseDialog}
-      />
-    </div>
+    <CenterDialog
+      title={title}
+      content={content}
+      actionBtn={actionBtn}
+      setCloseDialog={setDeleteDialog}
+    />
   );
 };
 
