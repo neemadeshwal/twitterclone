@@ -23,9 +23,10 @@ export const useCurrentUser = () => {
 export const useGetUserByUserName = (userName: string) => {
   const query = useQuery<getUserByUserNameProps>({
     queryKey: ["user-detail"],
-    queryFn: () => graphqlClient.request(getUserByUserNameQuery, { payload: { userName } }),
+    queryFn: () =>
+      graphqlClient.request(getUserByUserNameQuery, { payload: { userName } }),
   });
-  console.log(query.data,"data")
+  console.log(query.data, "data");
   return { ...query, user: query.data?.getUserByUserName };
 };
 

@@ -14,17 +14,19 @@ import CharacterCircle from "@/shared/CharacterCircle";
 import { TWEET_CHARACTER_LIMIT } from "@/lib/constants";
 import useOutsideClick from "@/shared/closeContainer";
 import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
+import { toast } from "@/hooks/use-toast";
+import { useCurrentUser } from "@/hooks/user";
 
 const ComposePost = ({
   user,
   isComment,
   tweetId,
-  isParentComment
+  isParentComment,
 }: {
   user: getCurrentUser | null;
   isComment?: boolean;
   tweetId?: string;
-  isParentComment?: boolean
+  isParentComment?: boolean;
 }) => {
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
@@ -48,7 +50,7 @@ const ComposePost = ({
       setFiles([]);
     },
   });
-  
+
   const { replyOnComment } = useCommentMutation({
     onSuccess: () => {
       setTweetContent("");
@@ -64,7 +66,26 @@ const ComposePost = ({
       commentId: tweetId ?? "",
     };
     try {
-      await replyOnComment(body);
+      const data = await replyOnComment(body);
+      console.log(data, "dataf");
+      toast({
+        description: (
+          <div className="flex items-center justify-between w-full">
+            <span>Your post is sent.</span>
+            <a
+              href={`http://localhost:5000/${user.userName}/comment/${tweet?.id}`} // Replace with your actual post view URL
+              className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+              }}
+            >
+              View
+            </a>
+          </div>
+        ),
+        className:
+          "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+      });
     } catch (error) {
       console.log(error);
     } finally {
@@ -80,6 +101,24 @@ const ComposePost = ({
     };
     try {
       await createTweet(body);
+      toast({
+        description: (
+          <div className="flex items-center justify-between w-full">
+            <span>Your post is sent.</span>
+            <a
+              href={`http://localhost:5000/${user?.userName}/status/${tweet?.id}`} // Replace with your actual post view URL
+              className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+              }}
+            >
+              View
+            </a>
+          </div>
+        ),
+        className:
+          "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+      });
     } catch (error) {
       console.log(error);
     } finally {
@@ -96,6 +135,24 @@ const ComposePost = ({
     };
     try {
       await createComment(body);
+      toast({
+        description: (
+          <div className="flex items-center justify-between w-full">
+            <span>Your post is sent.</span>
+            <a
+              href={`http://localhost:5000/${user?.userName}/comment/${tweet?.id}`} // Replace with your actual post view URL
+              className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+              }}
+            >
+              View
+            </a>
+          </div>
+        ),
+        className:
+          "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+      });
     } catch (error) {
       console.log(error);
     } finally {
@@ -154,7 +211,10 @@ const ComposePost = ({
                   <button
                     onClick={replyOnCommentSubmit}
                     className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
-                    disabled={loading || (files.length === 0 && tweetContent.trim() === "")}
+                    disabled={
+                      loading ||
+                      (files.length === 0 && tweetContent.trim() === "")
+                    }
                   >
                     Reply
                   </button>
@@ -162,7 +222,10 @@ const ComposePost = ({
                   <button
                     onClick={onCommentSubmit}
                     className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
-                    disabled={loading || (files.length === 0 && tweetContent.trim() === "")}
+                    disabled={
+                      loading ||
+                      (files.length === 0 && tweetContent.trim() === "")
+                    }
                   >
                     Reply
                   </button>
@@ -171,7 +234,10 @@ const ComposePost = ({
                 <button
                   onClick={onSubmit}
                   className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
-                  disabled={loading || (files.length === 0 && tweetContent.trim() === "")}
+                  disabled={
+                    loading ||
+                    (files.length === 0 && tweetContent.trim() === "")
+                  }
                 >
                   Post
                 </button>

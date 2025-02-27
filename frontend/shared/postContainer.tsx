@@ -16,6 +16,7 @@ import TweetAction from "./singlePost/TweetAction";
 import MediaUpload from "./singlePost/MediaUpload";
 import TweetContent from "./singlePost/TweetContent";
 import { FaArrowLeft } from "react-icons/fa";
+import { useCurrentUser } from "@/hooks/user";
 const PostContainer = ({
   isEdit,
   editTweet,
@@ -37,6 +38,7 @@ const PostContainer = ({
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
   const [tweetContent, setTweetContent] = useState("");
+  const { user } = useCurrentUser();
   const mutation = useMutation({
     mutationFn: createTweetMutate,
     onSuccess: (response: any) => {
@@ -150,33 +152,31 @@ const PostContainer = ({
         >
           <FaArrowLeft className="text-[20px] " strokeWidth={1} />
         </div>
-        {
-          isEdit?
+        {isEdit ? (
           <div className="absolute top-2 md:hidden right-2 rounded-full z-50 p-1 hover:bg-[#0f0f0f] cursor-pointer">
-              <button
-                onClick={onEdit}
-                className="py-[0.4rem] rounded-full x-bgcolor px-6"
-              >
-                Edit
-              </button>
-            </div>:
-            <div className="absolute top-2 md:hidden right-2 rounded-full z-50 p-1 hover:bg-[#0f0f0f] cursor-pointer">
-              <button
-                onClick={onSubmit}
-                className="py-[0.4rem] rounded-full x-bgcolor px-6"
-              >
-                Reply
-              </button>
-            </div>
-
-        }
-        
+            <button
+              onClick={onEdit}
+              className="py-[0.4rem] rounded-full x-bgcolor px-6"
+            >
+              Edit
+            </button>
+          </div>
+        ) : (
+          <div className="absolute top-2 md:hidden right-2 rounded-full z-50 p-1 hover:bg-[#0f0f0f] cursor-pointer">
+            <button
+              onClick={onSubmit}
+              className="py-[0.4rem] rounded-full x-bgcolor px-6"
+            >
+              Reply
+            </button>
+          </div>
+        )}
 
         {/* Content */}
         <div className="h-full">
           <div className="flex items-start gap-4 p-4 pt-4 pb-2 md:pb-0">
             <div className="">
-              <CurrentUser />
+              <CurrentUser user={user} />
             </div>
             <div className="w-full pt-1  h-auto px-2">
               <TweetContent

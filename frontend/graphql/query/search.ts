@@ -14,52 +14,49 @@ export const getSearchByQuery = gql`
         id
         mediaArray
       }
-      hashtag{
+      hashtag {
         id
         text
-        tweets{
+        tweets {
           createdAt
-          hashtags{
+          hashtags {
             id
             text
           }
-          LikedBy{
+          likedBy {
             id
           }
-          commentAuthor{
+          commentAuthor {
             id
           }
           id
           content
-            mediaArray
-            author {
+          mediaArray
+          author {
+            id
+            userName
+            email
+            firstName
+            lastName
+          }
+          repostTweet {
+            userId
+            tweetId
+            id
+            tweet {
               id
-              userName
-              email
-              firstName
-              lastName
-            }
-            repostTweet{
-                userId
-                tweetId
+              content
+              mediaArray
+              author {
                 id
-                tweet{
-                    id
-                    content
-                    mediaArray
-                    author{
-                        id
-                        userName
-                        email
-                        firstName
-                        lastName
-                    }
-                }
+                userName
+                email
+                firstName
+                lastName
+              }
             }
-
-
+          }
         }
-
       }
       latest {
         id
@@ -92,8 +89,8 @@ export const getSearchByQuery = gql`
         }
         commentAuthor {
           id
-          comment
-          userId
+          content
+          authorId
           tweetId
         }
         author {
@@ -103,7 +100,7 @@ export const getSearchByQuery = gql`
           profileImgUrl
           id
         }
-        LikedBy {
+        likedBy {
           id
           userId
           tweetId
@@ -149,8 +146,8 @@ export const getSearchByQuery = gql`
         }
         commentAuthor {
           id
-          comment
-          userId
+          content
+          authorId
           tweetId
         }
         author {
@@ -160,7 +157,7 @@ export const getSearchByQuery = gql`
           profileImgUrl
           id
         }
-        LikedBy {
+        likedBy {
           id
           userId
           tweetId
