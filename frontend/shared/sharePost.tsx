@@ -6,6 +6,7 @@ import useOutsideClick from "./closeContainer";
 import { DrawerTrigger } from "@/components/ui/drawer";
 import PortalContainerWrapper from "./PortalContainerWrapper";
 import DrawDialog from "./DrawDialog";
+import { toast } from "@/hooks/use-toast";
 
 const SharePost = ({
   link,
@@ -21,15 +22,31 @@ const SharePost = ({
   const handleCopyLink = () => {
     setOpenShareContainer(false);
 
+    const showToast = () => {
+    toast({
+      description: (
+        <div className="flex items-center justify-between w-full">
+          Copied to clipboard
+        </div>
+      ),
+      className:
+        "bg-blue-500 text-[16px] font-[500] text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+    });
+  }
     if (navigator.clipboard) {
       navigator.clipboard
         .writeText(link)
         .then(() => {
           setIsLinkCopied(true);
+          showToast()
           setTimeout(() => setIsLinkCopied(false), 2000);
         })
         .catch((error) => {
           console.log(error, "failed to copy ");
+          toast({
+            variant: "destructive",
+            description: "Failed to copy to clipboard",
+          });
         });
     } else {
       // Fallback for older browsers
@@ -38,8 +55,12 @@ const SharePost = ({
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand("copy");
+      
       document.body.removeChild(textArea);
+     
       setIsLinkCopied(true);
+      showToast()
+
       setTimeout(() => setIsLinkCopied(false), 2000);
     }
   };

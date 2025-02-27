@@ -3,7 +3,7 @@ import { useSearchquery } from "@/hooks/search";
 import React, { useEffect, useRef, useState } from "react";
 import ShowSearchPreview from "./showSearchPreview";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Icons } from "@/utils/icons";
 
 const useRecentSearches = () => {
@@ -45,7 +45,7 @@ const SearchInput = ({
       className={`relative py-1 ${
         isSearchFocused ? "ml-10 w-[90%]" : "w-full"
       }`}
-    >
+    > 
       <input
         ref={inputRef}
         value={query}
@@ -92,6 +92,7 @@ const SearchBar = ({}) => {
   const { allSearchResult, isLoading } = useSearchquery(debouncedQuery);
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname=usePathname()
 
   const { addRecentSearch } = useRecentSearches();
 
@@ -160,7 +161,7 @@ const SearchBar = ({}) => {
       )}
 
       <div className="backdrop-blur-md pt-1 bg-[#000000b0]">
-        <div className="px-12 relative">
+        <div className={`${(pathname === "/explore" || pathname == "/search")  &&"px-12"} relative`}>
           <SearchInput
             query={query}
             setQuery={setQuery}

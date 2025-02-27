@@ -83,7 +83,6 @@ const MiddlePost = ({ user }: { user: getCurrentUser | null }) => {
  
   return (
     <div className="flex flex-col h-full">
-      <NavigationEvents/>
       <div className="flex sm:hidden w-[50%] pl-4 py-2 justify-between items-center ">
         <div>
           <Sheet  open={isSheetOpen}>
@@ -191,6 +190,7 @@ const MiddlePost = ({ user }: { user: getCurrentUser | null }) => {
       {
         logoutDialog&&<Logout setisDialogOpen={setShowLogoutDialog}/>
       }
+      
     </div>
   );
 };

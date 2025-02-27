@@ -3,6 +3,7 @@
 import { Bookmarks, Comment, Tweet } from "@/graphql/types";
 import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
 import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
+import { toast } from "@/hooks/use-toast";
 import { useCurrentUser } from "@/hooks/user";
 import React, { useEffect, useState } from "react";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
@@ -53,6 +54,7 @@ const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
       return;
     }
 
+
     setSaveBookmark((prevVal) => !prevVal);
 
     const body = {
@@ -61,6 +63,16 @@ const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
 
     try {
       await saveTweet(body);
+      toast({
+        description: (
+          <div className="flex items-center  justify-between w-full">
+            
+              Added to bookmarks
+          </div>
+        ),
+        className:
+          "bg-blue-500 text-[16px] font-[500] text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+      });
     } catch (error) {
       console.log(error);
     }

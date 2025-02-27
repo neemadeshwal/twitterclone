@@ -43,9 +43,22 @@ const CommentComponent = ({
     try {
       await replyOnComment(body);
       toast({
-        description: "Your post is sent.View",
+        description: (
+          <div className="flex items-center justify-between w-full">
+            <span>Your post is sent.</span>
+            <a
+              href={`http://localhost:5000/${tweet?.author?.userName}/comment/${tweet?.id}`} // Replace with your actual post view URL
+              className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+              }}
+            >
+              View
+            </a>
+          </div>
+        ),
         className:
-          "bg-black border  rounded-lg bottom-0 bottom-0 sm:bottom-0 md:bottom-0 text-white shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+          "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
       });
       setShowDialogBox(false);
       setTweetComment("");
@@ -68,7 +81,7 @@ const CommentComponent = ({
           <div className="flex items-center justify-between w-full">
             <span>Your post is sent.</span>
             <a
-              href="/explore" // Replace with your actual post view URL
+              href={`http://localhost:5000/${tweet?.author?.userName}/comment/${tweet?.id}`} // Replace with your actual post view URL
               className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
               onClick={(e) => {
                 e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
@@ -108,7 +121,7 @@ const CommentComponent = ({
         <div className="p-2 rounded-full group-hover:bg-[#1e2034a5] ">
           <BsChat className="text-[16px] sm:text-[20px] " />
         </div>
-        <p className="ml-0 pl-0 -right-[0.3rem] absolute">{getCount()}</p>
+        <p className="ml-0 pl-0 -right-[0.35rem] absolute">{getCount()}</p>
       </div>
       {showDialogBox && (
         <div className="fixed top-0 left-0 w-full h-full z-[1000] dimBg flex items-center justify-center">

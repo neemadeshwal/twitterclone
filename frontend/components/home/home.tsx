@@ -24,9 +24,10 @@ const Home = async () => {
 
         <main className=" w-full sm:w-[80%] md:w-[95%]  md:max-w-[700px] lg:max-w-full lg:w-[60%] xl1300:w-[50%] ">
           <MiddlePost user={user} />
+          
         </main>
 
-        <div className="hidden lg:block">
+        <div className="hidden sm:block">
           <DivisionBar type="y" />
         </div>
 

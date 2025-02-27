@@ -17,7 +17,7 @@ const RecommendedUser = ({ userList,isBio }: { userList: any,isBio?:boolean }) =
   }
   if(userList&&!userList.length){
     return (
-      <div className="rounded-[20px] border p-4">
+      <div className="rounded-[20px] border border-gray-700  p-4 py-6">
         <p className="text-gray-500 text-sm">No Users yet</p>
       </div>
     )
