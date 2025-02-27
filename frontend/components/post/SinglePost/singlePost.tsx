@@ -13,6 +13,7 @@ import PostContent from "./PostContent";
 import HoverWrapper from "@/shared/singlePost/HoverWrapper";
 import PostControlDialog from "@/shared/singlePost/postControlDialog";
 import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
+import { useToast } from "@/hooks/use-toast";
 
 const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
@@ -35,11 +36,13 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
 
   async function handleTweetLike() {
     setLiked((prevVal) => !prevVal);
+
     const body = {
       tweetId: tweet.id,
     };
     try {
       await likeTweet(body);
+     
     } catch (error) {
       console.log(error);
     }
@@ -55,7 +58,7 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
   }, [tweet, user]);
 
   return (
-    <div className="w-full cursor-pointer  py-3">
+    <div className="w-full cursor-pointer   py-3">
       <div className="flex gap-0 w-full relative px-4 ">
         <div className="pr-4">
           <HoverWrapper userId={tweet?.author?.userName}>

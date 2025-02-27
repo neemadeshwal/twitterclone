@@ -7,8 +7,8 @@ console.log("hello before");
 console.log(typeof window);
 const isClient = typeof window !== "undefined";
 
-// Define a variable for the token, only accessible in client context
-let token = "";
+// // Define a variable for the token, only accessible in client context
+ let token = "";
 
 if (isClient) {
   console.log(document.cookie, "document cookie");

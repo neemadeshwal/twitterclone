@@ -15,9 +15,17 @@ const PostList = () => {
       </div>
     )
    
+
+  }
+  if(!allTweet?.length){
+    return(
+      <div className="rounded-[20px] p-4">
+      <p className="text-gray-500 text-lg text-center">Be the first to post!</p>
+    </div>
+    )
   }
   return (
-    <div>
+    <div className="min-h-screen">
       <div>
         {allTweet &&
           allTweet.length !== 0 &&

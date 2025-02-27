@@ -13,6 +13,7 @@ import { MdDelete, MdEditDocument } from "react-icons/md";
 import { PiSpeakerSimpleSlash } from "react-icons/pi";
 import PostContainer from "./postContainer";
 import DeletePostContainer from "./DeletePostContainer";
+import PortalContainerWrapper from "./PortalContainerWrapper";
 
 const PostActivity = ({
   setPostControlDialogOpen,
@@ -28,21 +29,17 @@ const PostActivity = ({
 }) => {
   const postRef = useRef<HTMLDivElement>(null);
   const { user } = useCurrentUser();
-  console.log(singleTweet, "single tweet twer");
   const [isUserPost, setIsUserPost] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
   const [editPost, setEditPost] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
-
   const [isContainerOpen, setIsContainerOpen] = useState(false);
 
   useEffect(() => {
     if (!user || !singleTweet) {
       return;
     }
-    console.log(user.id);
-    console.log(singleTweet.author.id);
 
     if (user.id === singleTweet.author.id) {
       setIsUserPost(true);
@@ -50,6 +47,7 @@ const PostActivity = ({
       setIsUserPost(false);
     }
   }, [singleTweet.id, user]);
+
   useEffect(() => {
     const handlePostDialog = (event: MouseEvent) => {
       if (postRef.current && !postRef.current.contains(event.target as Node)) {
@@ -62,89 +60,97 @@ const PostActivity = ({
       document.removeEventListener("mousedown", handlePostDialog);
     };
   }, [setPostControlDialogOpen]);
+
   return (
-    <div
-      ref={postRef}
-      style={{
-        boxShadow: !isDrawer ? "0 0 6px rgba(255, 255, 255, 0.6)" : "",
-      }}
-      className={` ${
-        !isDrawer ? "absolute w-[350px]" : "w-full"
-      } text-white p-4 py-8 right-0 top-0 z-[100]  h-auto bg-black rounded-[15px]`}
-    >
-      <div className="flex flex-col gap-6">
-        {isUserPost ? (
-          <div className=" flex flex-col gap-6">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setDeleteDialog(true);
-              }}
-              className="flex gap-3 items-center font-[600] text-red-500"
-            >
-              <MdDelete className="font-[600] text-[20px]" />
-              Delete
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setEditPost(true);
-                setIsContainerOpen(true);
-              }}
-              className="flex gap-3 items-center font-[600]"
-            >
-              <MdEditDocument className="font-[600] text-[17px]" />
-              Edit
-            </button>
-          </div>
-        ) : (
-          <div className=" flex flex-col gap-6">
-            <button className="flex gap-3 items-center font-[600]">
-              <BsEmojiFrown className="font-[600] text-[17px]" />
-              Not interested in this post
-            </button>
-            <button className="flex gap-3 items-center font-[600]">
-              {" "}
-              <FiUserX className="font-[600] text-[17px]" />
-              Unfollow @{singleTweet?.author.userName}
-            </button>
-            <button className="flex gap-3 items-center font-[600]">
-              <PiSpeakerSimpleSlash className="font-[600] text-[17px]" />
-              Mute @{singleTweet?.author.userName}
-            </button>
-          </div>
+    <>
+      <div
+        ref={postRef}
+        style={{
+          boxShadow: !isDrawer ? "0 0 6px rgba(255, 255, 255, 0.6)" : "",
+        }}
+        className={`${
+          !isDrawer ? "absolute w-[350px]" : "w-full"
+        } text-white p-4 py-8 right-0 top-0 z-[100] h-screen  bg-black rounded-[15px]`}
+      >
+        <div className="flex flex-col gap-6">
+          {isUserPost ? (
+            <div className="flex flex-col gap-6">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPostControlDialogOpen(false); // Close the post control dialog first
+                  setTimeout(() => {
+                    // Then open the delete dialog with a small delay
+                    setDeleteDialog(true);
+                    setIsContainerOpen(true);
+                  }, 300); // Small delay to ensure close happens first
+                }}
+                className="flex gap-3 items-center font-[600] text-red-500"
+              >
+                <MdDelete className="font-[600] text-[20px]" />
+                Delete
+              </button>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditPost(true);
+                  setIsContainerOpen(true);
+                }}
+                className="flex gap-3 items-center font-[600]"
+              >
+                <MdEditDocument className="font-[600] text-[17px]" />
+                Edit
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-6">
+              <button className="flex gap-3 items-center font-[600]">
+                <BsEmojiFrown className="font-[600] text-[17px]" />
+                Not interested in this post
+              </button>
+              <button className="flex gap-3 items-center font-[600]">
+                <FiUserX className="font-[600] text-[17px]" />
+                Unfollow @{singleTweet?.author.userName}
+              </button>
+              <button className="flex gap-3 items-center font-[600]">
+                <PiSpeakerSimpleSlash className="font-[600] text-[17px]" />
+                Mute @{singleTweet?.author.userName}
+              </button>
+            </div>
+          )}
+          <button
+            onClick={() =>
+              router.push(
+                `/${singleTweet?.author.userName}/status/${singleTweet?.id}`
+              )
+            }
+            className="flex gap-3 items-center font-[600]"
+          >
+            <IoIosStats className="font-[600] text-[17px]" />
+            View post engagements
+          </button>
+        </div>
+        {editPost && isContainerOpen && (
+          <PostContainer
+            ref={postRef}
+            setPostControlDialogOpen={setPostControlDialogOpen}
+            isEdit={editPost}
+            editTweet={singleTweet}
+            isContainerOpen={isContainerOpen}
+            setIsContainerOpen={setIsContainerOpen}
+          />
         )}
-        <button
-          onClick={() =>
-            router.push(
-              `/${singleTweet?.author.userName}/status/${singleTweet?.id}`
-            )
-          }
-          className="flex gap-3 items-center font-[600]"
-        >
-          <IoIosStats className="font-[600] text-[17px]" />
-          View post engagements
-        </button>
+        {deleteDialog && isContainerOpen && (
+          <DeletePostContainer
+            postId={singleTweet.id}
+            isComment={isComment}
+            setDeleteDialog={setDeleteDialog}
+            setPostControlDialogOpen={setPostControlDialogOpen}
+          />
+        )}
       </div>
-      {editPost && isContainerOpen && (
-        <PostContainer
-          ref={postRef}
-          setPostControlDialogOpen={setPostControlDialogOpen}
-          isEdit={editPost}
-          editTweet={singleTweet}
-          isContainerOpen={isContainerOpen}
-          setIsContainerOpen={setIsContainerOpen}
-        />
-      )}
-      {deleteDialog && (
-        <DeletePostContainer
-          postId={singleTweet.id}
-          isComment={isComment}
-          setDeleteDialog={setDeleteDialog}
-          setPostControlDialogOpen={setPostControlDialogOpen}
-        />
-      )}
-    </div>
+    </>
   );
 };
 

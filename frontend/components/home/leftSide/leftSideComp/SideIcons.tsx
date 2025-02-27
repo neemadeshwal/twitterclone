@@ -49,7 +49,7 @@ const SideIcons = ({ currentUser,position }: { currentUser: getCurrentUser | nul
             key={item.title + index}
             href={
               item.title === "profile"
-                ? `/@${currentUser?.userName}`
+                ? `/${currentUser?.userName}`
                 : item.activePathname
             }
           >

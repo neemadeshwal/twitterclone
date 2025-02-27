@@ -5,13 +5,20 @@ import Loading from "@/shared/loading";
 
 const RecommendedUser = ({ userList,isBio }: { userList: any,isBio?:boolean }) => {
 
-  if(!userList||userList.length==0){
+  if(!userList){
     return(
       <div className="rounded-[20px] border border-gray-700 p-4">
       
       <div className="flex items-center justify-center py-2">
         <Loading/>
       </div>
+      </div>
+    )
+  }
+  if(userList&&!userList.length){
+    return (
+      <div className="rounded-[20px] border p-4">
+        <p className="text-gray-500 text-sm">No Users yet</p>
       </div>
     )
   }

@@ -14,6 +14,7 @@ import { LuDot, LuFolderClock } from "react-icons/lu";
 import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
 import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
+import { useToast } from "@/hooks/use-toast";
 
 const CommentComponent = ({
   tweet,
@@ -26,9 +27,13 @@ const CommentComponent = ({
 }) => {
   const [showDialogBox, setShowDialogBox] = useState(false);
   const [tweetComment, setTweetComment] = useState("");
+  const { toast } = useToast();
 
   const { createComment, replyOnComment } = useCommentMutation({});
 
+  // const handleViewComment=()=>{
+  //   router.push()
+  // }
   const handleReplyOnComment = async () => {
     const body = {
       content: tweetComment,
@@ -37,6 +42,11 @@ const CommentComponent = ({
     };
     try {
       await replyOnComment(body);
+      toast({
+        description: "Your post is sent.View",
+        className:
+          "bg-black border  rounded-lg bottom-0 bottom-0 sm:bottom-0 md:bottom-0 text-white shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+      });
       setShowDialogBox(false);
       setTweetComment("");
     } catch (error) {
@@ -53,6 +63,24 @@ const CommentComponent = ({
 
     try {
       await createComment(body);
+      toast({
+        description: (
+          <div className="flex items-center justify-between w-full">
+            <span>Your post is sent.</span>
+            <a
+              href="/explore" // Replace with your actual post view URL
+              className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+              }}
+            >
+              View
+            </a>
+          </div>
+        ),
+        className:
+          "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+      });
       setShowDialogBox(false);
       setTweetComment("");
     } catch (error) {
