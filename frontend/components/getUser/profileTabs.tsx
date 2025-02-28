@@ -9,7 +9,7 @@ const ProfileTabs = ({ activeTab, onTabChange }: ProfileTabsProps) => {
   const tabs: TabType[] = ['post', 'replies', 'articles', 'media', 'likes'];
   
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center overflow-x-auto justify-between">
       {tabs.map((tab) => (
         <div
           key={tab}

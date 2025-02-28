@@ -161,7 +161,7 @@ const SearchBar = ({}) => {
       )}
 
       <div className="backdrop-blur-md pt-1 bg-[#000000b0]">
-        <div className={`${(pathname === "/explore" || pathname == "/search")  &&"px-12"} relative`}>
+        <div className={`${(pathname.startsWith("/explore") || pathname.startsWith("/search")) ? "px-12" : ""} relative`}>
           <SearchInput
             query={query}
             setQuery={setQuery}

@@ -31,7 +31,7 @@ const PostDetailLayoutWrapper = ({
           {children}
         </main>
 
-        <div className="hidden lg:block">
+        <div className="hidden sm:block">
           <DivisionBar type="y" />
         </div>
 

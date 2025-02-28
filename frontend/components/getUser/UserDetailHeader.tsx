@@ -4,7 +4,7 @@ import React from 'react'
 
 const UserDetailHeader = ({user}:{user:authorType}) => {
   return (
-    <div className="sticky top-0 z-50 backdrop-blur-sm py-1 px-0 sm:px-4 bg-black/60">
+    <div className="sticky top-0 z-50 backdrop-blur-sm py-1 px-2 sm:px-4 bg-black/60">
         <div className="flex gap-9 items-center ">
           <div>
             <Icons.ArrowLeft />

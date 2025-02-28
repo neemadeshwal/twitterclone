@@ -21,10 +21,10 @@ const SingleTweetHighlight = ({ tweet }: { tweet: Tweet}) => {
           })}</div>
           <div className="flex gap-1 gray text-[14px] items-center">
            <div className="flex -space-x-[0.9rem]">
-            {tweet.LikedBy.length!==0&&tweet.LikedBy.map((item:any,index:number)=>{
+            {tweet.likedBy.length!==0&&tweet.likedBy.map((item:any,index:number)=>{
              return(
                 <div className=" ring-2 ring-black rounded-full  scale-75" key={item.id}  style={{
-                  zIndex: tweet.LikedBy.length - index
+                  zIndex: tweet.likedBy.length - index
                 }}>
                   <AuthorProfile isSmall={true} author={item.user}/>
                  
@@ -38,7 +38,7 @@ const SingleTweetHighlight = ({ tweet }: { tweet: Tweet}) => {
            {formatTimeAgo(getDateTime(tweet?.createdAt))} ago
             </p>
             <Icons.Dot/>
-            <p>{tweet.LikedBy.length} likes</p>
+            <p>{tweet.likedBy.length} likes</p>
           </div>
         </div>
         <div>

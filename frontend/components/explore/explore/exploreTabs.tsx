@@ -20,15 +20,15 @@ const ExploreTabs = () => {
   const pathname = usePathname();
   return (
     <div>
-      <div className="flex items-center w-full">
+      <div className="flex items-center overflow-x-auto  w-full">
         {EXPLORETABS.map(({ id, label }) => {
           return (
             <Link
               href={`/explore/tabs${id}`}
               key={id}
-              className="relative w-1/3"
+              className="relative min-w-[100px]  w-1/3"
             >
-              <button className="py-4 px-4 w-full hover:bg-[#1d1d1dbb]">
+              <button className="  min-w-[100px] py-4 px-4 w-full hover:bg-[#1d1d1dbb]">
                 {label}
               </button>
               {(pathname === `/explore/tabs${id}` ||

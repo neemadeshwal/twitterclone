@@ -55,7 +55,7 @@ const TrendingTab = async() => {
             <div>
             <span className="text-[14px] text-gray-500">Popular Tweet</span>
             <p className="font-medium my-1 line-clamp-2">{item?.content}</p>
-            <span className="text-[14px] text-gray-500">{item?.LikedBy?.length} likes</span>
+            <span className="text-[14px] text-gray-500">{item?.likedBy?.length} likes</span>
             </div>
             <div className="p-2 hover:bg-[#80808030] rounded-full cursor-pointer h-fit gray hover:text-white"><Icons.HorizontalDots/></div>
 

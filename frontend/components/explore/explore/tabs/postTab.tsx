@@ -20,7 +20,7 @@ const PostTab = async () => {
   }
 
   const tweetList = allTweet.sort(
-    (a, b) => b.LikedBy.length - a.LikedBy.length
+    (a, b) => b.likedBy.length - a.likedBy.length
   );
 
   return (

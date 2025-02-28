@@ -14,7 +14,7 @@ const RightSidebar = () => {
   return (
     <div className="">
       <div className="px-6">
-      {(pathname !== "/explore" && pathname !== "/search") &&
+      {(!pathname.startsWith("/explore")&& !pathname.startsWith("/search")) &&
        <SearchInput/>}
         <div className="h-[200vh] text-[15px] flex flex-col gap-4 py-6">
         {pathname!=="/explore"&&<TrendingTopics />}
