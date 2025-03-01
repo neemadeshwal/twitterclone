@@ -1,4 +1,4 @@
-import { authorType } from "@/graphql/types";
+import { authorType, HashTag } from "@/graphql/types";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -13,7 +13,7 @@ const PostContent = ({
   showMedia,
 }: {
   content: string;
-  hashtags: any;
+  hashtags: HashTag[];
   mediaArray: string[];
   author: authorType;
   tweetId: string;
@@ -34,7 +34,7 @@ const PostContent = ({
 
         {hashtags && hashtags?.length !== 0 && (
           <div className="mt-2">
-            {hashtags?.map((item: any) => (
+            {hashtags?.map((item) => (
               <span key={item.id} className="x-textcolor">
                 {item.text}{" "}
               </span>

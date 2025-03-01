@@ -1,11 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-import { useGetSingleTweet } from "@/hooks/tweet";
 import { usePathname } from "next/navigation";
 import { authorType } from "@/graphql/types";
 import Loading from "@/shared/loading";
-import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 import PostHeader from "@/shared/PostDetail/PostHeader";
 import PostAuthorInfo from "@/shared/PostDetail/PostAuthorInfo";
 import PostMainContent from "@/shared/PostDetail/PostMainContent";

@@ -22,12 +22,12 @@ const SEARCHTABS = [
   { id: "media", label: "Media" },
 ];
 
-export interface SearchResultProps{
-  people:authorType[];
-  post:Tweet[];
-  hashtag:HashTag[];
-  media:Tweet[];
-  latest:Tweet[];
+export interface SearchResultProps {
+  people: authorType[];
+  post: Tweet[];
+  hashtag: HashTag[];
+  media: Tweet[];
+  latest: Tweet[];
 }
 
 const SearchTabs = () => {
@@ -52,7 +52,7 @@ const SearchTabs = () => {
       router.replace("/explore");
       return;
     }
-  }, []);
+  }, [query, router]);
 
   useEffect(() => {
     if (query) {
@@ -60,7 +60,7 @@ const SearchTabs = () => {
     }
   }, [allSearchResult, query, router]);
 
-  console.log(allSearchResult,"allsearch")
+  console.log(allSearchResult, "allsearch");
 
   const currentTab = searchParams.get("tab");
 

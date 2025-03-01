@@ -91,7 +91,7 @@ export const getAllTrendingData = async (): Promise<getAllTrending | null> => {
     const data = await client.request<getAllTrendingProps>(getAllTrendingQuery);
     return data.getAllTrending;
   } catch (error) {
-    console.log("an error occured");
+    console.log("an error occured", error);
     return null;
   }
 };
@@ -113,7 +113,7 @@ export const getAllHashTagData = async (): Promise<HashTag[] | null> => {
     const data = await client.request<getAllHashTagsProps>(allHashTagQuery);
     return data.getAllHashTags;
   } catch (error) {
-    console.log("an error occured");
+    console.log("an error occured", error);
     return null;
   }
 };
@@ -124,7 +124,7 @@ export const getAllPostData = async (): Promise<Tweet[] | null> => {
     const data = await client.request<GetAllTweetProps>(getAllTweetQuery);
     return data.getAllTweet;
   } catch (error) {
-    console.log("an error occured");
+    console.log("an error occured", error);
     return null;
   }
 };

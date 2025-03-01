@@ -2,6 +2,7 @@ import SinglePost from "@/components/post/SinglePost/singlePost";
 import Loading from "@/shared/loading";
 import ScrollTop from "@/shared/ScrollTop";
 import { SearchResultProps } from "../searchTabs";
+import { Tweet } from "@/graphql/types";
 
 const PostTab = ({
   searchResult,
@@ -36,10 +37,9 @@ const PostTab = ({
     <div>
       <ScrollTop />
       <div>
-        {
-          tweetList.map((tweet: any) => (
-            <SinglePost tweet={tweet} key={tweet.id} />
-          ))}
+        {tweetList.map((tweet: Tweet) => (
+          <SinglePost tweet={tweet} key={tweet.id} />
+        ))}
       </div>
     </div>
   );

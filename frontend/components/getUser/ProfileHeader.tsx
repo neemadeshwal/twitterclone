@@ -1,6 +1,5 @@
 import { authorType } from "@/graphql/types";
 import Image from "next/image";
-import { MdLocationPin, MdOutlineCalendarMonth } from "react-icons/md";
 
 type ProfileHeaderProps = {
   user: authorType;
@@ -52,11 +51,11 @@ const ProfileHeader = ({ user, onEditProfile }: ProfileHeaderProps) => {
       ) : (
         <div className="bg-[#3a3a3acd] w-full h-[170px]" />
       )}
-      
+
       <div className="absolute bottom-[-10px] left-4">
         <ProfileImage />
       </div>
-      
+
       <div className="flex justify-end w-full py-3 px-4">
         <button
           onClick={onEditProfile}
@@ -69,4 +68,4 @@ const ProfileHeader = ({ user, onEditProfile }: ProfileHeaderProps) => {
   );
 };
 
-export default ProfileHeader
+export default ProfileHeader;

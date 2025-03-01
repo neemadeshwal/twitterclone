@@ -1,19 +1,27 @@
-import SinglePost from '@/components/post/SinglePost/singlePost'
-import Loading from '@/shared/loading';
-import ScrollTop from '@/shared/ScrollTop';
-import { SearchResultProps } from '../searchTabs';
+import SinglePost from "@/components/post/SinglePost/singlePost";
+import Loading from "@/shared/loading";
+import ScrollTop from "@/shared/ScrollTop";
+import { SearchResultProps } from "../searchTabs";
+import { Tweet } from "@/graphql/types";
 
-const Latest = ({searchResult,query,isLoading}:{searchResult:SearchResultProps,query:string,isLoading:boolean}) => {
-  
-  if (isLoading||!searchResult) {
+const Latest = ({
+  searchResult,
+  query,
+  isLoading,
+}: {
+  searchResult: SearchResultProps;
+  query: string;
+  isLoading: boolean;
+}) => {
+  if (isLoading || !searchResult) {
     return (
       <div className="flex justify-center py-4">
-        <Loading/>
+        <Loading />
       </div>
     );
   }
-  
-  if (searchResult&&searchResult?.latest && !searchResult.latest.length) {
+
+  if (searchResult && searchResult?.latest && !searchResult.latest.length) {
     return (
       <div className="py-10 flex flex-col justify-center items-center">
         <h3 className="text-lg font-bold mb-4">No results for {query}</h3>
@@ -24,17 +32,18 @@ const Latest = ({searchResult,query,isLoading}:{searchResult:SearchResultProps,q
     );
   }
 
-  const tweetList=searchResult.latest
+  const tweetList = searchResult.latest;
   return (
     <div>
-  <ScrollTop/>
+      <ScrollTop />
 
-    <div>
-      {
-        tweetList.map((tweet:any) => <SinglePost tweet={tweet} key={tweet.id} />)}
+      <div>
+        {tweetList.map((tweet: Tweet) => (
+          <SinglePost tweet={tweet} key={tweet.id} />
+        ))}
+      </div>
     </div>
-  </div>
-  )
-}
+  );
+};
 
-export default Latest
+export default Latest;

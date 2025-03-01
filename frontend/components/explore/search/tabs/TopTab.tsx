@@ -4,10 +4,18 @@ import DivisionBar from "@/shared/divisionbar";
 import Loading from "@/shared/loading";
 import ScrollTop from "@/shared/ScrollTop";
 import { SearchResultProps } from "../searchTabs";
+import { authorType, HashTag, Tweet } from "@/graphql/types";
 
-const TopTab = ({ searchResult,query,isLoading }:{searchResult:SearchResultProps,query:string,isLoading:boolean}) => {
-
-  if (isLoading||!searchResult) {
+const TopTab = ({
+  searchResult,
+  query,
+  isLoading,
+}: {
+  searchResult: SearchResultProps;
+  query: string;
+  isLoading: boolean;
+}) => {
+  if (isLoading || !searchResult) {
     return (
       <div className="flex justify-center py-4">
         <Loading />
@@ -31,70 +39,63 @@ const TopTab = ({ searchResult,query,isLoading }:{searchResult:SearchResultProps
   }
   return (
     <div className="py-4 ">
-      <ScrollTop/>
+      <ScrollTop />
       <div className="">
-        {searchResult &&
-          searchResult.people.length !== 0 && (
-            <div className="">
-              <div className="py-6 pt-0 px-6">
-                <h3 className="text-[20px] font-[800]">People</h3>
-              </div>
-              <div className="flex flex-col gap-6 px-4">
-                {searchResult.people.slice(0, 4).map((item: any) => {
+        {searchResult && searchResult.people.length !== 0 && (
+          <div className="">
+            <div className="py-6 pt-0 px-6">
+              <h3 className="text-[20px] font-[800]">People</h3>
+            </div>
+            <div className="flex flex-col gap-6 px-4">
+              {searchResult.people.slice(0, 4).map((item: authorType) => {
+                return (
+                  <SingleFollowUser
+                    filterArray={false}
+                    key={item.id}
+                    singleUser={item}
+                  />
+                );
+              })}
+            </div>
+            {searchResult.people.length > 4 && <div className="">See all</div>}
+            <div className="py-6">
+              <DivisionBar type="x" />
+            </div>
+          </div>
+        )}
+        <div className="">
+          {searchResult && searchResult.hashtag.length !== 0 && (
+            <div>
+              {searchResult.hashtag
+                .slice(0, 4)
+                .map((item: HashTag, index: number) => {
                   return (
-                    <SingleFollowUser
-                      filterArray={false}
-                      key={item.id}
-                      singleUser={item}
-                    />
+                    <div
+                      className=""
+                      key={index + "hashtage" + "index" + index}
+                    >
+                      {item.tweets &&
+                        item.tweets.length !== 0 &&
+                        item.tweets.map((tweet: Tweet) => {
+                          return <SinglePost tweet={tweet} key={tweet.id} />;
+                        })}
+                    </div>
                   );
                 })}
-              </div>
-              {searchResult.people.length > 4 && (
+              {searchResult.hashtag.length > 4 && (
                 <div className="">See all</div>
               )}
-              <div className="py-6">
-                <DivisionBar type="x" />
-              </div>
             </div>
           )}
-        <div className="">
-          {searchResult &&
-            searchResult.hashtag.length !== 0 && (
-              <div>
-                {searchResult.hashtag
-                  .slice(0, 4)
-                  .map((item: any, index: number) => {
-                    return (
-                      <div
-                        className=""
-                        key={index + "hashtage" + "index" + index}
-                      >
-                        {item.tweets &&
-                          item.tweets.length !== 0 &&
-                          item.tweets.map((tweet: any) => {
-                            return <SinglePost tweet={tweet} key={tweet.id} />;
-                          })}
-                      </div>
-                    );
-                  })}
-                {searchResult.hashtag.length > 4 && (
-                  <div className="">See all</div>
-                )}
-               
-              </div>
-            )}
         </div>
         <div>
-          {searchResult &&
-            searchResult.post.length !== 0 && (
-              <div>
-                {searchResult.post.slice(0, 4).map((tweet: any) => {
-                  return <SinglePost tweet={tweet} key={tweet.id} />;
-                })}
-                
-              </div>
-            )}
+          {searchResult && searchResult.post.length !== 0 && (
+            <div>
+              {searchResult.post.slice(0, 4).map((tweet: Tweet) => {
+                return <SinglePost tweet={tweet} key={tweet.id} />;
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

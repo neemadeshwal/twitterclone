@@ -1,13 +1,11 @@
 "use client";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { BiX } from "react-icons/bi";
-import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useCurrentUser } from "@/hooks/user";
 
 import PostInteractions from "@/shared/PostDetail/PostInteractions";
 import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 import Photos from "./Photos";
+import { Comment, Like, Repost, Tweet } from "@/graphql/types";
 
 const TweetPhotos = ({
   photoNum,
@@ -15,7 +13,13 @@ const TweetPhotos = ({
   setShowFullPhoto,
   showFullPhoto,
   currentUrl,
-}: any) => {
+}: {
+  photoNum: string;
+  tweet: Tweet | Comment | undefined;
+  setShowFullPhoto: Dispatch<SetStateAction<boolean>>;
+  showFullPhoto: boolean;
+  currentUrl: string;
+}) => {
   const [liked, setLiked] = useState(false);
   const [repost, setRepost] = useState(false);
 
@@ -52,11 +56,11 @@ const TweetPhotos = ({
   }
   useEffect(() => {
     if (tweet?.likedBy && user) {
-      setLiked(tweet.likedBy.some((like: any) => like.userId === user.id));
+      setLiked(tweet.likedBy.some((like: Like) => like.userId === user.id));
     }
     if (tweet?.repostTweet && user) {
       setRepost(
-        tweet.repostTweet.some((repost: any) => repost.userId === user.id)
+        tweet.repostTweet.some((repost: Repost) => repost.userId === user.id)
       );
     }
   }, [tweet, user]);

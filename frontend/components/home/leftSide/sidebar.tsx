@@ -40,4 +40,7 @@ const Sidebar = React.memo(
   }
 );
 
+// Add display name
+Sidebar.displayName = "Sidebar";
+
 export default Sidebar;

@@ -1,9 +1,14 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+// Either use type alias instead of interface since we're not adding properties
+type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
+
+// Alternatively, if you want to keep the interface for future extensibility:
+// export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+//   // You could add custom props here in the future
+// }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
@@ -17,9 +22,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         {...props}
       />
-    )
+    );
   }
-)
-Input.displayName = "Input"
+);
+Input.displayName = "Input";
 
-export { Input }
+export { Input };

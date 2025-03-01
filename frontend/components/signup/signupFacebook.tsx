@@ -1,6 +1,5 @@
 import React from "react";
 import { FaFacebook } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
 
 const SignupFacebook = ({ signupType }: { signupType: "login" | "signup" }) => {
   return (

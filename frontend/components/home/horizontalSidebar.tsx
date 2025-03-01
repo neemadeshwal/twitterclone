@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import SideIcons, { sidebarIcons } from "./leftSide/leftSideComp/SideIcons";
+import SideIcons from "./leftSide/leftSideComp/SideIcons";
 import { getCurrentUser } from "@/graphql/types";
 
 const HorizontalSidebar = ({
@@ -12,7 +12,7 @@ const HorizontalSidebar = ({
   const [scrollDirection, setScrollDirection] = useState("");
 
   useEffect(() => {
-    let debounceTimer: any;
+    let debounceTimer: NodeJS.Timeout;
     const handleScroll = () => {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {

@@ -1,12 +1,8 @@
 "use client";
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { BiX } from "react-icons/bi";
-import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
 import { useCurrentUser } from "@/hooks/user";
 
 import PostInteractions from "@/shared/PostDetail/PostInteractions";
-import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 import Photos from "./Photos";
 import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
 
@@ -16,44 +12,42 @@ const CommentPhotos = ({
   setShowFullPhoto,
   showFullPhoto,
   currentUrl,
-  isComment
+  isComment,
 }: any) => {
- 
-
   const [liked, setLiked] = useState(false);
   const [repost, setRepost] = useState(false);
 
   const { user } = useCurrentUser();
 
-    const { likeComment, repostComment } = useCommentMutation({});
-  
-    async function handleRepostTweet() {
-      if (!tweet || !tweet.id) {
-        return;
-      }
-      const body = {
-        commentId: tweet.id,
-      };
-      try {
-        await repostComment(body);
-      } catch (error) {
-        console.log(error);
-      }
+  const { likeComment, repostComment } = useCommentMutation({});
+
+  async function handleRepostTweet() {
+    if (!tweet || !tweet.id) {
+      return;
     }
-    async function handleTweetLike() {
-      setLiked((prevVal) => !prevVal);
-      if (!tweet?.id) {
-        return;
-      }
-      const body = {
-        commentId: tweet.id,
-      };
-      try {
-        await likeComment(body);
-      } catch (error) {
-        console.log(error);
-      }
+    const body = {
+      commentId: tweet.id,
+    };
+    try {
+      await repostComment(body);
+    } catch (error) {
+      console.log(error);
     }
+  }
+  async function handleTweetLike() {
+    setLiked((prevVal) => !prevVal);
+    if (!tweet?.id) {
+      return;
+    }
+    const body = {
+      commentId: tweet.id,
+    };
+    try {
+      await likeComment(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useEffect(() => {
     if (tweet?.likedBy && user) {
       setLiked(tweet.likedBy.some((like: any) => like.userId === user.id));
@@ -65,25 +59,22 @@ const CommentPhotos = ({
     }
   }, [tweet, user]);
 
-  
-
-
   return (
     <div
       className={`${
         showFullPhoto ? "w-[100%]" : "w-[64%]"
       } overflow-hidden flex justify-center items-start relative`}
     >
-        <Photos
+      <Photos
         currentUrl={currentUrl}
         photoNum={photoNum}
         showFullPhoto={showFullPhoto}
         setShowFullPhoto={setShowFullPhoto}
         tweet={tweet}
-        />
-     
+      />
+
       <div className="fixed w-[60%] bottom-0">
-      <PostInteractions
+        <PostInteractions
           tweet={tweet}
           liked={liked}
           repost={repost}

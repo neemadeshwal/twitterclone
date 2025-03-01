@@ -1,13 +1,11 @@
 "use client";
-import { createComment, replyOnComment } from "@/graphql/mutation/comment";
-import { Comment, getCurrentUser, Tweet } from "@/graphql/types";
+import { replyOnCommentMutate } from "@/graphql/mutation/comment";
+import { Comment, getCurrentUser } from "@/graphql/types";
 import { useGetCommentById } from "@/hooks/comment";
-import { getRandomDarkHexColor } from "@/lib/randomColor";
 import CurrentUser from "@/shared/currentUser";
-import DivisionBar from "@/shared/divisionbar";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BiX } from "react-icons/bi";
 import { BsChat, BsEmojiSmile } from "react-icons/bs";
 import { FiMapPin } from "react-icons/fi";
@@ -29,7 +27,7 @@ const ReplyComment = ({
   const queryClient = useQueryClient();
   const { singleComment: comment } = useGetCommentById(singleComment.id);
   const mutation = useMutation({
-    mutationFn: replyOnComment,
+    mutationFn: replyOnCommentMutate,
     onSuccess: (response: any) => {
       console.log(response);
       setTweetComment("");
@@ -49,7 +47,7 @@ const ReplyComment = ({
       return;
     }
     const body = {
-      comment: tweetComment,
+      content: tweetComment,
       commentId: comment.id,
       mediaArray: [],
     };
@@ -81,20 +79,20 @@ const ReplyComment = ({
             </div>
             <div className="flex w-fit items-center flex-col gap-1 h-full justify-center  ">
               <div className="min-h-[100px] h-full flex items-center  flex-col gap-2">
-                {comment?.user?.profileImgUrl ? (
+                {comment?.author?.profileImgUrl ? (
                   <div>
-                    {comment?.user?.profileImgUrl.startsWith("#") ? (
+                    {comment?.author?.profileImgUrl.startsWith("#") ? (
                       <div
                         className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
                         style={{
-                          backgroundColor: comment?.user?.profileImgUrl,
+                          backgroundColor: comment?.author?.profileImgUrl,
                         }}
                       >
-                        {comment?.user?.firstName.slice(0, 1)}
+                        {comment?.author?.firstName.slice(0, 1)}
                       </div>
                     ) : (
                       <Image
-                        src={comment?.user?.profileImgUrl}
+                        src={comment?.author?.profileImgUrl}
                         alt=""
                         width={40}
                         height={40}
@@ -104,32 +102,34 @@ const ReplyComment = ({
                   </div>
                 ) : (
                   <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
-                    {comment?.user?.firstName.slice(0, 1)}
+                    {comment?.author?.firstName.slice(0, 1)}
                   </div>
                 )}
                 <div className="w-1 h-full bg-[#2c2c2cb2] min:h-[100px]"></div>
               </div>
               <div className="py-3 pt-5">
-                <CurrentUser />
+                <CurrentUser user={user} />
               </div>
             </div>
             <div className="w-full">
               <div>
                 <div className="flex gap-1 items-center mt-1">
                   <p className="capitalize font-[600] text-[17px] ">
-                    {comment?.user?.firstName} {comment?.user?.lastName}
+                    {comment?.author?.firstName} {comment?.author?.lastName}
                   </p>
-                  <p className="gray font-[300]">@{comment?.user?.userName}</p>
+                  <p className="gray font-[300]">
+                    @{comment?.author?.userName}
+                  </p>
                   <p>
                     <LuDot className="gray font-[300]" />
                   </p>
                   <p className="gray font-[300]">5h</p>
                 </div>
-                <div className="py-3">{comment?.comment}</div>
+                <div className="py-3">{comment?.content}</div>
                 <div className="gray font-[500] text-[13px] py-1">
                   Replying to{" "}
                   <p className="x-textcolor inline">
-                    @{comment?.user?.userName}
+                    @{comment?.author?.userName}
                   </p>
                 </div>
               </div>

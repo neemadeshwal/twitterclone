@@ -60,7 +60,6 @@ export interface createTweetMutateProps {
   mediaArray: string[];
 }
 
-
 export interface Tweet {
   id: string;
   content: string;
@@ -79,7 +78,7 @@ export interface Tweet {
 export interface HashTag {
   id: string;
   text: string;
-  tweets:Tweet[]
+  tweets: Tweet[];
 }
 
 interface getAllTweet {
@@ -96,22 +95,22 @@ export interface getAllHashTagsProps {
   getAllHashTags: HashTag[];
 }
 
-export interface getAllTrending{
-  trendingHashtag:HashTag[];
-  trendingTweet:Tweet[];
-  trendingUser:getCurrentUser[];
+export interface getAllTrending {
+  trendingHashtag: HashTag[];
+  trendingTweet: Tweet[];
+  trendingUser: getCurrentUser[];
 }
 
-export interface getAllTrendingProps{
-  getAllTrending:getAllTrending
+export interface getAllTrendingProps {
+  getAllTrending: getAllTrending;
 }
-export interface getForYouProps{
-  getForYou:getForYou
+export interface getForYouProps {
+  getForYou: getForYou;
 }
-export interface getForYou{
-  forYouHashtag:HashTag[];
-  forYouTweet:Tweet[];
-  forYouUser:getCurrentUser[];
+export interface getForYou {
+  forYouHashtag: HashTag[];
+  forYouTweet: Tweet[];
+  forYouUser: getCurrentUser[];
 }
 
 export interface Bookmarks {
@@ -120,8 +119,8 @@ export interface Bookmarks {
   tweetId: string;
   commentId: string;
   user: getCurrentUser[];
-  tweet: Tweet[];
-  comment: Comment[];
+  tweet: Tweet;
+  comment: Comment;
 }
 
 export interface getAllBookmarksProps {
@@ -133,9 +132,8 @@ export interface Like {
   tweetId: string;
   user: getCurrentUser;
   tweet: Tweet;
-  commentId:string;
-  comment:Comment;
-
+  commentId: string;
+  comment: Comment;
 }
 
 export interface toggleLikeTweetProps {
@@ -162,9 +160,9 @@ export interface Comment {
   parentId: string;
   parent: Comment;
   repostComment: Repost[];
-  hashtags:HashTag[]
-  createdAt:string;
-  savedPost:Comment[]
+  hashtags: HashTag[];
+  createdAt: string;
+  savedPost: Comment[];
 }
 
 export interface getUserByUserNameProps {
@@ -179,18 +177,17 @@ export interface getAllUsersQueryProps {
   getAllUsers: getCurrentUser[];
 }
 
-
 export interface follow {
   followingId: string;
   followerId: string;
-  follower:{
-    firstName:string;
-    lastName:string
-  }
-  following:{
-    firstName:string;
-    lastName:string;
-  }
+  follower: {
+    firstName: string;
+    lastName: string;
+  };
+  following: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 export interface followUserProps {

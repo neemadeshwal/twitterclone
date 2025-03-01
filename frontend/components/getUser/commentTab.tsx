@@ -1,6 +1,4 @@
-import { Tweet } from "@/graphql/types";
 import React from "react";
-import SinglePost from "../post/SinglePost/singlePost";
 import SingleComment from "../postDetail/singleComment";
 import { Comment } from "@/graphql/types";
 

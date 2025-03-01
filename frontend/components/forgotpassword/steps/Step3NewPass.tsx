@@ -13,17 +13,10 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { days, months, years } from "@/lib/functions";
+
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { useMutation } from "@tanstack/react-query";
-import { createAccount, resetPassword } from "@/graphql/mutation/user";
+import { resetPassword } from "@/graphql/mutation/user";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
@@ -52,7 +45,7 @@ const Step3Password = ({ data, setGetData }: any) => {
   const mutation = useMutation({
     mutationFn: resetPassword,
     onSuccess: (response: any) => {
-      console.log(response,"new pass response")
+      console.log(response, "new pass response");
       const result = response.resetPassword;
       setGetData({
         next_page: result.next_page,

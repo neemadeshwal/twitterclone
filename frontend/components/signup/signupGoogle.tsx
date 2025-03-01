@@ -1,5 +1,4 @@
 "use client";
-import { SERVER_URL } from "@/lib/constants";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 

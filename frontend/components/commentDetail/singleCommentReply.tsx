@@ -1,28 +1,18 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
-import { BsChat } from "react-icons/bs";
-import { CiBookmark, CiHeart } from "react-icons/ci";
-import { FaDotCircle, FaHeart } from "react-icons/fa";
-import {
-  IoEllipseOutline,
-  IoEllipsisHorizontal,
-  IoShareOutline,
-} from "react-icons/io5";
-import { ImLoop } from "react-icons/im";
+import React, { useEffect, useState } from "react";
+import { CiHeart } from "react-icons/ci";
+import { FaHeart } from "react-icons/fa";
+import { IoEllipsisHorizontal, IoShareOutline } from "react-icons/io5";
 import { LuDot, LuRepeat2 } from "react-icons/lu";
 import DivisionBar from "@/shared/divisionbar";
 import Image from "next/image";
-import { useAllTweet } from "@/hooks/tweet";
 import { Comment as CommentType, Tweet } from "@/graphql/types";
 import { getRandomDarkHexColor } from "@/lib/randomColor";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toggleLikeComment, toggleLikeTweet } from "@/graphql/mutation/like";
-import { useCurrentUser } from "@/hooks/user";
+import { toggleLikeComment } from "@/graphql/mutation/like";
 import { useRouter } from "next/navigation";
 import ReplyComment from "@/components/postDetail/replyOnComment";
 import Link from "next/link";
-import SingleComment from "../postDetail/singleComment";
-import SavePost from "@/shared/savePost";
 import SaveComment from "@/shared/saveComment";
 
 const SingleCommentReply = ({
@@ -79,20 +69,20 @@ const SingleCommentReply = ({
     >
       <div className="flex gap-4 w-full px-2">
         <div>
-          {comment.user?.profileImgUrl ? (
+          {comment.author?.profileImgUrl ? (
             <div>
-              {comment.user?.profileImgUrl.startsWith("#") ? (
+              {comment.author?.profileImgUrl.startsWith("#") ? (
                 <div
                   style={{
-                    backgroundColor: comment.user?.profileImgUrl,
+                    backgroundColor: comment.author?.profileImgUrl,
                   }}
                   className="rounded-full w-10 h-10 flex items-center justify-center capitalize"
                 >
-                  {comment.user?.firstName.slice(0, 1)}
+                  {comment.author?.firstName.slice(0, 1)}
                 </div>
               ) : (
                 <Image
-                  src={comment.user?.profileImgUrl}
+                  src={comment.author?.profileImgUrl}
                   alt=""
                   width={40}
                   height={40}
@@ -102,7 +92,7 @@ const SingleCommentReply = ({
             </div>
           ) : (
             <div className="rounded-full w-10 h-10 bg-blue-900 flex items-center justify-center capitalize">
-              {comment?.user?.firstName.slice(0, 1)}
+              {comment?.author?.firstName.slice(0, 1)}
             </div>
           )}
         </div>
@@ -110,9 +100,9 @@ const SingleCommentReply = ({
           <div className="flex justify-between w-full ">
             <div className="flex gap-1 items-center">
               <p className="capitalize font-[600] text-[17px]">
-                {comment.user?.firstName}
+                {comment.author?.firstName}
               </p>
-              <p className="gray font-[300]">@{comment.user?.userName}</p>
+              <p className="gray font-[300]">@{comment.author?.userName}</p>
               <p>
                 <LuDot className="gray font-[300]" />
               </p>
@@ -122,8 +112,8 @@ const SingleCommentReply = ({
               <IoEllipsisHorizontal className="gray" />
             </div>
           </div>
-          <Link href={`/${comment?.user.userName}/comment/${comment.id}`}>
-            <div>{comment?.comment}</div>
+          <Link href={`/${comment?.author.userName}/comment/${comment.id}`}>
+            <div>{comment?.content}</div>
           </Link>
           {/* <div className="py-2">
             <Image

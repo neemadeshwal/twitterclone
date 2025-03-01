@@ -1,5 +1,4 @@
 import React from "react";
-import { BiX } from "react-icons/bi";
 import { BsTwitterX } from "react-icons/bs";
 import SignupGoogle from "./signupGoogle";
 import SignupFacebook from "./signupFacebook";

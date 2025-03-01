@@ -10,7 +10,7 @@ query getAllBookmarks{
 
         comment{
             id
-            comment
+            content
             mediaArray
             likes{
                 userId
@@ -39,7 +39,7 @@ query getAllBookmarks{
                 profileImgUrl
                 id
             }
-            LikedBy{
+            likedBy{
                 id
             }
             commentAuthor{

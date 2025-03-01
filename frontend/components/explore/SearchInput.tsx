@@ -1,7 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import SearchBar from "./explore/searchbar";
-import DivisionBar from "@/shared/divisionbar";
 
 const SearchInput = () => {
   return (

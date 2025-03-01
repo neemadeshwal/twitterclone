@@ -19,7 +19,7 @@ const formSchema = z.object({
   }), // First, we treat it as a string.
 });
 
-const Step2VerifyOtp = ({ data, setGetData,authType }: any) => {
+const Step2VerifyOtp = ({ data, setGetData, authType }: any) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,7 +47,7 @@ const Step2VerifyOtp = ({ data, setGetData,authType }: any) => {
     const body = {
       otp: values.otp.toString(),
       email: data.email,
-      authType:authType
+      authType: authType,
     };
     try {
       await mutation.mutateAsync(body);
@@ -95,7 +95,7 @@ const Step2VerifyOtp = ({ data, setGetData,authType }: any) => {
         </Form>
         <div>
           <p className=" text-[12px] pl-1 leading-[24px] text-[#1d9bf0] ">
-            Didn't receive the email?
+            Didn&apos;t receive the email?
           </p>
         </div>
       </div>

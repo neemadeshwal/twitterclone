@@ -119,14 +119,13 @@ const useRecentSearches = () => {
 };
 
 const ShowSearchPreview: React.FC<SearchPreviewProps> = ({
-  isSearchPreviewOpen,
   setIsSearchPreviewOpen,
   allSearchResult,
   setQuery,
-  isLoading,
 }) => {
   const previewRef = useRef<HTMLDivElement>(null);
-  const { recentSearch, deleteAllRecentSearch, deleteSearchByName } = useRecentSearches();
+  const { recentSearch, deleteAllRecentSearch, deleteSearchByName } =
+    useRecentSearches();
 
   useEffect(() => {
     const handleClosePreview = (event: MouseEvent) => {
@@ -148,7 +147,8 @@ const ShowSearchPreview: React.FC<SearchPreviewProps> = ({
       style={{ boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)" }}
       className="bg-black rounded-[10px] z-50 w-full absolute min-h-[100px] max-h-[300px] h-auto overflow-auto my-2"
     >
-      {allSearchResult && allSearchResult.hashtag.length + allSearchResult.people.length > 0 ? (
+      {allSearchResult &&
+      allSearchResult.hashtag.length + allSearchResult.people.length > 0 ? (
         <div>
           {allSearchResult.hashtag.length > 0 && (
             <>
@@ -161,11 +161,10 @@ const ShowSearchPreview: React.FC<SearchPreviewProps> = ({
             </>
           )}
 
-          {allSearchResult.people.length > 0 && 
+          {allSearchResult.people.length > 0 &&
             allSearchResult.people.map((item) => (
               <PersonItem key={item.id} person={item} />
-            ))
-          }
+            ))}
         </div>
       ) : recentSearch.length > 0 ? (
         <div className="py-3">

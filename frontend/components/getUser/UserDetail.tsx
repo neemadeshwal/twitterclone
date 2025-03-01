@@ -3,7 +3,7 @@
 import { useGetUserByUserName } from "@/hooks/user";
 import { usePathname } from "next/navigation";
 
-import React, { useState } from "react";
+import React from "react";
 import UserDetailHeader from "./UserDetailHeader";
 import ProfileDisplay from "./proflleDisplay";
 import Loading from "@/shared/loading";

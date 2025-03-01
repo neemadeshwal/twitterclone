@@ -1,9 +1,9 @@
-import { Bookmarks } from "@/graphql/types";
 import React from "react";
 import SinglePost from "../post/SinglePost/singlePost";
 import SingleComment from "../postDetail/singleComment";
+import { Bookmarks } from "@/graphql/types";
 
-const SingleBookmark = ({ bookmark }: { bookmark: any }) => {
+const SingleBookmark = ({ bookmark }: { bookmark: Bookmarks }) => {
   console.log(bookmark);
   if (!bookmark) {
     return <div>nothing there</div>;

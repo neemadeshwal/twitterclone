@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import DivisionBar from "@/shared/divisionbar";
-import { Comment as CommentType, Tweet } from "@/graphql/types";
+import { Comment as CommentType } from "@/graphql/types";
 import { useCurrentUser } from "@/hooks/user";
 import { useGetCommentById } from "@/hooks/comment";
 import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
@@ -23,7 +23,7 @@ const SingleComment = ({
 
   const { user } = useCurrentUser();
 
-  const { likeComment, replyOnComment, repostComment } = useCommentMutation({});
+  const { likeComment, repostComment } = useCommentMutation({});
 
   async function handleCommentLike() {
     setLiked((prevVal) => !prevVal);

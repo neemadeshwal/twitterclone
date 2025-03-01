@@ -1,43 +1,46 @@
 import Image from "next/image";
 
-import { Tweet } from "@/graphql/types";
+import { Like, Tweet } from "@/graphql/types";
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
 import AuthorProfile from "@/shared/AuthorProfile";
 import { Icons } from "@/utils/icons";
 
-
-
-const SingleTweetHighlight = ({ tweet }: { tweet: Tweet}) => {
-
+const SingleTweetHighlight = ({ tweet }: { tweet: Tweet }) => {
   return (
     <div key={tweet.id}>
       <div className="flex justify-between">
         <div>
-          <h2>{tweet.content&&tweet.content.slice(0,50)}</h2>
-          <div>{tweet.hashtags.length>0&&tweet.hashtags.map((hashtag)=>{
-            return(
-              <div className="text-blue-500 text-[14px]" key={hashtag.id}>{hashtag.text}</div>
-            )
-          })}</div>
+          <h2>{tweet.content && tweet.content.slice(0, 50)}</h2>
+          <div>
+            {tweet.hashtags.length > 0 &&
+              tweet.hashtags.map((hashtag) => {
+                return (
+                  <div className="text-blue-500 text-[14px]" key={hashtag.id}>
+                    {hashtag.text}
+                  </div>
+                );
+              })}
+          </div>
           <div className="flex gap-1 gray text-[14px] items-center">
-           <div className="flex -space-x-[0.9rem]">
-            {tweet.likedBy.length!==0&&tweet.likedBy.map((item:any,index:number)=>{
-             return(
-                <div className=" ring-2 ring-black rounded-full  scale-75" key={item.id}  style={{
-                  zIndex: tweet.likedBy.length - index
-                }}>
-                  <AuthorProfile isSmall={true} author={item.user}/>
-                 
-                </div>
-              )
-            })}
-           </div>
+            <div className="flex -space-x-[0.9rem]">
+              {tweet.likedBy.length !== 0 &&
+                tweet.likedBy.map((item: Like, index: number) => {
+                  return (
+                    <div
+                      className=" ring-2 ring-black rounded-full  scale-75"
+                      key={item.id}
+                      style={{
+                        zIndex: tweet.likedBy.length - index,
+                      }}
+                    >
+                      <AuthorProfile isSmall={true} author={item.user} />
+                    </div>
+                  );
+                })}
+            </div>
 
-           
-           <p>
-           {formatTimeAgo(getDateTime(tweet?.createdAt))} ago
-            </p>
-            <Icons.Dot/>
+            <p>{formatTimeAgo(getDateTime(tweet?.createdAt))} ago</p>
+            <Icons.Dot />
             <p>{tweet.likedBy.length} likes</p>
           </div>
         </div>

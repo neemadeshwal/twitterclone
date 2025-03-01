@@ -1,9 +1,9 @@
-import { Tweet } from "@/graphql/types";
 import React from "react";
 import SinglePost from "../post/SinglePost/singlePost";
 import SingleComment from "../postDetail/singleComment";
+import { Like } from "@/graphql/types";
 
-const LikeTab = ({ postlist }: { postlist: any }) => {
+const LikeTab = ({ postlist }: { postlist: Like[] }) => {
   console.log(postlist, "postlist");
 
   return (

@@ -2,7 +2,6 @@
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -21,13 +20,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { days, months, years } from "@/lib/functions";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { getCredAndSendOtp } from "@/graphql/mutation/user";
 import { getDataProps } from "../createAccount";
 
-interface NewData {
-  getCredAndSendOtp: getDataProps;
-}
 const formSchema = z.object({
   firstName: z
     .string()
@@ -300,7 +296,7 @@ const Step1Creds = ({
                               return (
                                 <SelectItem
                                   value={item.toString()}
-                                  key={item + index+item+"year"}
+                                  key={item + index + item + "year"}
                                 >
                                   {item}
                                 </SelectItem>

@@ -1,5 +1,5 @@
 "use client";
-import { Comment, Tweet } from "@/graphql/types";
+import { Comment, HashTag, Tweet } from "@/graphql/types";
 import { useCurrentUser } from "@/hooks/user";
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
 import CurrentUser from "@/shared/currentUser";
@@ -200,7 +200,7 @@ const CommentComponent = ({
                         <div>
                           {tweet?.hashtags && tweet?.hashtags.length !== 0 && (
                             <div>
-                              {tweet?.hashtags.map((tag: any) => {
+                              {tweet?.hashtags.map((tag: HashTag) => {
                                 return (
                                   <span
                                     key={tag.id}
