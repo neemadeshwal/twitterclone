@@ -1,23 +1,16 @@
 "use client";
-import React, { useState } from "react";
-import { BsTwitterX, BsX } from "react-icons/bs";
-import Step1CheckEmail from "../login/steps/step1CheckEmail";
+import { BsTwitterX } from "react-icons/bs";
 import Link from "next/link";
-import Step3Password from "../signup/steps/step3-password";
-import Step2VerifyOtp from "../signup/steps/step2-verifyotp";
 import { useRouter } from "next/navigation";
 
-const Logout = ({setisDialogOpen}:any) => {
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [authData, setAuthData] = useState({
-    next_page: "checkemail",
-    email: "",
-  });
-
+const Logout = ({
+  setisDialogOpen,
+}: {
+  setisDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const router = useRouter();
 
   function handleLogout() {
-    console.log("hello  ");
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
     router.push("/login");
   }
@@ -41,13 +34,11 @@ const Logout = ({setisDialogOpen}:any) => {
                     <h4 className="font-[700] mb-2 text-[31px] leading-[36px]">
                       Log out of x?
                     </h4>
-                    {authData.next_page == "checkemail" && (
-                      <p className="text-gray-400 text-[13px] mt-1">
-                        You can always log back in at any time. If you just want
-                        to switch accounts, you can do that by adding an
-                        existing account.
-                      </p>
-                    )}
+                    <p className="text-gray-400 text-[13px] mt-1">
+                      You can always log back in at any time. If you just want
+                      to switch accounts, you can do that by adding an existing
+                      account.
+                    </p>
                   </div>
                   <div className="py-[18px] h-full"></div>
                 </div>
@@ -61,8 +52,7 @@ const Logout = ({setisDialogOpen}:any) => {
                     Logout
                   </button>
                   <button
-                  onClick={()=>setisDialogOpen(false)}
-                  
+                    onClick={() => setisDialogOpen(false)}
                     className="text-white border-gray-600 border-[1px]  bg-black items-center w-full py-[0.8rem] font-[700] rounded-full"
                   >
                     Cancel

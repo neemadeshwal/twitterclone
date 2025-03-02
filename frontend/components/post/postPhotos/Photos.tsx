@@ -1,9 +1,8 @@
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { BiX } from "react-icons/bi";
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
-import Link from "next/link";
 import {
   Carousel,
   CarouselContent,
@@ -22,10 +21,10 @@ const Photos = ({
   showFullPhoto,
 }: {
   tweet: Tweet | Comment;
-  photoNum: number;
+  photoNum: string;
   showFullPhoto: boolean;
   currentUrl: string;
-  setShowFullPhoto: any;
+  setShowFullPhoto: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(
     Number(photoNum) - 1

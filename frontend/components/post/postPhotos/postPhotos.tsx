@@ -40,7 +40,7 @@ const PostPhotos = () => {
               photoNum={photoNum}
               showFullPhoto={showFullPhoto}
               setShowFullPhoto={setShowFullPhoto}
-              tweet={post}
+              tweet={post!}
               isComment={true}
             />
           ) : (
@@ -49,7 +49,7 @@ const PostPhotos = () => {
               photoNum={photoNum}
               showFullPhoto={showFullPhoto}
               setShowFullPhoto={setShowFullPhoto}
-              tweet={post}
+              tweet={post!}
             />
           )}
 

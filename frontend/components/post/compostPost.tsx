@@ -15,7 +15,6 @@ import { TWEET_CHARACTER_LIMIT } from "@/lib/constants";
 import useOutsideClick from "@/shared/closeContainer";
 import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
 import { toast } from "@/hooks/use-toast";
-import { useCurrentUser } from "@/hooks/user";
 
 const ComposePost = ({
   user,

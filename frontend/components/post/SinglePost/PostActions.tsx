@@ -5,6 +5,7 @@ import { FaHeart } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
 import SharePost from "@/shared/sharePost";
 import SavePost from "@/shared/savePost";
+import { Comment as CommentType, Tweet } from "@/graphql/types";
 
 const PostActions = ({
   tweet,
@@ -13,10 +14,24 @@ const PostActions = ({
   handleRepostTweet,
   handleTweetLike,
   isComment,
-}: any) => {
+}: {
+  tweet: Tweet | CommentType;
+  liked: boolean;
+  repost: boolean;
+  handleRepostTweet: () => void;
+  handleTweetLike: () => void;
+  isComment?: boolean;
+}) => {
   const shareLink = isComment
     ? `http://localhost:5000/${tweet?.author?.userName}/comment/${tweet?.id}`
     : `http://localhost:5000/${tweet?.author?.userName}/status/${tweet?.id}`;
+
+  // Type-checking tweet object for both Tweet and CommentType
+  const isTweetCheck = (tweet: Tweet | CommentType): tweet is Tweet =>
+    "repostTweet" in tweet;
+  const isCommentCheck = (tweet: Tweet | CommentType): tweet is CommentType =>
+    "repostComment" in tweet;
+
   return (
     <div>
       <div className="flex justify-between py-2 pt-3 pb-4">
@@ -40,9 +55,12 @@ const PostActions = ({
             className={` ${repost && "text-[#00ba7c]"}
                  ml-0 pl-0 -right-[0.3rem]  absolute`}
           >
-            {isComment
+            {/* Access repost data based on type */}
+            {isCommentCheck(tweet)
               ? tweet?.repostComment?.length
-              : tweet?.repostTweet?.length}
+              : isTweetCheck(tweet)
+              ? tweet?.repostTweet?.length
+              : 0}
           </p>
         </div>
         <div
@@ -65,7 +83,12 @@ const PostActions = ({
               liked && "text-red-500"
             } -right-[0.3rem]  absolute`}
           >
-            {isComment ? tweet?.likes?.length : tweet?.likedBy?.length}
+            {/* Access likes data based on type */}
+            {isCommentCheck(tweet)
+              ? tweet?.likes?.length
+              : isTweetCheck(tweet)
+              ? tweet?.likedBy?.length
+              : 0}
           </p>
         </div>
         {<SharePost link={shareLink} />}

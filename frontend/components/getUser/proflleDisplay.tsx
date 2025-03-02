@@ -1,7 +1,7 @@
 import { useState } from "react";
 import DivisionBar from "@/shared/divisionbar";
 import EditProfileContainer from "@/shared/editProfileContainer";
-import { authorType } from "@/graphql/types";
+import { authorType, Like } from "@/graphql/types"; // Ensure Like is imported
 import PostTab from "./postTab";
 import CommentTab from "./commentTab";
 import MediaTab from "./mediaTab";
@@ -14,11 +14,15 @@ const ProfileDisplay = ({ user }: { user: authorType }) => {
   const [activeTab, setActiveTab] = useState<TabType>("post");
   const [editProfileDialog, setEditProfileDialog] = useState(false);
 
-  const likedTweets = user.likedTweets.map((item) => {
-    if (item.tweetId || item.commentId) {
-      return item;
-    }
-  });
+  const likedTweets = user.likedTweets
+    .map((item) => {
+      if (item.tweetId || item.commentId) {
+        return item;
+      }
+      return undefined;
+    })
+    .filter((item): item is Like => item !== undefined); // Ensure only Like items are in the array
+
   const mediaPosts = user.posts.filter((post) => post.mediaArray.length > 0);
 
   const renderTabContent = () => {

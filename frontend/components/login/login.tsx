@@ -3,7 +3,6 @@ import { BsTwitterX } from "react-icons/bs";
 import SignupGoogle from "../signup/signupGoogle";
 import SignupFacebook from "../signup/signupFacebook";
 import DivisionBar from "@/shared/divisionbar";
-import CreateAccount from "../signup/createAccount";
 import Link from "next/link";
 import SigninAccountbtn from "./signinbtn";
 
@@ -50,7 +49,7 @@ const Login = () => {
                 <div className="py-8">
                   <div className="flex flex-col gap-6">
                     <h3 className="text-[#e7e9ea] font-[700] text-[17px] leading-[20px]">
-                      Don't have a account?
+                      Don&apos;t have a account?
                     </h3>
 
                     <div className="">

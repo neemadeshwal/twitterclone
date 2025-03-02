@@ -2,10 +2,8 @@
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,18 +11,11 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { days, months, years } from "@/lib/functions";
+
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { useMutation } from "@tanstack/react-query";
-import { createAccount } from "@/graphql/mutation/user";
 import { useRouter } from "next/navigation";
+import { getDataProps } from "../createAccount";
+import { userUserMutation } from "@/hooks/mutation/useUserMutation";
 
 const formSchema = z.object({
   password: z
@@ -37,7 +28,13 @@ const formSchema = z.object({
     .max(50),
 });
 
-const Step3Password = ({ data, setGetData }: any) => {
+const Step3Password = ({
+  data,
+  setGetData,
+}: {
+  data: getDataProps;
+  setGetData: React.Dispatch<React.SetStateAction<getDataProps>>;
+}) => {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,24 +46,7 @@ const Step3Password = ({ data, setGetData }: any) => {
   const [showpassword, setShowPassword] = useState(false);
   const [showconfirmpassword, setshowconfirmpassword] = useState(false);
 
-  const mutation = useMutation({
-    mutationFn: createAccount,
-    onSuccess: (response: any) => {
-      const result = response.createAccount;
-      setGetData({
-        next_page: result.next_page,
-        email: result.email,
-      });
-
-      if (result.next_page === "signin") {
-        router.push("/");
-      }
-    },
-    onError: (error) => {
-      console.error("Error:", error);
-      // Handle error (e.g., show an error message)
-    },
-  });
+  const { createAccountFn } = userUserMutation();
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
 
@@ -78,7 +58,17 @@ const Step3Password = ({ data, setGetData }: any) => {
       email: data.email,
     };
     try {
-      await mutation.mutateAsync(body);
+      const result = await createAccountFn(body);
+      if (result && result.createAccount) {
+        setGetData((prevVal) => ({
+          ...prevVal,
+          next_page: result.createAccount.next_page,
+          email: result.createAccount.email,
+        }));
+        if (result.createAccount.next_page === "signin") {
+          router.push("/");
+        }
+      }
     } catch (error) {
       console.log(error);
     }

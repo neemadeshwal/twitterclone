@@ -1,11 +1,16 @@
 "use client";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useCurrentUser } from "@/hooks/user";
-
 import PostInteractions from "@/shared/PostDetail/PostInteractions";
 import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 import Photos from "./Photos";
 import { Comment, Like, Repost, Tweet } from "@/graphql/types";
+
+// Type guard functions for Tweet and Comment
+const isTweet = (tweet: Tweet | Comment): tweet is Tweet =>
+  "repostTweet" in tweet;
+const isComment = (tweet: Tweet | Comment): tweet is Comment =>
+  "repostComment" in tweet;
 
 const TweetPhotos = ({
   photoNum,
@@ -15,7 +20,7 @@ const TweetPhotos = ({
   currentUrl,
 }: {
   photoNum: string;
-  tweet: Tweet | Comment | undefined;
+  tweet: Tweet | Comment;
   setShowFullPhoto: Dispatch<SetStateAction<boolean>>;
   showFullPhoto: boolean;
   currentUrl: string;
@@ -27,6 +32,7 @@ const TweetPhotos = ({
 
   const { likeTweet, repostTweet } = useTweetMutation({});
 
+  // Repost handling function
   async function handleRepostTweet() {
     if (!tweet || !tweet.id) {
       return;
@@ -40,6 +46,8 @@ const TweetPhotos = ({
       console.log(error);
     }
   }
+
+  // Like handling function
   async function handleTweetLike() {
     setLiked((prevVal) => !prevVal);
     if (!tweet?.id) {
@@ -54,18 +62,34 @@ const TweetPhotos = ({
       console.log(error);
     }
   }
+
+  // UseEffect hook for managing like and repost state
   useEffect(() => {
-    if (tweet?.likedBy && user) {
-      setLiked(tweet.likedBy.some((like: Like) => like.userId === user.id));
-    }
-    if (tweet?.repostTweet && user) {
-      setRepost(
-        tweet.repostTweet.some((repost: Repost) => repost.userId === user.id)
-      );
+    if (isTweet(tweet)) {
+      // Logic specific to Tweet
+      if (tweet?.likedBy && user) {
+        setLiked(tweet.likedBy.some((like: Like) => like.userId === user.id));
+      }
+      if (tweet?.repostTweet && user) {
+        setRepost(
+          tweet.repostTweet.some((repost: Repost) => repost.userId === user.id)
+        );
+      }
+    } else if (isComment(tweet)) {
+      // Logic specific to Comment
+      if (tweet?.likes && user) {
+        setLiked(tweet.likes.some((like: Like) => like.userId === user.id));
+      }
+      if (tweet?.repostComment && user) {
+        setRepost(
+          tweet.repostComment.some(
+            (repost: Repost) => repost.userId === user.id
+          )
+        );
+      }
     }
   }, [tweet, user]);
 
-  console.log(tweet);
   return (
     <div
       className={`${

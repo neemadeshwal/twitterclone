@@ -216,7 +216,7 @@ const CommentComponent = ({
                         {tweet?.mediaArray &&
                           tweet?.mediaArray.length !== 0 && (
                             <div className="pr-4 text-[14px] xs:text-lg sm:text-[18px] flex flex-col gap-4">
-                              {tweet?.mediaArray?.map((url, index) => (
+                              {tweet?.mediaArray?.map((url) => (
                                 <div key={url} className="relative break-all">
                                   {url}
                                 </div>

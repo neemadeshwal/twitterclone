@@ -2,10 +2,8 @@
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,9 +13,8 @@ import { z } from "zod";
 import { Input } from "@/components/ui/input";
 
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { useMutation } from "@tanstack/react-query";
-import { resetPassword } from "@/graphql/mutation/user";
 import { useRouter } from "next/navigation";
+import { userUserMutation } from "@/hooks/mutation/useUserMutation";
 
 const formSchema = z.object({
   password: z
@@ -30,7 +27,18 @@ const formSchema = z.object({
     .max(50),
 });
 
-const Step3Password = ({ data, setGetData }: any) => {
+const Step3Password = ({
+  data,
+  setGetData,
+}: {
+  data: { next_page: string; email: string };
+  setGetData: React.Dispatch<
+    React.SetStateAction<{
+      next_page: string;
+      email: string;
+    }>
+  >;
+}) => {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,25 +50,7 @@ const Step3Password = ({ data, setGetData }: any) => {
   const [showpassword, setShowPassword] = useState(false);
   const [showconfirmpassword, setshowconfirmpassword] = useState(false);
 
-  const mutation = useMutation({
-    mutationFn: resetPassword,
-    onSuccess: (response: any) => {
-      console.log(response, "new pass response");
-      const result = response.resetPassword;
-      setGetData({
-        next_page: result.next_page,
-        email: result.email,
-      });
-
-      if (result.next_page === "signin") {
-        router.push("/");
-      }
-    },
-    onError: (error) => {
-      console.error("Error:", error);
-      // Handle error (e.g., show an error message)
-    },
-  });
+  const { newPassFn } = userUserMutation();
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
 
@@ -72,7 +62,17 @@ const Step3Password = ({ data, setGetData }: any) => {
       email: data.email,
     };
     try {
-      await mutation.mutateAsync(body);
+      const result = await newPassFn(body);
+      if (result && result.resetPassword) {
+        setGetData({
+          next_page: result.resetPassword.next_page,
+          email: result.resetPassword.email,
+        });
+
+        if (result.resetPassword.next_page === "signin") {
+          router.push("/");
+        }
+      }
     } catch (error) {
       console.log(error);
     }

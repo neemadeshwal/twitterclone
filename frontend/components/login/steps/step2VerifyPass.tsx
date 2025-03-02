@@ -2,10 +2,8 @@
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,19 +11,10 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { days, months, years } from "@/lib/functions";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { useMutation } from "@tanstack/react-query";
-import { checkLoginPassword } from "@/graphql/mutation/user";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { userUserMutation } from "@/hooks/mutation/useUserMutation";
 
 const formSchema = z.object({
   password: z
@@ -34,7 +23,23 @@ const formSchema = z.object({
     .max(50),
 });
 
-const Step2VerifyPass = ({ setAuthData, authData, setIsCreateOpen }: any) => {
+const Step2VerifyPass = ({
+  setAuthData,
+  authData,
+  setIsCreateOpen,
+}: {
+  setAuthData: React.Dispatch<
+    React.SetStateAction<{
+      next_page: string;
+      email: string;
+    }>
+  >;
+  authData: {
+    next_page: string;
+    email: string;
+  };
+  setIsCreateOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const [showpassword, setShowPassword] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -43,23 +48,8 @@ const Step2VerifyPass = ({ setAuthData, authData, setIsCreateOpen }: any) => {
       password: "",
     },
   });
-  const mutation = useMutation({
-    mutationFn: checkLoginPassword,
-    onSuccess: (newData: any) => {
-      console.log(newData);
-      const result = newData.checkLoginPassword;
-      console.log(result, "result");
-      setAuthData({
-        next_page: result.next_page,
-        email: result.email,
-      });
-      if (result.next_page === "signin") {
-        setIsCreateOpen(false);
 
-        router.push("/");
-      }
-    },
-  });
+  const { verifyPassFn } = userUserMutation();
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     const body = {
@@ -67,7 +57,18 @@ const Step2VerifyPass = ({ setAuthData, authData, setIsCreateOpen }: any) => {
       password: values.password,
     };
     try {
-      await mutation.mutateAsync(body);
+      const result = await verifyPassFn(body);
+      if (result && result.checkLoginPassword) {
+        setAuthData({
+          next_page: result.checkLoginPassword.next_page,
+          email: result.checkLoginPassword.email,
+        });
+        if (result.checkLoginPassword.next_page === "signin") {
+          setIsCreateOpen(false);
+
+          router.push("/");
+        }
+      }
     } catch (error) {
       console.log(error);
     }
@@ -126,11 +127,11 @@ const Step2VerifyPass = ({ setAuthData, authData, setIsCreateOpen }: any) => {
                     )}
                   />
                   <Link href="/password_reset">
-                  <div>
-                    <p className=" text-[12px] pl-2 leading-[24px] text-[#1d9bf0] ">
-                      Forgot password?
-                    </p>
-                  </div>
+                    <div>
+                      <p className=" text-[12px] pl-2 leading-[24px] text-[#1d9bf0] ">
+                        Forgot password?
+                      </p>
+                    </div>
                   </Link>
                 </div>
               </div>

@@ -1,11 +1,9 @@
 "use client";
-import React, { useEffect, useState, memo, use } from "react";
+import React, { useEffect, useState } from "react";
 
 import DivisionBar from "@/shared/divisionbar";
 import { Tweet } from "@/graphql/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCurrentUser, useGetUserByUserName } from "@/hooks/user";
-import { useRouter } from "next/navigation";
+import { useCurrentUser } from "@/hooks/user";
 import PostActions from "./PostActions";
 import AuthorDetail from "@/shared/singlePost/AuthorDetail";
 import AuthorProfile from "@/shared/AuthorProfile";
@@ -13,9 +11,8 @@ import PostContent from "./PostContent";
 import HoverWrapper from "@/shared/singlePost/HoverWrapper";
 import PostControlDialog from "@/shared/singlePost/postControlDialog";
 import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
-import { useToast } from "@/hooks/use-toast";
 
-const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
+const SinglePost = ({ tweet }: { tweet: Tweet }) => {
   const [liked, setLiked] = useState(false);
   const [repost, setRepost] = useState(false);
   const { user } = useCurrentUser();
@@ -42,7 +39,6 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
     };
     try {
       await likeTweet(body);
-     
     } catch (error) {
       console.log(error);
     }
@@ -90,6 +86,6 @@ const SinglePost = memo(({ tweet }: { tweet: Tweet }) => {
       <DivisionBar type="x" />
     </div>
   );
-});
+};
 
 export default SinglePost;

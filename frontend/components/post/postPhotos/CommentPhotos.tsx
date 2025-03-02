@@ -1,10 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useCurrentUser } from "@/hooks/user";
 
 import PostInteractions from "@/shared/PostDetail/PostInteractions";
 import Photos from "./Photos";
 import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
+import { Tweet, Comment as CommentType } from "@/graphql/types";
+
+// Type guard functions for Tweet and Comment
+const isTweetType = (tweet: Tweet | CommentType): tweet is Tweet =>
+  "repostTweet" in tweet;
+const isCommentType = (tweet: Tweet | CommentType): tweet is CommentType =>
+  "repostComment" in tweet;
 
 const CommentPhotos = ({
   photoNum,
@@ -12,8 +19,15 @@ const CommentPhotos = ({
   setShowFullPhoto,
   showFullPhoto,
   currentUrl,
-  isComment,
-}: any) => {
+  isComment: isCommentProp,
+}: {
+  tweet: Tweet | CommentType;
+  photoNum: string;
+  showFullPhoto: boolean;
+  currentUrl: string;
+  setShowFullPhoto: Dispatch<SetStateAction<boolean>>;
+  isComment: boolean;
+}) => {
   const [liked, setLiked] = useState(false);
   const [repost, setRepost] = useState(false);
 
@@ -34,6 +48,7 @@ const CommentPhotos = ({
       console.log(error);
     }
   }
+
   async function handleTweetLike() {
     setLiked((prevVal) => !prevVal);
     if (!tweet?.id) {
@@ -48,14 +63,28 @@ const CommentPhotos = ({
       console.log(error);
     }
   }
+
   useEffect(() => {
-    if (tweet?.likedBy && user) {
-      setLiked(tweet.likedBy.some((like: any) => like.userId === user.id));
-    }
-    if (tweet?.repostTweet && user) {
-      setRepost(
-        tweet.repostTweet.some((repost: any) => repost.userId === user.id)
-      );
+    if (isCommentType(tweet)) {
+      // Handle comment specific logic
+      if (tweet?.likes && user) {
+        setLiked(tweet.likes.some((like) => like.userId === user.id));
+      }
+      if (tweet?.repostComment && user) {
+        setRepost(
+          tweet.repostComment.some((repost) => repost.userId === user.id)
+        );
+      }
+    } else if (isTweetType(tweet)) {
+      // Handle tweet specific logic
+      if (tweet?.likedBy && user) {
+        setLiked(tweet.likedBy.some((like) => like.userId === user.id));
+      }
+      if (tweet?.repostTweet && user) {
+        setRepost(
+          tweet.repostTweet.some((repost) => repost.userId === user.id)
+        );
+      }
     }
   }, [tweet, user]);
 
@@ -78,7 +107,7 @@ const CommentPhotos = ({
           tweet={tweet}
           liked={liked}
           repost={repost}
-          isComment={isComment}
+          isComment={isCommentProp}
           handleRepostTweet={handleRepostTweet}
           handleTweetLike={handleTweetLike}
         />

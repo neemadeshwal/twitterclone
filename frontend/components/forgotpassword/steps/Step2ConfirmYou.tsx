@@ -1,20 +1,6 @@
-import { confirmYou } from "@/graphql/mutation/user";
-import { useMutation } from "@tanstack/react-query";
+import { userUserMutation } from "@/hooks/mutation/useUserMutation";
 import React from "react";
 import { FaCircleCheck } from "react-icons/fa6";
-
-// Define the response type from your mutation
-type ConfirmYouResponse = {
-  confirmedMail: {
-    email: string;
-    next_page: string;
-  };
-};
-
-// Define the request payload type
-type ConfirmYouPayload = {
-  email: string;
-};
 
 const Step2ConfirmYou = ({
   authEmail,
@@ -30,27 +16,21 @@ const Step2ConfirmYou = ({
 }) => {
   const hideEmailConst = authEmail.split("@")[0].slice(2);
 
-  const mutation = useMutation<ConfirmYouResponse, Error, ConfirmYouPayload>({
-    mutationFn: confirmYou,
-    onSuccess: (data) => {
-      console.log(data);
-      const result = data.confirmedMail;
-      setAuthData({
-        next_page: result.next_page,
-        email: result.email,
-      });
-    },
-  });
-
+  const { confirmMailFn } = userUserMutation();
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    console.log("handelsubmit");
 
     const body = {
       email: authEmail,
     };
     try {
-      await mutation.mutateAsync(body);
+      const result = await confirmMailFn(body);
+      if (result && result.confirmedMail) {
+        setAuthData({
+          next_page: result.confirmedMail.next_page,
+          email: result.confirmedMail.email,
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -89,8 +69,8 @@ const Step2ConfirmYou = ({
         </div>
         <div>
           <p>
-            Contact <span className="x-textcolor">X Support</span> if you don't
-            have access.
+            Contact <span className="x-textcolor">X Support</span> if you
+            don&apos;t have access.
           </p>
         </div>
       </div>

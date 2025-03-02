@@ -1,10 +1,5 @@
-import Logout from '@/components/logout/logout'
-import React from 'react'
-
 const Page = () => {
-  return (
-    <Logout/>
-  )
-}
+  return null;
+};
 
-export default Page
+export default Page;

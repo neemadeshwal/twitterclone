@@ -13,17 +13,14 @@ import { Icons } from "@/utils/icons";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import LogOutContainer from "@/shared/logoutContainer";
 import Logout from "@/components/logout/logout";
 import useOutsideClick from "@/shared/closeContainer";
-import { NavigationEvents } from "@/shared/RouterLoading";
 
 export const sheetIcons = [
   {
@@ -74,22 +71,22 @@ const TabButton = ({
 const MiddlePost = ({ user }: { user: getCurrentUser | null }) => {
   const [isForYou, setIsForYou] = useState(true);
   const pathname = usePathname();
-  const[isSheetOpen,setIsSheetOpen]=useState(false)
-  const [logoutDialog,setShowLogoutDialog]=useState(false)
- const sheetRef=useRef(null)
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [logoutDialog, setShowLogoutDialog] = useState(false);
+  const sheetRef = useRef(null);
 
- useOutsideClick(sheetRef, () => setIsSheetOpen(false));
+  useOutsideClick(sheetRef, () => setIsSheetOpen(false));
 
- 
   return (
     <div className="flex flex-col h-full">
       <div className="flex sm:hidden w-[50%] pl-4 py-2 justify-between items-center ">
         <div>
-          <Sheet  open={isSheetOpen}>
-            <SheetTrigger onClick={()=>setIsSheetOpen(true)}>
+          <Sheet open={isSheetOpen}>
+            <SheetTrigger onClick={() => setIsSheetOpen(true)}>
               <CurrentUser user={user} customSize={true} />
             </SheetTrigger>
-            <SheetContent ref={sheetRef}
+            <SheetContent
+              ref={sheetRef}
               side="left"
               className="w-[75%] z-[1000]  bg-black text-white"
             >
@@ -121,41 +118,47 @@ const MiddlePost = ({ user }: { user: getCurrentUser | null }) => {
                     </div>
                   </div>
                 </SheetTitle>
-                  <div className="text-white pt-3">
-                    {sheetIcons.map((item, index) => (
-                      <Link
-                      onClick={()=>setIsSheetOpen(prev=>!prev)}
-                        key={item.title + index}
-                        href={
-                          item.title === "profile"
-                            ? `/${user?.userName}`
-                            : item.activePathname
-                        }
+                <div className="text-white pt-3">
+                  {sheetIcons.map((item, index) => (
+                    <Link
+                      onClick={() => setIsSheetOpen((prev) => !prev)}
+                      key={item.title + index}
+                      href={
+                        item.title === "profile"
+                          ? `/${user?.userName}`
+                          : item.activePathname
+                      }
+                    >
+                      <div
+                        aria-label={`Go to ${item.title}`}
+                        className="p-2  fullWidth w-fit hover:bg-[#1d1d1dbb] cursor-pointer rounded-full flex items-center justify-center gap-5 fixPosition px-width"
                       >
-                        <div
-                          aria-label={`Go to ${item.title}`}
-                          className="p-2  fullWidth w-fit hover:bg-[#1d1d1dbb] cursor-pointer rounded-full flex items-center justify-center gap-5 fixPosition px-width"
-                        >
-                          {pathname === item.activePathname ? (
-                            <p className="text-[20px]">{item.iconActive}</p>
-                          ) : (
-                            <p className="text-[20px]">{item.icon}</p>
-                          )}
-                          <span className=" showIcon capitalize text-white text-[18px]">
-                            {item.title}
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                  <div onClick={()=>{setShowLogoutDialog(true);setIsSheetOpen(prev=>!prev)}} className="flex p-2 pt-0 items-center gap-5 px-width">
-                    <span>
-                      <Icons.Logout className="w-[20px] font-[600]" />
-                    </span>
-                    <span className=" showIcon capitalize text-white text-[18px]">
-                            logout
-                          </span>
-                  </div>  
+                        {pathname === item.activePathname ? (
+                          <p className="text-[20px]">{item.iconActive}</p>
+                        ) : (
+                          <p className="text-[20px]">{item.icon}</p>
+                        )}
+                        <span className=" showIcon capitalize text-white text-[18px]">
+                          {item.title}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                <div
+                  onClick={() => {
+                    setShowLogoutDialog(true);
+                    setIsSheetOpen((prev) => !prev);
+                  }}
+                  className="flex p-2 pt-0 items-center gap-5 px-width"
+                >
+                  <span>
+                    <Icons.Logout className="w-[20px] font-[600]" />
+                  </span>
+                  <span className=" showIcon capitalize text-white text-[18px]">
+                    logout
+                  </span>
+                </div>
               </SheetHeader>
             </SheetContent>
           </Sheet>
@@ -187,10 +190,7 @@ const MiddlePost = ({ user }: { user: getCurrentUser | null }) => {
       <div className="sm:hidden">
         <ComposePostIcon />
       </div>
-      {
-        logoutDialog&&<Logout setisDialogOpen={setShowLogoutDialog}/>
-      }
-      
+      {logoutDialog && <Logout setisDialogOpen={setShowLogoutDialog} />}
     </div>
   );
 };

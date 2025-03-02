@@ -6,12 +6,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { verifyOtp } from "@/graphql/mutation/user";
+import { userUserMutation } from "@/hooks/mutation/useUserMutation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { getDataProps } from "../createAccount";
 
 const formSchema = z.object({
   otp: z.string().min(6, {
@@ -19,7 +19,15 @@ const formSchema = z.object({
   }), // First, we treat it as a string.
 });
 
-const Step2VerifyOtp = ({ data, setGetData, authType }: any) => {
+const Step2VerifyOtp = ({
+  data,
+  setGetData,
+  authType,
+}: {
+  data: getDataProps;
+  setGetData: React.Dispatch<React.SetStateAction<getDataProps>>;
+  authType: string;
+}) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -27,20 +35,7 @@ const Step2VerifyOtp = ({ data, setGetData, authType }: any) => {
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: verifyOtp,
-    onSuccess: (response: any) => {
-      const result = response.verifyOtp;
-      setGetData({
-        next_page: result.next_page,
-        email: result.email,
-      });
-    },
-    onError: (error) => {
-      console.error("Error:", error);
-      // Handle error (e.g., show an error message)
-    },
-  });
+  const { verifyOtpFn } = userUserMutation();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -50,7 +45,14 @@ const Step2VerifyOtp = ({ data, setGetData, authType }: any) => {
       authType: authType,
     };
     try {
-      await mutation.mutateAsync(body);
+      const result = await verifyOtpFn(body);
+      if (result && result.verifyOtp) {
+        setGetData((prevVal) => ({
+          ...prevVal,
+          next_page: result.verifyOtp.next_page,
+          email: result.verifyOtp.email,
+        }));
+      }
     } catch (error) {
       console.log(error);
     }

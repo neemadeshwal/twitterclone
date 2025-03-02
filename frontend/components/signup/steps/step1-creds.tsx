@@ -20,9 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { days, months, years } from "@/lib/functions";
-import { useMutation } from "@tanstack/react-query";
-import { getCredAndSendOtp } from "@/graphql/mutation/user";
 import { getDataProps } from "../createAccount";
+import { userUserMutation } from "@/hooks/mutation/useUserMutation";
 
 const formSchema = z.object({
   firstName: z
@@ -38,7 +37,7 @@ const formSchema = z.object({
     month: z.string().min(3, { message: "Month should not be empty" }),
     year: z.coerce
       .number()
-      .min(1900, { message: "Year should be a valid year" }), // Adjusted min value as appropriate
+      .min(1900, { message: "Year should be a valid year" }),
     day: z.coerce
       .number()
       .min(1, { message: "Day should be a positive number" }),
@@ -46,9 +45,9 @@ const formSchema = z.object({
 });
 
 const Step1Creds = ({
-  data,
+  setGetData,
 }: {
-  data: React.Dispatch<React.SetStateAction<getDataProps>>;
+  setGetData: React.Dispatch<React.SetStateAction<getDataProps>>;
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,23 +58,15 @@ const Step1Creds = ({
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: getCredAndSendOtp,
-    onSuccess: (newData: any) => {
-      console.log("Success:", newData);
-      const result = newData.getCredAndSendOtp;
-      data((prevVal) => ({
-        ...prevVal,
-        next_page: result.next_page,
-        email: result.email,
-      }));
-      // Handle success (e.g., show a success message, navigate)
+  const { getCredAndSendOtpFn, isgettingCred } = userUserMutation({
+    onSuccess: () => {
+      console.log("Credentials submitted successfully");
     },
     onError: (error) => {
-      console.error("Error:", error);
-      // Handle error (e.g., show an error message)
+      console.error("Error submitting credentials:", error);
     },
   });
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     const monthIndex = months.indexOf(values.dob.month) + 1;
@@ -85,8 +76,16 @@ const Step1Creds = ({
       email: values.email,
       dateOfBirth: `${monthIndex}/${values.dob.day}/${values.dob.year}`,
     };
+
     try {
-      await mutation.mutateAsync(newData);
+      const result = await getCredAndSendOtpFn(newData);
+      if (result && result.getCredAndSendOtp) {
+        setGetData((prevVal) => ({
+          ...prevVal,
+          next_page: result.getCredAndSendOtp.next_page,
+          email: result.getCredAndSendOtp.email,
+        }));
+      }
     } catch (error) {
       console.log(error);
     }
@@ -312,6 +311,14 @@ const Step1Creds = ({
                 </div>
               </div>
             </div>
+            {/* Optional: Add a submit button if not present elsewhere */}
+            <button
+              type="submit"
+              disabled={isgettingCred}
+              className="bg-[#1d9bf0] text-white px-4 py-2 rounded-full mt-4"
+            >
+              {isgettingCred ? "Submitting..." : "Submit"}
+            </button>
           </form>
         </Form>
       </div>

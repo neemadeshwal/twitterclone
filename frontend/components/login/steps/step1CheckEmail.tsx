@@ -2,10 +2,8 @@
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,17 +11,9 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { days, months, years } from "@/lib/functions";
-import { useMutation } from "@tanstack/react-query";
-import { getLoginCreds } from "@/graphql/mutation/user";
+
 import Link from "next/link";
+import { userUserMutation } from "@/hooks/mutation/useUserMutation";
 
 const formSchema = z.object({
   email: z
@@ -32,7 +22,18 @@ const formSchema = z.object({
     .min(5, "Email must be at least 5 characters long"),
 });
 
-const Step1CheckEmail = ({ setAuthData,forgotpass }: any) => {
+const Step1CheckEmail = ({
+  setAuthData,
+  forgotpass,
+}: {
+  setAuthData: React.Dispatch<
+    React.SetStateAction<{
+      next_page: string;
+      email: string;
+    }>
+  >;
+  forgotpass: boolean;
+}) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,25 +41,21 @@ const Step1CheckEmail = ({ setAuthData,forgotpass }: any) => {
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: getLoginCreds,
-    onSuccess: (newData: any) => {
-      console.log(newData);
-      const result = newData.getLoginCreds;
-      setAuthData({
-        next_page: result.next_page,
-        email: result.email,
-      });
-    },
-  });
+  const { checkEmailFn } = userUserMutation();
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     const body = {
       email: values.email,
-      authType:forgotpass?"confirmyou":"login"
+      authType: forgotpass ? "confirmyou" : "login",
     };
     try {
-      await mutation.mutateAsync(body);
+      const result = await checkEmailFn(body);
+      if (result && result.getLoginCreds) {
+        setAuthData({
+          next_page: result.getLoginCreds.next_page,
+          email: result.getLoginCreds.email,
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -100,29 +97,26 @@ const Step1CheckEmail = ({ setAuthData,forgotpass }: any) => {
                     </FormItem>
                   )}
                 />
-                {
-                  !forgotpass&&
+                {!forgotpass && (
                   <div className=" items-center flex justify-center  w-full">
-                  <button
-                    type="submit"
-                    className="bg-white  text-black items-center w-full py-[0.6rem] font-[700] rounded-full"
-                  >
-                    Next
-                  </button>
-                </div>
-                }
-               
-                {
-                  !forgotpass&&
+                    <button
+                      type="submit"
+                      className="bg-white  text-black items-center w-full py-[0.6rem] font-[700] rounded-full"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+
+                {!forgotpass && (
                   <div className=" items-center flex justify-center  w-full">
-                  <Link href="/password_reset" className="w-full ">
-                   <button  className="text-white  bg-black items-center w-full py-[0.6rem] font-[700] rounded-full border border-gray-500">
-                     Forgot password ?
-                   </button>
-                   </Link>
-                 </div>
-                }
-               
+                    <Link href="/password_reset" className="w-full ">
+                      <button className="text-white  bg-black items-center w-full py-[0.6rem] font-[700] rounded-full border border-gray-500">
+                        Forgot password ?
+                      </button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </form>

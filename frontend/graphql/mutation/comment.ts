@@ -1,7 +1,6 @@
 import { graphqlClient } from "@/clients/api";
 import { gql } from "@apollo/client";
 import { CreateCommentProps } from "../types";
-import ReplyComment from "@/components/postDetail/replyOnComment";
 
 const CREATE_COMMENT = gql`
   mutation CreateComment($payload: createCommentInput!) {
