@@ -16,6 +16,14 @@ import useOutsideClick from "@/shared/closeContainer";
 import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
 import { toast } from "@/hooks/use-toast";
 
+interface EmojiSelect {
+  id: string;
+  name: string;
+  native: string;
+  unified: string;
+  keywords: string[];
+  shortcodes: string;
+}
 const ComposePost = ({
   user,
   isComment,
@@ -72,14 +80,14 @@ const ComposePost = ({
           <div className="flex items-center justify-between w-full">
             <span>Your post is sent.</span>
             {/* <a
-              href={`http://localhost:5000/${user.userName}/comment/${tweet?.id}`} // Replace with your actual post view URL
-              className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
-              onClick={(e) => {
-                e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
-              }}
-            >
-              View
-            </a> */}
+                href={`http://localhost:5000/${user.userName}/comment/${tweet?.id}`} // Replace with your actual post view URL
+                className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+                }}
+              >
+                View
+              </a> */}
           </div>
         ),
         className:
@@ -105,14 +113,14 @@ const ComposePost = ({
           <div className="flex items-center justify-between w-full">
             <span>Your post is sent.</span>
             {/* <a
-              href={`http://localhost:5000/${user?.userName}/status/${tweet?.id}`} // Replace with your actual post view URL
-              className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
-              onClick={(e) => {
-                e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
-              }}
-            >
-              View
-            </a> */}
+                href={`http://localhost:5000/${user?.userName}/status/${tweet?.id}`} // Replace with your actual post view URL
+                className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+                }}
+              >
+                View
+              </a> */}
           </div>
         ),
         className:
@@ -139,14 +147,14 @@ const ComposePost = ({
           <div className="flex items-center justify-between w-full">
             <span>Your post is sent.</span>
             {/* <a
-              href={`http://localhost:5000/${user?.userName}/comment/${tweet?.id}`} // Replace with your actual post view URL
-              className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
-              onClick={(e) => {
-                e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
-              }}
-            >
-              View
-            </a> */}
+                href={`http://localhost:5000/${user?.userName}/comment/${tweet?.id}`} // Replace with your actual post view URL
+                className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+                }}
+              >
+                View
+              </a> */}
           </div>
         ),
         className:
@@ -254,7 +262,7 @@ const ComposePost = ({
           <div>
             <Picker
               data={data}
-              onEmojiSelect={(emoji: any) =>
+              onEmojiSelect={(emoji: EmojiSelect) =>
                 setTweetContent((prevVal: string) => prevVal + emoji.native)
               }
             />

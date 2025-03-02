@@ -8,18 +8,15 @@ import { GIF_KEY } from "@/lib/constants";
 const GifContainer = ({
   setOpenGifContainer,
   setFiles,
-  gifContainerRef
+  gifContainerRef,
 }: {
-  setOpenGifContainer: any;
-  setFiles?: any;
-  gifContainerRef:any;
+  setOpenGifContainer: React.Dispatch<React.SetStateAction<boolean>>;
+  setFiles?: React.Dispatch<React.SetStateAction<string>>;
+  gifContainerRef: React.RefObject<HTMLDivElement>;
 }) => {
-
-
-
   const [fetched, setFetched] = useState(false);
   const [searchGif, setSearchGif] = useState("");
-  
+
   const fetchGif = new GiphyFetch(GIF_KEY!);
   const trendingGifs = async () => {
     const response = await fetchGif.trending({ limit: 7 });
@@ -31,7 +28,7 @@ const GifContainer = ({
     const response = await fetchGif.search(searchGif, { limit: 6 });
     console.log(response);
 
-    return response; 
+    return response;
   };
 
   useEffect(() => {
@@ -44,10 +41,12 @@ const GifContainer = ({
         });
   }, [searchGif, fetch]);
 
- 
   return (
     <div className="fixed top-0 left-0 w-full h-full z-[1000] dimBg flex items-center justify-center">
-      <div ref={gifContainerRef} className="bg-black md:rounded-[20px] z-50 w-full md:w-[45%] h-full md:min-h-[55%] md:h-[90%] relative">
+      <div
+        ref={gifContainerRef}
+        className="bg-black md:rounded-[20px] z-50 w-full md:w-[45%] h-full md:min-h-[55%] md:h-[90%] relative"
+      >
         <div className="sticky top-0 z-[1000] backdrop-blur-sm rounded-[20px]">
           <div
             className="absolute top-1 left-1 rounded-full cursor-pointer p-2"

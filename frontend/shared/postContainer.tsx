@@ -17,6 +17,7 @@ import MediaUpload from "./singlePost/MediaUpload";
 import TweetContent from "./singlePost/TweetContent";
 import { FaArrowLeft } from "react-icons/fa";
 import { useCurrentUser } from "@/hooks/user";
+import { Comment, Tweet } from "@/graphql/types";
 const PostContainer = ({
   isEdit,
   editTweet,
@@ -26,11 +27,11 @@ const PostContainer = ({
   setIsContainerOpen,
 }: {
   isEdit?: boolean;
-  editTweet?: any;
-  ref?: any;
-  setPostControlDialogOpen?: any;
+  editTweet?: Tweet | Comment;
+  ref?: React.RefObject<HTMLDivElement>;
+  setPostControlDialogOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   isContainerOpen: boolean;
-  setIsContainerOpen: any;
+  setIsContainerOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
@@ -41,7 +42,7 @@ const PostContainer = ({
   const { user } = useCurrentUser();
   const mutation = useMutation({
     mutationFn: createTweetMutate,
-    onSuccess: (response: any) => {
+    onSuccess: (response) => {
       console.log(response);
       queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
       setTweetContent("");
@@ -55,7 +56,7 @@ const PostContainer = ({
 
   const editMutation = useMutation({
     mutationFn: editTweetMutate,
-    onSuccess: (response: any) => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
       setIsContainerOpen(false);
       setPostControlDialogOpen && setPostControlDialogOpen(false);
@@ -69,7 +70,7 @@ const PostContainer = ({
     const body = {
       content: tweetContent,
       mediaArray: files,
-      tweetId: editTweet.id,
+      tweetId: editTweet!.id,
     };
     try {
       await editMutation.mutateAsync(body);
@@ -238,7 +239,10 @@ const PostContainer = ({
       )}
 
       {openGifContainer && (
-        <GifContainer setOpenGifContainer={setOpenGifContainer} />
+        <GifContainer
+          gifContainerRef={ref!}
+          setOpenGifContainer={setOpenGifContainer}
+        />
       )}
     </div>
   );
