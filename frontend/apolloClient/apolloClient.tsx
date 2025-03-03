@@ -7,6 +7,9 @@ const client = new ApolloClient({
   uri: SERVER_URL!,
   cache: new InMemoryCache(),
   credentials: "include",
+  headers: {
+    "Access-Control-Allow-Credentials": "true"
+  }
 });
 
 export const ApolloProviderWrapper = ({

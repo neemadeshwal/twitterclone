@@ -65,7 +65,7 @@ const Step2VerifyPass = ({
         });
         if (result.checkLoginPassword.next_page === "signin") {
           setIsCreateOpen(false);
-
+            console.log("taking to home page/.................")
           router.push("/");
         }
       }

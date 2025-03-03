@@ -11,7 +11,8 @@ export function middleware(request: NextRequest) {
     request.nextUrl.pathname === route || 
     request.nextUrl.pathname.startsWith(route + '/')
   );
-
+  console.log("Token in middleware:", token);
+  console.log("Current path:", request.nextUrl.pathname);
   // Redirect logic
   if (!token && !isPublicRoute) {
     return NextResponse.redirect(new URL('/login', request.url));
