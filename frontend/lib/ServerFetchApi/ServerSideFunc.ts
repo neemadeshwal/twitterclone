@@ -27,6 +27,7 @@ import {
   getAllTweetQuery,
   getForYouQuery,
 } from "@/graphql/query/tweet";
+import { isDynamicServerError } from "next/dist/client/components/hooks-server-context";
 
 export const getGraphQLClient = async () => {
   const cookieStore = await cookies();
@@ -57,6 +58,9 @@ export const getCurrentUserData = async (): Promise<getCurrentUser | null> => {
     );
     return data.getCurrentUser;
   } catch (error) {
+    if (isDynamicServerError(error)) {
+      throw error;
+    }
     console.error("Error fetching current user data:", error);
     return null;
   }
@@ -69,6 +73,9 @@ export const getUserDetailData = async (): Promise<authorType | null> => {
     );
     return data.getUserByUserName;
   } catch (error) {
+    if (isDynamicServerError(error)) {
+      throw error;
+    }
     console.error("Error fetching current user data:", error);
     return null;
   }
@@ -80,6 +87,9 @@ export const getForYouData = async (): Promise<getForYou | null> => {
     const data = await client.request<getForYouProps>(getForYouQuery);
     return data.getForYou;
   } catch (error) {
+    if (isDynamicServerError(error)) {
+      throw error;
+    }
     console.error("Error fetching current user data:", error);
     return null;
   }
@@ -91,6 +101,9 @@ export const getAllTrendingData = async (): Promise<getAllTrending | null> => {
     const data = await client.request<getAllTrendingProps>(getAllTrendingQuery);
     return data.getAllTrending;
   } catch (error) {
+    if (isDynamicServerError(error)) {
+      throw error;
+    }
     console.log("an error occured", error);
     return null;
   }
@@ -102,6 +115,9 @@ export const getAllUsersData = async (): Promise<getCurrentUser[] | null> => {
     const data = await client.request<getAllUsersQueryProps>(getAllUsersQuery);
     return data.getAllUsers;
   } catch (error) {
+    if (isDynamicServerError(error)) {
+      throw error;
+    }
     console.log("an error occured", error);
     return null;
   }
@@ -113,6 +129,9 @@ export const getAllHashTagData = async (): Promise<HashTag[] | null> => {
     const data = await client.request<getAllHashTagsProps>(allHashTagQuery);
     return data.getAllHashTags;
   } catch (error) {
+    if (isDynamicServerError(error)) {
+      throw error;
+    }
     console.log("an error occured", error);
     return null;
   }
@@ -124,6 +143,9 @@ export const getAllPostData = async (): Promise<Tweet[] | null> => {
     const data = await client.request<GetAllTweetProps>(getAllTweetQuery);
     return data.getAllTweet;
   } catch (error) {
+    if (isDynamicServerError(error)) {
+      throw error;
+    }
     console.log("an error occured", error);
     return null;
   }

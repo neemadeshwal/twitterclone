@@ -1,7 +1,5 @@
 "use client";
-import MoreContainer from "@/shared/moreContainer";
 import { Icons } from "@/utils/icons";
-import React, { useState } from "react";
 import {
   Popover,
   PopoverContent,

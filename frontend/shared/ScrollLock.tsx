@@ -1,5 +1,5 @@
 // ScrollLock.tsx
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 const ScrollLock = ({ isOpen }: { isOpen: boolean }) => {
   useEffect(() => {
