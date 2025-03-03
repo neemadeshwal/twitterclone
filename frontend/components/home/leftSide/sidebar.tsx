@@ -10,7 +10,7 @@ import SideIcons from "./leftSideComp/SideIcons";
 const Sidebar = React.memo(
   ({ currentUser }: { currentUser: getCurrentUser | null }) => {
     return (
-      <div className="flex flex-col h-full items-center justify-between">
+      <div className="flex flex-col z-[1000] h-full items-center justify-between">
         {/* Main content section */}
         <div className="flex-1">
           <div className="py-2">

@@ -5,6 +5,7 @@ import { ApolloProviderWrapper } from "@/apolloClient/apolloClient";
 import { ReactQueryProvider } from "@/queryClient/queryClientWrapper";
 import { GlobalProvider } from "@/context/globalContext";
 import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/context/authContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,14 +33,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ApolloProviderWrapper>
-          <ReactQueryProvider>
-            <GlobalProvider>
-              {children}
-              <Toaster />
-            </GlobalProvider>
-          </ReactQueryProvider>
-        </ApolloProviderWrapper>
+          <ApolloProviderWrapper>
+            <ReactQueryProvider>
+              <GlobalProvider>
+                {children}
+                <Toaster />
+              </GlobalProvider>
+            </ReactQueryProvider>
+          </ApolloProviderWrapper>
       </body>
     </html>
   );

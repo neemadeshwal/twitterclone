@@ -8,6 +8,7 @@ import { getCurrentUserData } from "@/lib/ServerFetchApi/ServerSideFunc";
 
 const Home = async () => {
   const user = await getCurrentUserData();
+
   return (
     <div className="min-h-screen flex flex-col sm:flex-row">
       <div className="flex-1 flex flex-col sm:flex-row px-0  md:px-[100px] lg:px-[20px] xl1300:px-[40px]">

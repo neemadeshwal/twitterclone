@@ -1,5 +1,9 @@
-const Page = () => {
-  return null;
-};
+import Logout from '@/components/logout/logout'
+import React from 'react'
 
-export default Page;
+const Page = () => {
+  return (null
+  )
+}
+
+export default Page

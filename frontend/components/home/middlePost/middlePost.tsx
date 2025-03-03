@@ -162,7 +162,7 @@ const MiddlePost = ({ user }: { user: getCurrentUser | null }) => {
               </SheetHeader>
             </SheetContent>
           </Sheet>
-        </div>
+        </div>x
         <Icons.TwitterX className="lg:text-[290px] text-[24px]" />
       </div>
       <div className="relative sm:sticky  top-0 z-50 backdrop-blur-sm">
@@ -190,7 +190,7 @@ const MiddlePost = ({ user }: { user: getCurrentUser | null }) => {
       <div className="sm:hidden">
         <ComposePostIcon />
       </div>
-      {logoutDialog && <Logout setisDialogOpen={setShowLogoutDialog} />}
+      {logoutDialog && <Logout isDialogOpen={logoutDialog} setisDialogOpen={setShowLogoutDialog} />}
     </div>
   );
 };

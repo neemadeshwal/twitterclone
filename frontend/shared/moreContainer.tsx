@@ -9,16 +9,15 @@ const MoreContainer = ({ setMoreContainer }: any) => {
   useOutsideClick(moreContainerRef, () => setMoreContainer(false));
 
   return (
-    <div className="relative z-[1000000] bg-black">
       <div
         ref={moreContainerRef}
-        className="absolute z-50 top-[-2rem] left-[-4rem] bg-black"
+        className="absolute   z-[100000] left-0 bg-black"
       >
         <div
           style={{
             boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)",
           }}
-          className="rounded-[15px] w-[300px] z-50 min-h-[150px] h-auto py-3 bg-black"
+          className="rounded-[15px] w-[300px] z-[100000] min-h-[150px] h-auto py-3 bg-black"
         >
           <div className="flex flex-col z-50 bg-black ">
             <div className="flex items-center gap-2 hover-bg py-3 px-3">
@@ -38,7 +37,6 @@ const MoreContainer = ({ setMoreContainer }: any) => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

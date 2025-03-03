@@ -2,21 +2,23 @@
 import { BsTwitterX } from "react-icons/bs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import ReactDom from "react-dom";
 
 const Logout = ({
+  isDialogOpen,
   setisDialogOpen,
 }: {
+  isDialogOpen: boolean;
   setisDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const router = useRouter();
-
-  function handleLogout() {
+  async function handleLogout() {
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
     router.push("/login");
   }
-  return (
-    <div>
-      <div className="z-50">
+  const element = (
+    <div className="z-[1000]">
+      <div className="z-[100000]">
         <div className="w-screen h-screen fixed top-0 left-0 z-50 dimBg flex items-center justify-center ">
           <div className="bg-black w-full  md:w-[360px]   h-auto  rounded-none md:rounded-[20px] ">
             <div className="md:p-4 px-1 py-2">
@@ -64,6 +66,9 @@ const Logout = ({
         </div>
       </div>
     </div>
+  );
+  return (
+    <div>{isDialogOpen && ReactDom.createPortal(element, document.body)}</div>
   );
 };
 
