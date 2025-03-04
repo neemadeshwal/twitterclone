@@ -19,7 +19,7 @@ const ProfileHeader = ({ user, onEditProfile }: ProfileHeaderProps) => {
     if (user.profileImgUrl.startsWith("#")) {
       return (
         <div
-          className="rounded-full w-[150px] text-[80px] border-4 border-black h-[150px] flex items-center justify-center capitalize"
+          className="rounded-full w-[120px] sm:w-[150px] h-[120px] text-[60px] sm:text-[80px] border-4 border-black sm:h-[150px] flex items-center justify-center capitalize"
           style={{ backgroundColor: user.profileImgUrl }}
         >
           {user.firstName.slice(0, 1)}
