@@ -35,14 +35,18 @@ const formSchema = z.object({
     .min(5, "Email must be at least 5 characters long"),
   dob: z.object({
     month: z.string().min(3, { message: "Month should not be empty" }),
-    year: z.coerce
-      .number()
-      .min(1900, { message: "Year should be a valid year" }),
-    day: z.coerce
-      .number()
-      .min(1, { message: "Day should be a positive number" }),
-  }),
-});
+    year: z.string()
+  .min(1, { message: "Year is required" })
+  .transform(val => Number(val))
+  .refine(n => !isNaN(n), { message: "Year must be a valid number" })
+  .refine(n => n >= 1900, { message: "Year should be a valid year" }),
+
+day: z.string()
+  .min(1, { message: "Day is required" })
+  .transform(val => Number(val))
+  .refine(n => !isNaN(n), { message: "Day must be a valid number" })
+  .refine(n => n >= 1, { message: "Day should be a positive number" })
+})})
 
 const Step1Creds = ({
   setGetData,
@@ -312,13 +316,7 @@ const Step1Creds = ({
               </div>
             </div>
             {/* Optional: Add a submit button if not present elsewhere */}
-            <button
-              type="submit"
-              disabled={isgettingCred}
-              className="bg-[#1d9bf0] text-white px-4 py-2 rounded-full mt-4"
-            >
-              {isgettingCred ? "Submitting..." : "Submit"}
-            </button>
+            
           </form>
         </Form>
       </div>

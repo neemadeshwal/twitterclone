@@ -43,7 +43,7 @@ const CreateAccount = ({ authType }: { authType: "login" | "signup" }) => {
       {isCreateOpen && (
         <div className="z-50">
           <div className="w-screen h-screen fixed top-0 left-0 z-50 dimBg flex items-center justify-center ">
-            <div className="bg-black w-full  md:w-[600px]   h-full md:h-[700px]  rounded-none md:rounded-[20px] ">
+            <div className="bg-black w-full  md:w-[600px]  md:mt-10 overflow-scroll h-full md:h-[700px]  rounded-none md:rounded-[20px] ">
               <div className="md:p-4 px-1 py-2">
                 <div className="w-full relative flex justify-center items-center">
                   <div
