@@ -311,14 +311,6 @@ const Step1Creds = ({
                 </div>
               </div>
             </div>
-            {/* Optional: Add a submit button if not present elsewhere */}
-            <button
-              type="submit"
-              disabled={isgettingCred}
-              className="bg-[#1d9bf0] text-white px-4 py-2 rounded-full mt-4"
-            >
-              {isgettingCred ? "Submitting..." : "Submit"}
-            </button>
           </form>
         </Form>
       </div>
