@@ -1,5 +1,10 @@
 import { Input } from "@/components/ui/input";
-import { FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 
 interface FormInputProps {
   name: string;
@@ -9,7 +14,13 @@ interface FormInputProps {
   rows?: number;
 }
 
-export const FormInput = ({ name, control, label, isTextArea = false, rows = 3 }: FormInputProps) => {
+export const FormInput = ({
+  name,
+  control,
+  label,
+  isTextArea = false,
+  rows = 3,
+}: FormInputProps) => {
   return (
     <FormField
       control={control}
@@ -39,9 +50,9 @@ export const FormInput = ({ name, control, label, isTextArea = false, rows = 3 }
             className={`absolute text-[16px] ${
               field.value
                 ? "text-[11px] top-8 -translate-y-9 text-gray-500"
-                : `left-4 top-${isTextArea ? '4' : '2'} -translate-y-4`
+                : `left-4 top-${isTextArea ? "4" : "2"} -translate-y-4`
             } left-4 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-${
-              isTextArea ? '1/4' : '1/2'
+              isTextArea ? "1/4" : "1/2"
             } peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0]`}
           >
             {label}

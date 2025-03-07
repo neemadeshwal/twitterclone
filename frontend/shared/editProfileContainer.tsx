@@ -20,7 +20,7 @@ const formSchema = z.object({
   profileImgUrl: z.string(),
 });
 
- const EditProfileContainer = ({
+const EditProfileContainer = ({
   setEditProfileDialog,
   user,
   editProfileDialog,
@@ -45,10 +45,11 @@ const formSchema = z.object({
   const [profileImgLoading, setProfileImgLoading] = useState(false);
   const [coverImgLoading, setCoverImgLoading] = useState(false);
 
-  
- const {editUser}=userUserMutation({});
+  const { editUser } = userUserMutation({});
 
-  const handleImgUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImgUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (!event.target.files?.length) return;
 
     const isProfile = event.target.id === "profileImgUrl";
@@ -66,12 +67,16 @@ const formSchema = z.object({
     }
   };
 
-  
-
   useEffect(() => {
     if (user) {
-      const fields = ['firstName', 'lastName', 'bio', 'coverImgUrl', 'profileImgUrl'] as const;
-      fields.forEach(field => {
+      const fields = [
+        "firstName",
+        "lastName",
+        "bio",
+        "coverImgUrl",
+        "profileImgUrl",
+      ] as const;
+      fields.forEach((field) => {
         if (user[field]) {
           form.setValue(field, user[field]);
         }
@@ -82,28 +87,38 @@ const formSchema = z.object({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await editUser(values);
-      setEditProfileDialog(false)
+      setEditProfileDialog(false);
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <div className="absolute text-white py-8 left-0 dimBg top-0 z-[100] w-full h-full flex items-center justify-center" style={{ boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)" }}>
-     <ScrollLock isOpen={editProfileDialog}/>
-      <div ref={postRef} className="w-[45%] h-full overflow-auto bg-black rounded-[20px] py-3">
+    <div
+      className="absolute text-white md:py-8 left-0 dimBg top-0 z-[100] w-full h-full flex items-center justify-center"
+      style={{ boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)" }}
+    >
+      <ScrollLock isOpen={editProfileDialog} />
+      <div
+        ref={postRef}
+        className="w-full md:w-[60%] lg:w-[45%] h-full overflow-auto bg-black md:rounded-[20px] py-2 md:py-3"
+      >
         <div className="h-[90%]">
-          <div className="sticky top-0 z-[100000] px-4">
+          <div className="sticky top-0 z-[100000] px-1 md:px-4">
             <div className="flex justify-between items-center backdrop-blur-sm z-[1000]">
               <div className="flex items-center gap-6">
-                <div onClick={() => setEditProfileDialog(false)} className="cursor-pointer hover:bg-[#5656563e] rounded-full p-2">
-                  <Icons.XIcon className="w-6 h-6" />
+                <div
+                  onClick={() => setEditProfileDialog(false)}
+                  className="cursor-pointer hover:bg-[#5656563e] rounded-full p-2"
+                >
+                  <Icons.XIcon className="w-6 hidden md:block h-6" />
+                  <Icons.ArrowLeft className="w-6 md:hidden" />
                 </div>
                 <p className="text-[18px] font-[600]">Edit profile</p>
               </div>
               <button
                 onClick={() => form.handleSubmit(onSubmit)()}
-                className="py-1 font-[600] px-4 rounded-full bg-white text-black capitalize"
+                className="py-1 font-[600] px-4 mr-1 sm:mr-0 rounded-full bg-white text-black capitalize"
               >
                 save
               </button>
@@ -114,7 +129,10 @@ const formSchema = z.object({
             <Form {...form}>
               <form id="editprofile" onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="h-full">
-                  <div style={{ height: "250px" }} className="relative h-[300px]">
+                  <div
+                    style={{ height: "250px" }}
+                    className="relative h-[300px]"
+                  >
                     <ImageUpload
                       control={form.control}
                       name="coverImgUrl"
@@ -139,10 +157,27 @@ const formSchema = z.object({
 
                   <div className="px-4 py-6">
                     <div className="flex flex-col gap-6">
-                      <FormInput name="firstName" control={form.control} label="Firstname" />
-                      <FormInput name="lastName" control={form.control} label="Lastname" />
-                      <FormInput name="bio" control={form.control} label="Bio" isTextArea />
-                      <FormInput name="location" control={form.control} label="Location" />
+                      <FormInput
+                        name="firstName"
+                        control={form.control}
+                        label="Firstname"
+                      />
+                      <FormInput
+                        name="lastName"
+                        control={form.control}
+                        label="Lastname"
+                      />
+                      <FormInput
+                        name="bio"
+                        control={form.control}
+                        label="Bio"
+                        isTextArea
+                      />
+                      <FormInput
+                        name="location"
+                        control={form.control}
+                        label="Location"
+                      />
                     </div>
                   </div>
                 </div>
@@ -155,4 +190,4 @@ const formSchema = z.object({
   );
 };
 
-export default EditProfileContainer
+export default EditProfileContainer;

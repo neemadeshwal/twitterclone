@@ -11,6 +11,7 @@ const client = new ApolloClient({
     "Access-Control-Allow-Credentials": "true"
   }
 });
+console.log(SERVER_URL!,"server url");
 
 export const ApolloProviderWrapper = ({
   children,

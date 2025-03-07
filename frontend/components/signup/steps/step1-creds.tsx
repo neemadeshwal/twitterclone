@@ -315,8 +315,6 @@ const Step1Creds = ({
                 </div>
               </div>
             </div>
-            {/* Optional: Add a submit button if not present elsewhere */}
-            
           </form>
         </Form>
       </div>

@@ -1,6 +1,11 @@
 import { TbCameraPlus } from "react-icons/tb";
 import Image from "next/image";
-import { FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import Loading from "./loading";
 
 interface ImageUploadProps {
@@ -13,14 +18,14 @@ interface ImageUploadProps {
   firstName?: string;
 }
 
-export const ImageUpload = ({ 
-  control, 
-  name, 
-  value, 
-  loading, 
-  onUpload, 
+export const ImageUpload = ({
+  control,
+  name,
+  value,
+  loading,
+  onUpload,
   isCover = false,
-  firstName = ""
+  firstName = "",
 }: ImageUploadProps) => {
   return (
     <FormField
@@ -30,18 +35,30 @@ export const ImageUpload = ({
         <FormItem>
           <FormControl>
             {loading ? (
-              <div className={`flex ${isCover?"":"rounded-full border border-gray-700 w-[130px] items-center h-[130px]"} justify-center items-center`}><Loading/></div>
+              <div
+                className={`flex ${
+                  isCover
+                    ? ""
+                    : "rounded-full border border-gray-700 w-[130px] items-center h-[130px]"
+                } justify-center items-center`}
+              >
+                <Loading />
+              </div>
             ) : (
-              <div className={isCover ? "w-full h-[170px] flex items-center justify-center" : ""}>
+              <div
+                className={
+                  isCover
+                    ? "w-full h-[170px] flex items-center justify-center"
+                    : ""
+                }
+              >
                 {value ? (
                   <div>
                     {value.startsWith("#") && !isCover ? (
                       <div
-                        className="rounded-full text-[60px] border-4 border-black flex items-center justify-center capitalize"
+                        className="rounded-full w-[100px] h-[100px] sm:w-[130px] sm:h-[130px] text-[60px] border-4 border-black flex items-center justify-center capitalize"
                         style={{
                           backgroundColor: value,
-                          width: "130px",
-                          height: "130px",
                         }}
                       >
                         {firstName.slice(0, 1)}
@@ -50,7 +67,11 @@ export const ImageUpload = ({
                       <Image
                         src={value}
                         alt=""
-                        className={isCover ? "w-full h-[170px]" : "rounded-full w-[130px] h-[130px] border-black border-4 bg-contain"}
+                        className={
+                          isCover
+                            ? "w-full h-[170px]"
+                            : "rounded-full w-[130px] h-[130px] border-black border-4 bg-contain"
+                        }
                         width={isCover ? 100 : 40}
                         height={isCover ? 100 : 40}
                       />
@@ -69,7 +90,11 @@ export const ImageUpload = ({
                     </div>
                   )
                 )}
-                <div className={`absolute top-0 left-0 w-full h-full ${isCover?"pb-10":""}  flex justify-center items-center`}>
+                <div
+                  className={`absolute top-0 left-0 w-full h-full ${
+                    isCover ? "pb-10" : ""
+                  }  flex justify-center items-center`}
+                >
                   <div className="cursor-pointer p-2 z-[100]">
                     <label htmlFor={name} className="cursor-pointer">
                       <TbCameraPlus className="w-7 h-7" />
