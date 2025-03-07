@@ -22,6 +22,7 @@ import {
 import { days, months, years } from "@/lib/functions";
 import { getDataProps } from "../createAccount";
 import { userUserMutation } from "@/hooks/mutation/useUserMutation";
+import Loading from "@/shared/loading";
 
 const formSchema = z.object({
   firstName: z
@@ -90,10 +91,23 @@ const Step1Creds = ({
           email: result.getCredAndSendOtp.email,
         }));
       }
+      else{
+
+        console.log(result,"result")
+
+
+
+      }
     } catch (error) {
-      console.log(error);
+      console.log(error.ClientError,"an erro");
+      if (error.message?.includes("User already exists") || 
+        error.graphQLErrors?.some((e: any) => e.message?.includes("User already exists"))) {
     }
   }
+
+ if(isgettingCred){
+  return <div className="flex justify-center py-4"><Loading/></div>
+ }
 
   return (
     <div>
