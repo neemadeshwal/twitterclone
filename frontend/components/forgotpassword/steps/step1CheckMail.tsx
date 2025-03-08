@@ -26,7 +26,6 @@ const formSchema = z.object({
 
 const Step1CheckEmail = ({
   setAuthData,
-  forgotpass,
 }: {
   setAuthData: React.Dispatch<
     React.SetStateAction<{
@@ -34,7 +33,6 @@ const Step1CheckEmail = ({
       email: string;
     }>
   >;
-  forgotpass: boolean;
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,51 +44,41 @@ const Step1CheckEmail = ({
   const [previousEmail, setPreviousEmail] = useState("");
   const [typedEmail, setTypedEmail] = useState("");
 
-  const { checkEmailFn, isCheckingEmail, confirmMailFn, isConfirmMail } =
-    userUserMutation({
-      onError: (error) => {
-        if (error.message.includes("Account does not exist")) {
-          setAccountExist(true);
-          setPreviousEmail(form.getValues("email"));
-        } else {
-          console.log(error);
-          toast.error(error.message);
-        }
-      },
-    });
+  const { checkEmailFn } = userUserMutation({
+    onError: (error) => {
+      if (
+        error.message.includes(
+          "User does not exist. Please create an account first"
+        )
+      ) {
+        console.log("exist error");
+        setAccountExist(true);
+        setPreviousEmail(form.getValues("email"));
+      } else {
+        console.log(error);
+        toast.error(error.message);
+      }
+    },
+  });
 
   useEffect(() => {
     if (!typedEmail || !previousEmail) return;
 
     if (typedEmail == previousEmail) {
-      setAccountExist(true);
-    } else {
       setAccountExist(false);
+    } else {
+      setAccountExist(true);
     }
   }, [typedEmail, previousEmail]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      if (forgotpass) {
-        const body = { email: values.email };
-        const result = await confirmMailFn(body);
-        if (result && result.confirmedMail) {
-          setAuthData({
-            next_page: result.confirmedMail.next_page,
-            email: result.confirmedMail.email,
-          });
-        }
-      } else {
-        const body = {
-          email: values.email,
-          authType: forgotpass ? "confirmyou" : "login",
-        };
-        const result = await checkEmailFn(body);
-        if (result && result.getLoginCreds) {
-          setAuthData({
-            next_page: result.getLoginCreds.next_page,
-            email: result.getLoginCreds.email,
-          });
-        }
+      const body = { email: values.email, authType: "confirmyou" };
+      const result = await checkEmailFn(body);
+      if (result && result.getLoginCreds) {
+        setAuthData({
+          next_page: result.getLoginCreds.next_page,
+          email: result.getLoginCreds.email,
+        });
       }
     } catch (error) {
       console.log(error);
@@ -156,37 +144,6 @@ const Step1CheckEmail = ({
                     </div>
                   )}
                 />
-                {!forgotpass && (
-                  <div className=" items-center flex justify-center  w-full">
-                    <button
-                      type="submit"
-                      disabled={!typedEmail}
-                      className="bg-white disabled:bg-white/50  text-black items-center w-full py-[0.6rem] font-[700] rounded-full"
-                    >
-                      {isCheckingEmail || isConfirmMail ? (
-                        <div className="flex items-center justify-center">
-                          {" "}
-                          <Loading small={true} />
-                        </div>
-                      ) : (
-                        " Next"
-                      )}
-                    </button>
-                  </div>
-                )}
-
-                {!forgotpass && (
-                  <div className=" items-center flex justify-center  w-full">
-                    <Link href="/password_reset" className="w-full ">
-                      <button
-                        type="button"
-                        className="text-white  bg-black items-center w-full py-[0.6rem] font-[700] rounded-full border border-gray-500"
-                      >
-                        Forgot password ?
-                      </button>
-                    </Link>
-                  </div>
-                )}
               </div>
             </div>
           </form>

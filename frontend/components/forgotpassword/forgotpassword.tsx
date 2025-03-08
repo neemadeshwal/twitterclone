@@ -1,11 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import { BsTwitterX, BsX } from "react-icons/bs";
-import Step1CheckEmail from "../login/steps/step1CheckEmail";
+import Step1CheckEmail from "./steps/step1CheckMail";
 import Link from "next/link";
 import Step2ConfirmYou from "./steps/Step2ConfirmYou";
 import Step3NewPass from "./steps/Step3NewPass";
 import Step2VerifyOtp from "../signup/steps/step2-verifyotp";
+import { userUserMutation } from "@/hooks/mutation/useUserMutation";
+import Loading from "@/shared/loading";
 
 const Forgotpassword = () => {
   const [authData, setAuthData] = useState({
@@ -26,6 +28,7 @@ const Forgotpassword = () => {
       form.dispatchEvent(event);
     }
   }
+  const { isConfirmMail } = userUserMutation();
   return (
     <div>
       <div className="z-50">
@@ -97,10 +100,7 @@ const Forgotpassword = () => {
                   </div>
                   <div className="py-[18px] h-full">
                     {authData.next_page === "checkemail" ? (
-                      <Step1CheckEmail
-                        forgotpass={true}
-                        setAuthData={setAuthData}
-                      />
+                      <Step1CheckEmail setAuthData={setAuthData} />
                     ) : authData.next_page === "confirmyou" ? (
                       <Step2ConfirmYou
                         authEmail={authData.email}
@@ -124,7 +124,13 @@ const Forgotpassword = () => {
                     onClick={handleSubmitForm}
                     className="bg-white  text-black items-center w-full py-[0.8rem] font-[700] rounded-full"
                   >
-                    Next
+                    {isConfirmMail ? (
+                      <div>
+                        <Loading small={true} />
+                      </div>
+                    ) : (
+                      " Next"
+                    )}
                   </button>
                 </div>
               </div>

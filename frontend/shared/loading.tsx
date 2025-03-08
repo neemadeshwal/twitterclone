@@ -1,12 +1,14 @@
 import React from "react";
 
-const Loading = () => {
+const Loading = ({ small }: { small?: boolean }) => {
   return (
     <div>
       <div role="status">
         <svg
           aria-hidden="true"
-          className="w-6 h-6 text-blue-500 animate-spin dark:text-blue-900 fill-blue-500"
+          className={`${
+            small ? "w-4 h-4" : "w-6 h-6"
+          } text-blue-500 animate-spin dark:text-blue-900 fill-blue-500`}
           viewBox="0 0 100 101"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

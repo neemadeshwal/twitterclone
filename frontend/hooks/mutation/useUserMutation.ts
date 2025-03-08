@@ -6,6 +6,7 @@ import {
   editProfileMutate,
   getCredAndSendOtp,
   getLoginCreds,
+  resendCode,
   resetPassword,
   verifyOtp,
 } from "@/graphql/mutation/user";
@@ -69,10 +70,25 @@ interface NewPassResponse {
     email: string;
   };
 }
+interface ErrorResponse {
+  message: string;
+  code: string;
+  path: string;
+  extensions: {
+    code: string;
+  };
+}
+
+interface resendCodeResponse {
+  resendOtp: {
+    next_page: string;
+    email: string;
+  };
+}
 
 interface UseUserMutationProps {
   onSuccess?: () => void;
-  onError?: (error: unknown) => void;
+  onError?: (error: ErrorResponse) => void;
 }
 
 export const userUserMutation = ({
@@ -122,9 +138,14 @@ export const userUserMutation = ({
     return resetPassword(data) as Promise<NewPassResponse>;
   };
 
+  const typedResendCode = (data: {
+    email: string;
+  }): Promise<resendCodeResponse> => {
+    return resendCode(data) as Promise<resendCodeResponse>;
+  };
   const getCredAndSendOtpMutation = useMutation<
     CredResponse,
-    Error,
+    ErrorResponse,
     getCredsData
   >({
     mutationFn: typedGetCredAndSendOtp,
@@ -137,7 +158,11 @@ export const userUserMutation = ({
     },
   });
 
-  const verifyOtpMutation = useMutation<OtpResponse, Error, verifyOtpProps>({
+  const verifyOtpMutation = useMutation<
+    OtpResponse,
+    ErrorResponse,
+    verifyOtpProps
+  >({
     mutationFn: typedVerifyOtp,
     onSuccess: (data) => {
       onSuccess?.();
@@ -150,7 +175,7 @@ export const userUserMutation = ({
 
   const createAccountMutation = useMutation<
     createAccountResponse,
-    Error,
+    ErrorResponse,
     createAccountProps
   >({
     mutationFn: typedCreateAccount,
@@ -163,10 +188,25 @@ export const userUserMutation = ({
     },
   });
 
+  const resendCodemutation = useMutation<
+    resendCodeResponse,
+    ErrorResponse,
+    { email: string }
+  >({
+    mutationFn: typedResendCode,
+    onSuccess: (data) => {
+      onSuccess?.();
+      return data;
+    },
+    onError: (error) => {
+      onError?.(error);
+    },
+  });
+
   const checkEmailMutation = useMutation<
     checkEmailResponse,
-    Error,
-    getLoginCredsProps
+    ErrorResponse,
+    { email: string; authType: string }
   >({
     mutationFn: typedCheckEmail,
     onSuccess: (data) => {
@@ -180,7 +220,7 @@ export const userUserMutation = ({
 
   const verifyPassMutation = useMutation<
     verifyPassResponse,
-    Error,
+    ErrorResponse,
     checkLoginPassProps
   >({
     mutationFn: typedVerifyPass,
@@ -195,7 +235,7 @@ export const userUserMutation = ({
 
   const confirmMailMutation = useMutation<
     confirmYouResponse,
-    Error,
+    ErrorResponse,
     { email: string }
   >({
     mutationFn: typedConfirmYou,
@@ -210,7 +250,7 @@ export const userUserMutation = ({
 
   const newPasswordMutation = useMutation<
     NewPassResponse,
-    Error,
+    ErrorResponse,
     { email: string; password: string }
   >({
     mutationFn: typedNewPass,
@@ -272,6 +312,16 @@ export const userUserMutation = ({
   const createAccountFn = async (body: createAccountProps) => {
     try {
       const result = await createAccountMutation.mutateAsync(body);
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+
+  const resendCodeFn = async (body: { email: string }) => {
+    try {
+      const result = await resendCodemutation.mutateAsync(body);
       return result;
     } catch (error) {
       console.log(error);
@@ -345,7 +395,15 @@ export const userUserMutation = ({
     newPassFn,
     confirmMailFn,
     followUserFn,
+    resendCodeFn,
     isgettingCred: getCredAndSendOtpMutation.isPending,
     isEditingUser: EditUserMutation.isPending,
+    isverifyingOtp: verifyOtpMutation.isPending,
+    isResendingCode: resendCodemutation.isPending,
+    isCreatingAccount: createAccountMutation.isPending,
+    isCheckingEmail: checkEmailMutation.isPending,
+    isverifyingPassword: verifyPassMutation.isPending,
+    isConfirmMail: confirmMailMutation.isPending,
+    ischeckingEmail: checkEmailMutation.isPending,
   };
 };

@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,7 @@ import { days, months, years } from "@/lib/functions";
 import { getDataProps } from "../createAccount";
 import { userUserMutation } from "@/hooks/mutation/useUserMutation";
 import Loading from "@/shared/loading";
-
+import { toast } from "sonner";
 const formSchema = z.object({
   firstName: z
     .string()
@@ -36,18 +36,21 @@ const formSchema = z.object({
     .min(5, "Email must be at least 5 characters long"),
   dob: z.object({
     month: z.string().min(3, { message: "Month should not be empty" }),
-    year: z.string()
-  .min(1, { message: "Year is required" })
-  .transform(val => Number(val))
-  .refine(n => !isNaN(n), { message: "Year must be a valid number" })
-  .refine(n => n >= 1900, { message: "Year should be a valid year" }),
+    year: z
+      .string()
+      .min(1, { message: "Year is required" })
+      .transform((val) => Number(val))
+      .refine((n) => !isNaN(n), { message: "Year must be a valid number" })
+      .refine((n) => n >= 1900, { message: "Year should be a valid year" }),
 
-day: z.string()
-  .min(1, { message: "Day is required" })
-  .transform(val => Number(val))
-  .refine(n => !isNaN(n), { message: "Day must be a valid number" })
-  .refine(n => n >= 1, { message: "Day should be a positive number" })
-})})
+    day: z
+      .string()
+      .min(1, { message: "Day is required" })
+      .transform((val) => Number(val))
+      .refine((n) => !isNaN(n), { message: "Day must be a valid number" })
+      .refine((n) => n >= 1, { message: "Day should be a positive number" }),
+  }),
+});
 
 const Step1Creds = ({
   setGetData,
@@ -63,17 +66,44 @@ const Step1Creds = ({
     },
   });
 
+  const [isuserAlreadyExist, setIsUserAlreadyExist] = useState(false);
+  const [previousEmail, setPreviousEmail] = useState("");
+  const [typedEmail, setTypedEmail] = useState("");
+
+  // Watch for email changes to reset the error state
+  useEffect(() => {
+    if (
+      typedEmail === previousEmail &&
+      (typedEmail !== "" || previousEmail !== "")
+    ) {
+      setIsUserAlreadyExist(true);
+    } else {
+      setIsUserAlreadyExist(false);
+    }
+  }, [typedEmail, previousEmail]);
+
   const { getCredAndSendOtpFn, isgettingCred } = userUserMutation({
     onSuccess: () => {
       console.log("Credentials submitted successfully");
     },
     onError: (error) => {
+      if (error.message.includes("User already exists")) {
+        setIsUserAlreadyExist(true);
+        // Store the current email to compare against future changes
+        setPreviousEmail(form.getValues("email"));
+      } else {
+        console.log("error");
+        toast.error(error.message);
+      }
       console.error("Error submitting credentials:", error);
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    // Remove this line to prevent overriding the API response
+    // setIsUserAlreadyExist(true);
+
     const monthIndex = months.indexOf(values.dob.month) + 1;
     const newData = {
       firstName: values.firstName,
@@ -90,24 +120,21 @@ const Step1Creds = ({
           next_page: result.getCredAndSendOtp.next_page,
           email: result.getCredAndSendOtp.email,
         }));
-      }
-      else{
-
-        console.log(result,"result")
-
-
-
+      } else {
+        console.log(result, "result");
       }
     } catch (error) {
-      console.log(error.ClientError,"an erro");
-      if (error.message?.includes("User already exists") || 
-        error.graphQLErrors?.some((e: any) => e.message?.includes("User already exists"))) {
+      console.log(error);
     }
   }
 
- if(isgettingCred){
-  return <div className="flex justify-center py-4"><Loading/></div>
- }
+  if (isgettingCred) {
+    return (
+      <div className="flex justify-center py-4">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -116,6 +143,7 @@ const Step1Creds = ({
           <form onSubmit={form.handleSubmit(onSubmit)} id="getcreds">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-6">
+                {/* First Name Field */}
                 <FormField
                   control={form.control}
                   name="firstName"
@@ -126,7 +154,7 @@ const Step1Creds = ({
                           <Input
                             id="firstName"
                             autoFocus
-                            className="block w-full px-4 text-[16px] border-0 focus:outline-none  bg-transparent peer "
+                            className="block w-full px-4  text-[16px] border-0 focus:outline-none  bg-transparent peer "
                             placeholder=""
                             {...field}
                           />
@@ -151,6 +179,7 @@ const Step1Creds = ({
                     </div>
                   )}
                 />
+                {/* Last Name Field */}
                 <FormField
                   control={form.control}
                   name="lastName"
@@ -184,18 +213,33 @@ const Step1Creds = ({
                     </FormItem>
                   )}
                 />
+                {/* Email Field */}
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => (
                     <div>
-                      <FormItem className="relative pt-[1rem] pb-1 border-gray-600  px-1 border rounded-[5px]  focus-within:border-[#1d9bf0]  focus-within:shadow-[0 1px 8px rgba(29, 155, 240, 0.5)] ">
+                      <FormItem
+                        className={`relative pt-[1rem] pb-1 ${
+                          isuserAlreadyExist
+                            ? "border-red-500"
+                            : "border-gray-600"
+                        }   px-1 border rounded-[5px] ${
+                          isuserAlreadyExist
+                            ? "focus-within:border-red-500"
+                            : "focus-within:border-[#1d9bf0] "
+                        }   focus-within:shadow-[0 1px 8px rgba(29, 155, 240, 0.5)] `}
+                      >
                         <FormControl>
                           <Input
+                            {...field}
                             id="email"
                             className="block w-full px-4 text-[16px] border-0 focus:outline-none  bg-transparent peer "
                             placeholder=""
-                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e); // Call the form library's onChange
+                              setTypedEmail(e.target.value); // Update your local state
+                            }}
                           />
                         </FormControl>
 
@@ -205,16 +249,30 @@ const Step1Creds = ({
                             form.getValues("email")
                               ? "text-[11px] top-8 -translate-y-9 text-gray-500"
                               : "left-4 top-2 -translate-y-4"
-                          } left-4 top-2 transition-all duration-200 peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 peer-focus:text-[#1d9bf0] `}
+                          } left-4 top-2 ${
+                            isuserAlreadyExist
+                              ? "text-red-500"
+                              : "text-gray-500"
+                          } transition-all duration-200 capitalize peer-focus:text-[13px] transform peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:text-gray-500 peer-focus:top-8 peer-focus:-translate-y-9 ${
+                            isuserAlreadyExist
+                              ? "peer-focus:text-red-500"
+                              : "peer-focus:text-[#1d9bf0]"
+                          } `}
                         >
                           email
                         </label>
                       </FormItem>
+                      {isuserAlreadyExist && (
+                        <p className="text-red-500 text-[14px]">
+                          Email has already been taken.
+                        </p>
+                      )}
                       <FormMessage />
                     </div>
                   )}
                 />
               </div>
+              {/* Date of Birth Section */}
               <div>
                 <div>
                   <h2 className="font-[600] text-[17px]">Date of birth</h2>
@@ -224,6 +282,7 @@ const Step1Creds = ({
                   </p>
                 </div>
                 <div className="flex gap-2 items-center py-4">
+                  {/* Month Selection */}
                   <FormField
                     control={form.control}
                     name="dob.month"
@@ -256,6 +315,7 @@ const Step1Creds = ({
                       </FormItem>
                     )}
                   />
+                  {/* Day Selection */}
                   <FormField
                     control={form.control}
                     name="dob.day"
@@ -291,6 +351,7 @@ const Step1Creds = ({
                       </FormItem>
                     )}
                   />
+                  {/* Year Selection */}
                   <FormField
                     control={form.control}
                     name="dob.year"

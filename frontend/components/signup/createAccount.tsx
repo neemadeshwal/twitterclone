@@ -99,11 +99,11 @@ const CreateAccount = ({ authType }: { authType: "login" | "signup" }) => {
                 </div>
                 <div
                   style={{ boxShadow: "0 -0.4px 0px rgba(255,255,255,0.5)" }}
-                  className="p-4 px-20 items-center flex justify-center pt-6"
+                  className="p-4 px-14 md:px-20 items-center flex justify-center pt-6"
                 >
                   <button
                     onClick={handleSubmitForm}
-                    className="bg-white  text-black items-center w-full py-[0.8rem] font-[700] rounded-full"
+                    className="bg-white disabled:bg-white/50  text-black items-center w-full py-[0.8rem] font-[700] rounded-full"
                   >
                     Next
                   </button>
