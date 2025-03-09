@@ -52,7 +52,7 @@ const Step1CheckEmail = ({
       onError: (error) => {
         
         if (error.message.includes("Account does not exist. not found")) {
-          setAccountExist(true);
+          setAccountExist(false);
           setPreviousEmail(form.getValues("email"));
         } else {
           console.log(error);
