@@ -50,7 +50,7 @@ const Step1CheckEmail = ({
   const { checkEmailFn, isCheckingEmail, confirmMailFn, isConfirmMail } =
     userUserMutation({
       onError: (error) => {
-        if (error.message.includes("Account does not exist")) {
+        if (error.message.includes("Account does not exist. not found")) {
           setAccountExist(true);
           setPreviousEmail(form.getValues("email"));
         } else {
