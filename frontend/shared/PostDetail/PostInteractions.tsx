@@ -4,12 +4,13 @@ import PostActions from "@/components/post/SinglePost/PostActions";
 import { Comment, Tweet } from "@/graphql/types";
 
 interface PostInteractionsProps {
-  tweet: Tweet|Comment;
+  tweet: Tweet | Comment;
   liked: boolean;
   repost: boolean;
   handleTweetLike: () => void;
   handleRepostTweet: () => void;
-  isComment?:boolean
+  isComment?: boolean;
+  isInPhotoSection?: boolean;
 }
 const PostInteractions = ({
   tweet,
@@ -17,12 +18,13 @@ const PostInteractions = ({
   repost,
   handleRepostTweet,
   handleTweetLike,
-  isComment
+  isInPhotoSection,
+  isComment,
 }: PostInteractionsProps) => {
   return (
     <div>
-      <div className="px-4 pt-2">
-        <DivisionBar type="x" />
+      <div className={`px-4 ${!isInPhotoSection ? "pt-2" : "pt-0"}`}>
+        {!isInPhotoSection && <DivisionBar type="x" />}
         <PostActions
           tweet={tweet}
           liked={liked}
@@ -30,9 +32,8 @@ const PostInteractions = ({
           handleRepostTweet={handleRepostTweet}
           handleTweetLike={handleTweetLike}
           isComment={isComment}
-          
         />
-        <DivisionBar type="x" />
+        {!isInPhotoSection && <DivisionBar type="x" />}
       </div>
     </div>
   );

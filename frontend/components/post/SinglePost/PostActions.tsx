@@ -23,14 +23,15 @@ const PostActions = ({
   isComment?: boolean;
 }) => {
   const shareLink = isComment
-    ? `http://localhost:5000/${tweet?.author?.userName}/comment/${tweet?.id}`
-    : `http://localhost:5000/${tweet?.author?.userName}/status/${tweet?.id}`;
+    ? `${process.env.NEXT_PUBLIC_CLIENT_URL}/${tweet?.author?.userName}/comment/${tweet?.id}`
+    : `${process.env.NEXT_PUBLIC_CLIENT_URL}/${tweet?.author?.userName}/status/${tweet?.id}`;
 
   // Type-checking tweet object for both Tweet and CommentType
   const isTweetCheck = (tweet: Tweet | CommentType): tweet is Tweet =>
-    "repostTweet" in tweet;
+    tweet !== undefined && tweet !== null && "repostTweet" in tweet;
+
   const isCommentCheck = (tweet: Tweet | CommentType): tweet is CommentType =>
-    "repostComment" in tweet;
+    tweet !== undefined && tweet !== null && "repostComment" in tweet;
 
   return (
     <div>

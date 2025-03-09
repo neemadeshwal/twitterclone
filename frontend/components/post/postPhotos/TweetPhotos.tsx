@@ -7,10 +7,12 @@ import Photos from "./Photos";
 import { Comment, Like, Repost, Tweet } from "@/graphql/types";
 
 // Type guard functions for Tweet and Comment
+
 const isTweet = (tweet: Tweet | Comment): tweet is Tweet =>
-  "repostTweet" in tweet;
+  tweet !== undefined && tweet !== null && "repostTweet" in tweet;
+
 const isComment = (tweet: Tweet | Comment): tweet is Comment =>
-  "repostComment" in tweet;
+  tweet !== undefined && tweet !== null && "repostComment" in tweet;
 
 const TweetPhotos = ({
   photoNum,

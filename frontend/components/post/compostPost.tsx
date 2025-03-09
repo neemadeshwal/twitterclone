@@ -29,11 +29,13 @@ const ComposePost = ({
   isComment,
   tweetId,
   isParentComment,
+  isInPhotoSection,
 }: {
   user: getCurrentUser | null;
   isComment?: boolean;
   tweetId?: string;
   isParentComment?: boolean;
+  isInPhotoSection?: boolean;
 }) => {
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
@@ -169,21 +171,21 @@ const ComposePost = ({
 
   return (
     <div className="w-full relative">
-      <div className="w-full p-6 px-0 sm:px-4 pb-4">
+      <div
+        className={`w-full ${!isInPhotoSection && "p-6 pb-4"} px-0 sm:px-4 `}
+      >
         <div className="flex gap-2 w-full">
-          <CurrentUser user={user} />
+          {!isInPhotoSection && <CurrentUser user={user} />}
+
           <div className="w-full mt-2 px-2">
             <TweetContent
               isComment={isComment}
               tweetContent={tweetContent}
+              isInPhotoSection={isInPhotoSection}
               setTweetContent={setTweetContent}
             />
 
-            {loading && (
-              <div className="pb-3 pl-3">
-                <Loading />
-              </div>
-            )}
+            {loading && <div className="pb-3 pl-3"></div>}
 
             {files.length !== 0 && (
               <MediaUpload files={files} setFiles={setFiles} />
@@ -191,67 +193,69 @@ const ComposePost = ({
             {!isComment && <DivisionBar type="x" />}
           </div>
         </div>
-        <div>
-          <div
-            className={`pl-14 flex ${
-              isComment ? "pt-0" : "pt-3"
-            } pb-0 justify-between`}
-          >
-            <TweetAction
-              setTweetContent={setTweetContent}
-              setFiles={setFiles}
-              setLoading={setLoading}
-              containerType="MainPost"
-            />
-            <div className="flex gap-2 items-center">
-              {tweetContent.length > 0 && (
-                <div>
-                  <CharacterCircle
-                    tweetContentLength={tweetContent.length}
-                    characterLimit={Number(TWEET_CHARACTER_LIMIT)}
-                  />
-                </div>
-              )}
+        {!isInPhotoSection && (
+          <div>
+            <div
+              className={`pl-14 flex ${
+                isComment ? "pt-0" : "pt-3"
+              } pb-0 justify-between`}
+            >
+              <TweetAction
+                setTweetContent={setTweetContent}
+                setFiles={setFiles}
+                setLoading={setLoading}
+                containerType="MainPost"
+              />
+              <div className="flex gap-2 items-center">
+                {tweetContent.length > 0 && (
+                  <div>
+                    <CharacterCircle
+                      tweetContentLength={tweetContent.length}
+                      characterLimit={Number(TWEET_CHARACTER_LIMIT)}
+                    />
+                  </div>
+                )}
 
-              {isComment && tweetId ? (
-                isParentComment ? (
-                  <button
-                    onClick={replyOnCommentSubmit}
-                    className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
-                    disabled={
-                      loading ||
-                      (files.length === 0 && tweetContent.trim() === "")
-                    }
-                  >
-                    Reply
-                  </button>
+                {isComment && tweetId ? (
+                  isParentComment ? (
+                    <button
+                      onClick={replyOnCommentSubmit}
+                      className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
+                      disabled={
+                        loading ||
+                        (files.length === 0 && tweetContent.trim() === "")
+                      }
+                    >
+                      Reply
+                    </button>
+                  ) : (
+                    <button
+                      onClick={onCommentSubmit}
+                      className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
+                      disabled={
+                        loading ||
+                        (files.length === 0 && tweetContent.trim() === "")
+                      }
+                    >
+                      Reply
+                    </button>
+                  )
                 ) : (
                   <button
-                    onClick={onCommentSubmit}
+                    onClick={onSubmit}
                     className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
                     disabled={
                       loading ||
                       (files.length === 0 && tweetContent.trim() === "")
                     }
                   >
-                    Reply
+                    Post
                   </button>
-                )
-              ) : (
-                <button
-                  onClick={onSubmit}
-                  className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
-                  disabled={
-                    loading ||
-                    (files.length === 0 && tweetContent.trim() === "")
-                  }
-                >
-                  Post
-                </button>
-              )}
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
       <DivisionBar type="x" />
       {isEmojiTableOpen && (

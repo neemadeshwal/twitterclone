@@ -1,0 +1,252 @@
+import { Tweet, Comment, Like, Repost } from "@/graphql/types";
+import AuthorProfile from "@/shared/AuthorProfile";
+import { Icons } from "@/utils/icons";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Image from "next/image";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import PostInteractions from "@/shared/PostDetail/PostInteractions";
+import { useCurrentUser } from "@/hooks/user";
+import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
+import ComposePost from "../compostPost";
+import { useRouter } from "next/navigation";
+import { type SyntheticEvent } from "react";
+
+const isTweet = (tweet: Tweet | Comment): tweet is Tweet =>
+  tweet !== undefined && tweet !== null && "repostTweet" in tweet;
+
+const isCommentCheck = (tweet: Tweet | Comment): tweet is Comment =>
+  tweet !== undefined && tweet !== null && "repostComment" in tweet;
+const SmallScreenPhoto = ({
+  tweet,
+  isComment,
+  photoNum,
+  currentUrl,
+}: {
+  tweet: Tweet | Comment;
+  isComment: boolean;
+  photoNum: string;
+  currentUrl: string;
+}) => {
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(
+    Number(photoNum) - 1
+  );
+  const [previousIndex, setPreviousIndex] = useState(Number(photoNum) - 1);
+  const [showPhoto, setShowPhoto] = useState("");
+  const [isSliding, setIsSliding] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [repost, setRepost] = useState(false);
+  const carouselApiRef = useRef<any>(null);
+
+  const { user } = useCurrentUser();
+
+  const { likeTweet, repostTweet } = useTweetMutation({});
+
+  // Repost handling function
+  async function handleRepostTweet() {
+    if (!tweet || !tweet.id) {
+      return;
+    }
+    const body = {
+      tweetId: tweet.id,
+    };
+    try {
+      await repostTweet(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Like handling function
+  async function handleTweetLike() {
+    setLiked((prevVal) => !prevVal);
+    if (!tweet?.id) {
+      return;
+    }
+    const body = {
+      tweetId: tweet.id,
+    };
+    try {
+      await likeTweet(body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const router = useRouter();
+  useEffect(() => {
+    if (isTweet(tweet)) {
+      // Logic specific to Tweet
+      if (tweet?.likedBy && user) {
+        setLiked(tweet.likedBy.some((like: Like) => like.userId === user.id));
+      }
+      if (tweet?.repostTweet && user) {
+        setRepost(
+          tweet.repostTweet.some((repost: Repost) => repost.userId === user.id)
+        );
+      }
+    } else if (isCommentCheck(tweet)) {
+      // Logic specific to Comment
+      if (tweet?.likes && user) {
+        setLiked(tweet.likes.some((like: Like) => like.userId === user.id));
+      }
+      if (tweet?.repostComment && user) {
+        setRepost(
+          tweet.repostComment.some(
+            (repost: Repost) => repost.userId === user.id
+          )
+        );
+      }
+    }
+  }, [tweet, user]);
+
+  useEffect(() => {
+    if (photoNum && tweet?.mediaArray) {
+      setCurrentPhotoIndex(Number(photoNum) - 1);
+      setPreviousIndex(Number(photoNum) - 1);
+      setShowPhoto(tweet.mediaArray[Number(photoNum) - 1]);
+    }
+  }, [photoNum, tweet]);
+
+  const handleNavigation = (direction: "prev" | "next") => {
+    if (isSliding || !tweet?.mediaArray || !carouselApiRef.current) return;
+
+    setIsSliding(true);
+
+    // Use the carousel API to scroll programmatically
+    if (direction === "prev") {
+      carouselApiRef.current.scrollPrev();
+    } else {
+      carouselApiRef.current.scrollNext();
+    }
+  };
+
+  const handleCarouselChange = (api: any) => {
+    if (!api || !tweet?.mediaArray) return;
+
+    // Store the API reference
+    carouselApiRef.current = api;
+
+    const selectedIndex = api.selectedScrollSnap();
+    const direction = selectedIndex > previousIndex ? "forward" : "backward";
+
+    console.log(
+      `Slide direction: ${direction}, New index: ${selectedIndex}, Previous index: ${previousIndex}`
+    );
+
+    // Update our state
+    setPreviousIndex(currentPhotoIndex);
+    setCurrentPhotoIndex(selectedIndex);
+    setShowPhoto(tweet.mediaArray[selectedIndex]);
+
+    // Update URL and release sliding lock
+    const newUrl = `${currentUrl}${selectedIndex + 1}`;
+    window.history.replaceState({ ...window.history.state }, "", newUrl);
+    setIsSliding(false);
+  };
+
+  const handleTransitionEnd = () => {
+    setIsSliding(false);
+  };
+
+  if (!showPhoto) return null;
+
+  return (
+    <div className="py-4 relative w-full h-screen   ">
+      <div className="flex justify-between px-4">
+        <Icons.ArrowLeft className="" onClick={() => router.back()} />
+        <Icons.VerticalDots />
+      </div>
+      <div className="py-8 px-2 flex justify-between">
+        <div className="flex gap-4 items-center">
+          <AuthorProfile author={tweet?.author} />
+          <div>
+            <h2 className="capitalize">
+              {tweet?.author.firstName} {tweet?.author.lastName}
+            </h2>
+            <p>@{tweet?.author.userName}</p>
+          </div>
+        </div>
+        <div>
+          <button className="rounded-full px-6 py-1 capitalize border">
+            follow
+          </button>
+        </div>
+      </div>
+      <div>
+        <Carousel
+          opts={{
+            loop: false,
+            startIndex: currentPhotoIndex,
+          }}
+          onSelect={handleCarouselChange}
+        >
+          <CarouselContent className="px-0 mx-0 pl-0 ml-0 w-full">
+            {tweet?.mediaArray.map((image: string, index: number) => (
+              <CarouselItem className="pl-0" key={image}>
+                <div className="flex justify-center">
+                  <Image
+                    onTransitionEnd={handleTransitionEnd}
+                    src={image}
+                    alt=""
+                    width={1000}
+                    height={1000}
+                    className="transition-transform duration-500 ease-in-out h-[58vh] pl-0 px-0 w-screen object-contain"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="absolute hidden left-2 top-1/2 -translate-y-1/2 z-10">
+            <CarouselPrevious
+              onClick={() => handleNavigation("prev")}
+              className={`${
+                currentPhotoIndex === 0 ? "opacity-30 cursor-not-allowed" : ""
+              }`}
+            />
+          </div>
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
+            <CarouselNext
+              onClick={() => handleNavigation("next")}
+              className={`${
+                currentPhotoIndex === (tweet?.mediaArray?.length || 0) - 1
+                  ? "opacity-30 cursor-not-allowed"
+                  : ""
+              }`}
+            />
+          </div>
+        </Carousel>
+
+        {/* Direction indicator for debugging */}
+      </div>
+
+      <div className="absolute w-full bottom-10">
+        <PostInteractions
+          isInPhotoSection={true}
+          tweet={tweet}
+          liked={liked}
+          repost={repost}
+          handleRepostTweet={handleRepostTweet}
+          handleTweetLike={handleTweetLike}
+        />
+      </div>
+      <div className="absolute w-full bottom-2">
+        <ComposePost
+          user={user!}
+          isInPhotoSection={true}
+          tweetId={tweet.id}
+          isParentComment={isComment}
+          isComment={true}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default SmallScreenPhoto;

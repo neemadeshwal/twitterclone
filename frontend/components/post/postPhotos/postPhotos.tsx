@@ -9,6 +9,7 @@ import CommentPhotos from "./CommentPhotos";
 import CommentDetail from "@/components/commentDetail/commentDetail";
 import { useCurrentUser } from "@/hooks/user";
 import { useGetCommentById } from "@/hooks/comment";
+import SmallScreenPhoto from "./SmallScreenPhoto";
 
 const PostPhotos = () => {
   const pathname = usePathname();
@@ -32,7 +33,24 @@ const PostPhotos = () => {
 
   return (
     <div className="bg-black/80 h-screen">
-      <div>
+      <div className="sm:hidden">
+        {isComment ? (
+          <SmallScreenPhoto
+            photoNum={photoNum}
+            currentUrl={currentUrl}
+            tweet={post!}
+            isComment={true}
+          />
+        ) : (
+          <SmallScreenPhoto
+            tweet={post!}
+            photoNum={photoNum}
+            currentUrl={currentUrl}
+            isComment={false}
+          />
+        )}
+      </div>
+      <div className="sm:block hidden">
         <div className="w-full flex min-h-screen gap-1 h-auto">
           {isComment ? (
             <CommentPhotos
