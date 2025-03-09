@@ -269,10 +269,10 @@ export const userUserMutation = ({
       queryClient.invalidateQueries({ queryKey: ["user-detail"] });
       onSuccess?.();
     },
-    onError: (error) => {
-      console.log(error);
-      onError?.(error);
-    },
+    // onError: (error) => {
+    //   console.log(error);
+    //   onError?.(error);
+    // },
   });
 
   const followUserMutation = useMutation({
@@ -283,10 +283,10 @@ export const userUserMutation = ({
 
       onSuccess?.();
     },
-    onError: (error) => {
-      console.log(error);
-      onError?.(error);
-    },
+    // onError: (error) => {
+    //   console.log(error);
+    //   onError?.(error);
+    // },
   });
 
   const getCredAndSendOtpFn = async (body: getCredsData) => {
@@ -405,5 +405,6 @@ export const userUserMutation = ({
     isverifyingPassword: verifyPassMutation.isPending,
     isConfirmMail: confirmMailMutation.isPending,
     ischeckingEmail: checkEmailMutation.isPending,
+    isNewPasswordSet: newPasswordMutation.isPending,
   };
 };

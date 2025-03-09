@@ -5,6 +5,7 @@ import Step1Creds from "./steps/step1-creds";
 import Step2VerifyOtp from "./steps/step2-verifyotp";
 import Step3Password from "./steps/step3-password";
 import ScrollLock from "@/shared/ScrollLock";
+import Loading from "@/shared/loading";
 
 export interface getDataProps {
   next_page: string;
@@ -12,6 +13,11 @@ export interface getDataProps {
 }
 const CreateAccount = ({ authType }: { authType: "login" | "signup" }) => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isgettingCredSuccess, setIsGettingCredSuccess] = useState(false);
+  const [isverifyingOtpSuccess, setIsVerifyingOtpSuccess] = useState(false);
+  const [isNewPassSuccess, setIsNewPassSuccess] = useState(false);
   const [getData, setGetData] = useState<getDataProps>({
     next_page: "getcred",
     email: "",
@@ -84,15 +90,26 @@ const CreateAccount = ({ authType }: { authType: "login" | "signup" }) => {
                     </div>
                     <div className="py-[24px]">
                       {getData.next_page === "getcred" ? (
-                        <Step1Creds setGetData={setGetData} />
+                        <Step1Creds
+                          setGetData={setGetData}
+                          setIsFormValid={setIsFormValid}
+                          setIsGettingCredSuccess={setIsGettingCredSuccess}
+                        />
                       ) : getData.next_page === "verifyotp" ? (
                         <Step2VerifyOtp
                           authType="createaccount"
                           setGetData={setGetData}
                           data={getData}
+                          setIsFormValid={setIsFormValid}
+                          setIsVerifyingOtpSuccess={setIsVerifyingOtpSuccess}
                         />
                       ) : getData.next_page === "password" ? (
-                        <Step3Password data={getData} setGetData={setGetData} />
+                        <Step3Password
+                          data={getData}
+                          setGetData={setGetData}
+                          setIsNewPassSuccess={setIsNewPassSuccess}
+                          setIsFormValid={setIsFormValid}
+                        />
                       ) : null}
                     </div>
                   </div>
@@ -102,9 +119,19 @@ const CreateAccount = ({ authType }: { authType: "login" | "signup" }) => {
                   className="p-4 px-14 md:px-20 items-center flex justify-center pt-6"
                 >
                   <button
+                    disabled={!isFormValid}
                     onClick={handleSubmitForm}
                     className="bg-white disabled:bg-white/50  text-black items-center w-full py-[0.8rem] font-[700] rounded-full"
                   >
+                    {isgettingCredSuccess ||
+                    isNewPassSuccess ||
+                    isverifyingOtpSuccess ? (
+                      <div className="flex justify-center">
+                        <Loading small={true} />
+                      </div>
+                    ) : (
+                      " Next"
+                    )}
                     Next
                   </button>
                 </div>

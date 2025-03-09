@@ -24,10 +24,14 @@ const Step2VerifyOtp = ({
   data,
   setGetData,
   authType,
+  setIsFormValid,
+  setIsVerifyingOtpSuccess,
 }: {
   data: getDataProps;
   setGetData: React.Dispatch<React.SetStateAction<getDataProps>>;
   authType: string;
+  setIsFormValid: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsVerifyingOtpSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,7 +44,7 @@ const Step2VerifyOtp = ({
   const [previousOtp, setPreviousOtp] = useState("");
   const [typedOtp, setTypedOtp] = useState("");
   const [timer, setTimer] = useState(60); // Start with 1 minute (60 seconds)
-  const [canResend, setCanResend] = useState(true);
+  const [canResend, setCanResend] = useState(false);
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (!canResend && timer > 0) {
@@ -84,6 +88,8 @@ const Step2VerifyOtp = ({
     };
     try {
       const result = await verifyOtpFn(body);
+      setIsVerifyingOtpSuccess(false);
+
       if (result && result.verifyOtp) {
         setGetData((prevVal) => ({
           ...prevVal,
@@ -93,6 +99,7 @@ const Step2VerifyOtp = ({
       }
     } catch (error) {
       console.log(error);
+      setIsVerifyingOtpSuccess(false);
     }
   }
 
@@ -112,13 +119,19 @@ const Step2VerifyOtp = ({
     }
   }
 
-  if (isverifyingOtp) {
-    return (
-      <div className="flex justify-center py-4">
-        <Loading />
-      </div>
-    );
-  }
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      // Check if email is valid and account exists
+      const isValid = value.otp && isResendingCode && invalidOtp;
+
+      setIsFormValid(isValid ? true : false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, setIsFormValid, invalidOtp, isResendingCode]);
+  useEffect(() => {
+    setIsVerifyingOtpSuccess(isverifyingOtp);
+  }, [isverifyingOtp]);
   return (
     <div>
       <div>

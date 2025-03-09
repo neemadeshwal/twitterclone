@@ -6,7 +6,6 @@ import Link from "next/link";
 import Step2ConfirmYou from "./steps/Step2ConfirmYou";
 import Step3NewPass from "./steps/Step3NewPass";
 import Step2VerifyOtp from "../signup/steps/step2-verifyotp";
-import { userUserMutation } from "@/hooks/mutation/useUserMutation";
 import Loading from "@/shared/loading";
 
 const Forgotpassword = () => {
@@ -28,7 +27,12 @@ const Forgotpassword = () => {
       form.dispatchEvent(event);
     }
   }
-  const { isConfirmMail } = userUserMutation();
+  const [isConfirmMailSuccess, setIsConfirmMailSuccess] = useState(false);
+  const [isCheckingEmailSuccess, setIsCheckingEmailSuccess] = useState(false);
+  const [isNewPassSuccess, setIsNewPassSuccess] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isverifyingOtpSuccess, setIsVerifyingOtpSuccess] = useState(false);
+
   return (
     <div>
       <div className="z-50">
@@ -100,20 +104,32 @@ const Forgotpassword = () => {
                   </div>
                   <div className="py-[18px] h-full">
                     {authData.next_page === "checkemail" ? (
-                      <Step1CheckEmail setAuthData={setAuthData} />
+                      <Step1CheckEmail
+                        setIsFormValid={setIsFormValid}
+                        setAuthData={setAuthData}
+                        setIsCheckingEmailSuccess={setIsCheckingEmailSuccess}
+                      />
                     ) : authData.next_page === "confirmyou" ? (
                       <Step2ConfirmYou
                         authEmail={authData.email}
                         setAuthData={setAuthData}
+                        setIsConfirmMailSuccess={setIsConfirmMailSuccess}
                       />
                     ) : authData.next_page === "verifyotp" ? (
                       <Step2VerifyOtp
                         setGetData={setAuthData}
                         authType="forgotpass"
                         data={authData}
+                        setIsFormValid={setIsFormValid}
+                        setIsVerifyingOtpSuccess={setIsVerifyingOtpSuccess}
                       />
                     ) : authData.next_page === "newpass" ? (
-                      <Step3NewPass data={authData} setGetData={setAuthData} />
+                      <Step3NewPass
+                        setIsNewPassSuccess={setIsNewPassSuccess}
+                        data={authData}
+                        setGetData={setAuthData}
+                        setIsFormValid={setIsFormValid}
+                      />
                     ) : null}
                   </div>
                 </div>
@@ -121,11 +137,15 @@ const Forgotpassword = () => {
               <div className="absolute bottom-0 w-full h-1/5">
                 <div className="py-1 px-6 sm:px-20  items-center flex justify-center pt-6">
                   <button
+                    disabled={!isFormValid}
                     onClick={handleSubmitForm}
-                    className="bg-white  text-black items-center w-full py-[0.8rem] font-[700] rounded-full"
+                    className="bg-white  disabled:bg-white/50  text-black items-center w-full py-[0.8rem] font-[700] rounded-full"
                   >
-                    {isConfirmMail ? (
-                      <div>
+                    {isConfirmMailSuccess ||
+                    isCheckingEmailSuccess ||
+                    isverifyingOtpSuccess ||
+                    isNewPassSuccess ? (
+                      <div className="flex justify-center">
                         <Loading small={true} />
                       </div>
                     ) : (

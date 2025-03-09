@@ -1,10 +1,11 @@
 import { userUserMutation } from "@/hooks/mutation/useUserMutation";
-import React from "react";
+import React, { useEffect } from "react";
 import { FaCircleCheck } from "react-icons/fa6";
 
 const Step2ConfirmYou = ({
   authEmail,
   setAuthData,
+  setIsConfirmMailSuccess,
 }: {
   authEmail: string;
   setAuthData: React.Dispatch<
@@ -13,10 +14,11 @@ const Step2ConfirmYou = ({
       email: string;
     }>
   >;
+  setIsConfirmMailSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const hideEmailConst = authEmail.split("@")[0].slice(2);
 
-  const { confirmMailFn } = userUserMutation();
+  const { confirmMailFn, isConfirmMail } = userUserMutation();
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
@@ -25,6 +27,8 @@ const Step2ConfirmYou = ({
     };
     try {
       const result = await confirmMailFn(body);
+      setIsConfirmMailSuccess(false);
+
       if (result && result.confirmedMail) {
         setAuthData({
           next_page: result.confirmedMail.next_page,
@@ -33,9 +37,16 @@ const Step2ConfirmYou = ({
       }
     } catch (error) {
       console.log(error);
+      setIsConfirmMailSuccess(false);
     }
   }
-
+  useEffect(() => {
+    if (isConfirmMail) {
+      setIsConfirmMailSuccess(true);
+    } else {
+      setIsConfirmMailSuccess(false);
+    }
+  }, [isConfirmMail, setIsConfirmMailSuccess]);
   return (
     <form id="confirmyou" onSubmit={handleSubmit}>
       <div className="flex flex-col gap-6 justify-between h-full">

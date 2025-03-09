@@ -12,9 +12,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 
-import Link from "next/link";
 import { userUserMutation } from "@/hooks/mutation/useUserMutation";
-import Loading from "@/shared/loading";
 import { toast } from "sonner";
 
 const formSchema = z.object({
@@ -26,6 +24,8 @@ const formSchema = z.object({
 
 const Step1CheckEmail = ({
   setAuthData,
+  setIsFormValid,
+  setIsCheckingEmailSuccess,
 }: {
   setAuthData: React.Dispatch<
     React.SetStateAction<{
@@ -33,6 +33,8 @@ const Step1CheckEmail = ({
       email: string;
     }>
   >;
+  setIsFormValid: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsCheckingEmailSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,13 +46,9 @@ const Step1CheckEmail = ({
   const [previousEmail, setPreviousEmail] = useState("");
   const [typedEmail, setTypedEmail] = useState("");
 
-  const { checkEmailFn } = userUserMutation({
+  const { checkEmailFn, ischeckingEmail } = userUserMutation({
     onError: (error) => {
-      if (
-        error.message.includes(
-          "User does not exist. Please create an account first"
-        )
-      ) {
+      if (error.message.includes("Account does not exist. not found")) {
         console.log("exist error");
         setAccountExist(true);
         setPreviousEmail(form.getValues("email"));
@@ -62,18 +60,35 @@ const Step1CheckEmail = ({
   });
 
   useEffect(() => {
+    const subscription = form.watch((value) => {
+      // Check if email is valid and account exists
+      const isValid =
+        value.email &&
+        value.email.length >= 5 &&
+        /\S+@\S+\.\S+/.test(value.email) &&
+        isAccountExist;
+
+      setIsFormValid(isValid ? true : false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, setIsFormValid, isAccountExist]);
+
+  useEffect(() => {
     if (!typedEmail || !previousEmail) return;
 
     if (typedEmail == previousEmail) {
       setAccountExist(false);
+      setIsFormValid(false);
     } else {
       setAccountExist(true);
     }
-  }, [typedEmail, previousEmail]);
+  }, [typedEmail, previousEmail, setIsFormValid]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const body = { email: values.email, authType: "confirmyou" };
       const result = await checkEmailFn(body);
+      setIsCheckingEmailSuccess(false);
       if (result && result.getLoginCreds) {
         setAuthData({
           next_page: result.getLoginCreds.next_page,
@@ -82,8 +97,16 @@ const Step1CheckEmail = ({
       }
     } catch (error) {
       console.log(error);
+      setIsCheckingEmailSuccess(false);
     }
   }
+  useEffect(() => {
+    if (ischeckingEmail) {
+      setIsCheckingEmailSuccess(true);
+    } else {
+      setIsCheckingEmailSuccess(false);
+    }
+  }, [ischeckingEmail, setIsCheckingEmailSuccess]);
 
   return (
     <div>

@@ -46,6 +46,7 @@ const Step2VerifyPass = ({
   const [isPasswordIncorrect, setIsPasswordIncorrect] = useState(false);
   const [typedPassword, setTypedPassword] = useState("");
   const [previousPassword, setPreviousPassword] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
     if (!typedPassword || !previousPassword) return;
@@ -99,6 +100,17 @@ const Step2VerifyPass = ({
       console.log(error);
     }
   }
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      // Check if email is valid and account exists
+      const isValid =
+        value.password && value.password.length >= 5 && isPasswordIncorrect;
+
+      setIsFormValid(isValid ? true : false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, setIsFormValid, isPasswordIncorrect]);
   return (
     <div>
       <div>
@@ -185,11 +197,11 @@ const Step2VerifyPass = ({
               </div>
               <div className=" items-center flex justify-center  w-full">
                 <button
-                  disabled={!typedPassword}
+                  disabled={isFormValid}
                   type="submit"
                   className="bg-white disabled:bg-white/50  text-black items-center w-full py-[0.8rem] font-[700] rounded-full"
                 >
-                  {isPasswordIncorrect ? (
+                  {isverifyingPassword ? (
                     <div className="flex items-center justify-center">
                       {" "}
                       <Loading small={true} />

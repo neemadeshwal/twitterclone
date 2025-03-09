@@ -45,6 +45,7 @@ const Step1CheckEmail = ({
   const [isAccountExist, setAccountExist] = useState(true);
   const [previousEmail, setPreviousEmail] = useState("");
   const [typedEmail, setTypedEmail] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const { checkEmailFn, isCheckingEmail, confirmMailFn, isConfirmMail } =
     userUserMutation({
@@ -68,6 +69,7 @@ const Step1CheckEmail = ({
       setAccountExist(false);
     }
   }, [typedEmail, previousEmail]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       if (forgotpass) {
@@ -96,6 +98,20 @@ const Step1CheckEmail = ({
       console.log(error);
     }
   }
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      // Check if email is valid and account exists
+      const isValid =
+        value.email &&
+        value.email.length >= 5 &&
+        /\S+@\S+\.\S+/.test(value.email) &&
+        isAccountExist;
+
+      setIsFormValid(isValid ? true : false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, setIsFormValid, isAccountExist]);
 
   return (
     <div>
@@ -160,7 +176,7 @@ const Step1CheckEmail = ({
                   <div className=" items-center flex justify-center  w-full">
                     <button
                       type="submit"
-                      disabled={!typedEmail}
+                      disabled={isFormValid}
                       className="bg-white disabled:bg-white/50  text-black items-center w-full py-[0.6rem] font-[700] rounded-full"
                     >
                       {isCheckingEmail || isConfirmMail ? (

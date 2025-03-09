@@ -13,9 +13,10 @@ import { z } from "zod";
 import { Input } from "@/components/ui/input";
 
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { userUserMutation } from "@/hooks/mutation/useUserMutation";
 import { toast } from "sonner";
+import Loading from "@/shared/loading";
 
 const formSchema = z
   .object({
@@ -45,6 +46,8 @@ const formSchema = z
 const Step3Password = ({
   data,
   setGetData,
+  setIsNewPassSuccess,
+  setIsFormValid,
 }: {
   data: { next_page: string; email: string };
   setGetData: React.Dispatch<
@@ -53,6 +56,8 @@ const Step3Password = ({
       email: string;
     }>
   >;
+  setIsNewPassSuccess: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsFormValid: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -70,7 +75,7 @@ const Step3Password = ({
   const [typedPassword, setTypedPassword] = useState("");
   const [typedConfirmPassword, setTypedConfirmPassword] = useState("");
 
-  const { newPassFn } = userUserMutation({
+  const { newPassFn, isNewPasswordSet } = userUserMutation({
     onError: (error) => {
       if (error.message.includes("badRequestError")) {
         setIsPasswordSame(true);
@@ -91,20 +96,46 @@ const Step3Password = ({
     };
     try {
       const result = await newPassFn(body);
+      setIsNewPassSuccess(false);
+
       if (result && result.resetPassword) {
         setGetData({
           next_page: result.resetPassword.next_page,
           email: result.resetPassword.email,
         });
         toast.success("Password reset Successful");
+        setIsSignedUp(true);
         if (result.resetPassword.next_page === "signin") {
           router.push("/");
         }
       }
     } catch (error) {
+      setIsNewPassSuccess(false);
       console.log(error);
     }
   }
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (isSignedUp && pathname == "/signup") {
+      setIsRedirecting(true);
+    } else {
+      setIsRedirecting(false);
+    }
+  });
+
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      // Check if email is valid and account exists
+      const isValid =
+        value.password && value.confirmpassword && !isPasswordSame;
+
+      setIsFormValid(isValid ? true : false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, setIsFormValid, isPasswordSame]);
+
   useEffect(() => {
     if (typedConfirmPassword == "" || typedPassword == "") {
       return;
@@ -115,8 +146,18 @@ const Step3Password = ({
       setIsPasswordSame(true);
     }
   }, [typedConfirmPassword, typedPassword]);
+
+  useEffect(() => {
+    setIsNewPassSuccess(isNewPasswordSet);
+  }, [isNewPasswordSet]);
+
   return (
     <div>
+      {isRedirecting && (
+        <div className="z-[1000000000] justify-center">
+          <Loading />
+        </div>
+      )}
       <div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} id="createaccount">
@@ -136,6 +177,10 @@ const Step3Password = ({
                             className="block w-full px-4 text-[16px] border-0 focus:outline-none  bg-transparent peer "
                             placeholder=""
                             {...field}
+                            onChange={(e) => {
+                              field.onChange(e); // Call the form library's onChange
+                              setTypedPassword(e.target.value); // Update your local state
+                            }}
                           />
                         </FormControl>
 
@@ -184,6 +229,10 @@ const Step3Password = ({
                             className="block w-full px-4 text-[16px] border-0 focus:outline-none  bg-transparent peer "
                             placeholder=""
                             {...field}
+                            onChange={(e) => {
+                              field.onChange(e); // Call the form library's onChange
+                              setTypedConfirmPassword(e.target.value); // Update your local state
+                            }}
                           />
                         </FormControl>
 

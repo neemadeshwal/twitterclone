@@ -22,7 +22,6 @@ import {
 import { days, months, years } from "@/lib/functions";
 import { getDataProps } from "../createAccount";
 import { userUserMutation } from "@/hooks/mutation/useUserMutation";
-import Loading from "@/shared/loading";
 import { toast } from "sonner";
 const formSchema = z.object({
   firstName: z
@@ -54,8 +53,12 @@ const formSchema = z.object({
 
 const Step1Creds = ({
   setGetData,
+  setIsFormValid,
+  setIsGettingCredSuccess,
 }: {
   setGetData: React.Dispatch<React.SetStateAction<getDataProps>>;
+  setIsFormValid: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsGettingCredSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -114,6 +117,8 @@ const Step1Creds = ({
 
     try {
       const result = await getCredAndSendOtpFn(newData);
+      setIsGettingCredSuccess(false);
+
       if (result && result.getCredAndSendOtp) {
         setGetData((prevVal) => ({
           ...prevVal,
@@ -125,16 +130,29 @@ const Step1Creds = ({
       }
     } catch (error) {
       console.log(error);
+      setIsGettingCredSuccess(false);
     }
   }
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      // Check if email is valid and account exists
+      const isValid =
+        value.email &&
+        value.firstName &&
+        value.dob &&
+        value.email.length >= 5 &&
+        /\S+@\S+\.\S+/.test(value.email) &&
+        isuserAlreadyExist;
 
-  if (isgettingCred) {
-    return (
-      <div className="flex justify-center py-4">
-        <Loading />
-      </div>
-    );
-  }
+      setIsFormValid(isValid ? true : false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, setIsFormValid, isuserAlreadyExist]);
+
+  useEffect(() => {
+    setIsGettingCredSuccess(isgettingCred);
+  }, [isgettingCred]);
 
   return (
     <div>

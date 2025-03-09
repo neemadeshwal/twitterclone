@@ -7,7 +7,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
@@ -48,9 +48,13 @@ const formSchema = z
 const Step3Password = ({
   data,
   setGetData,
+  setIsNewPassSuccess,
+  setIsFormValid,
 }: {
   data: getDataProps;
   setGetData: React.Dispatch<React.SetStateAction<getDataProps>>;
+  setIsNewPassSuccess: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsFormValid: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -124,13 +128,22 @@ const Step3Password = ({
     }
   }, [typedConfirmPassword, typedPassword]);
 
-  if (isCreatingAccount) {
-    return (
-      <div className="flex justify-center py-4">
-        <Loading />
-      </div>
-    );
-  }
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      // Check if email is valid and account exists
+      const isValid =
+        value.password && value.confirmpassword && !isPasswordSame;
+
+      setIsFormValid(isValid ? true : false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, setIsFormValid, isPasswordSame]);
+
+  useEffect(() => {
+    setIsNewPassSuccess(isCreatingAccount);
+  }, [isCreatingAccount]);
+
   return (
     <div>
       {isRedirecting && (
