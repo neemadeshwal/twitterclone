@@ -8,7 +8,8 @@ const SignupGoogle = ({ signupType }: { signupType: "login" | "signup" }) => {
       <div>
         <button
           onClick={() =>
-            (window.location.href = `${process.env.NEXT_PUBLIC_SERVER_URL_API}/api/auth/google`)
+           
+            (window.location.href = `${process.env. NEXT_PUBLIC_GOOGLE_URL}`)
           }
           className="bg-white hover:bg-[#ffffffed] text-black py-2 w-full items-center rounded-full flex justify-center gap-2 "
         >
