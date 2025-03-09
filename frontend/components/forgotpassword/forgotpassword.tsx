@@ -32,7 +32,7 @@ const Forgotpassword = () => {
   const [isNewPassSuccess, setIsNewPassSuccess] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
   const [isverifyingOtpSuccess, setIsVerifyingOtpSuccess] = useState(false);
-
+  console.log(isFormValid);
   return (
     <div>
       <div className="z-50">
@@ -137,7 +137,7 @@ const Forgotpassword = () => {
               <div className="absolute bottom-0 w-full h-1/5">
                 <div className="py-1 px-6 sm:px-20  items-center flex justify-center pt-6">
                   <button
-                    disabled={!isFormValid}
+                    // disabled={!isFormValid}
                     onClick={handleSubmitForm}
                     className="bg-white  disabled:bg-white/50  text-black items-center w-full py-[0.8rem] font-[700] rounded-full"
                   >

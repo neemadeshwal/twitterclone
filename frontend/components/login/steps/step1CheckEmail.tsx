@@ -98,6 +98,8 @@ const Step1CheckEmail = ({
       console.log(error);
     }
   }
+  console.log(isFormValid);
+
   useEffect(() => {
     const subscription = form.watch((value) => {
       // Check if email is valid and account exists
@@ -176,7 +178,7 @@ const Step1CheckEmail = ({
                   <div className=" items-center flex justify-center  w-full">
                     <button
                       type="submit"
-                      disabled={!isFormValid}
+                      // disabled={!isFormValid}
                       className="bg-white disabled:bg-white/50  text-black items-center w-full py-[0.6rem] font-[700] rounded-full"
                     >
                       {isCheckingEmail || isConfirmMail ? (

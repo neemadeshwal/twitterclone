@@ -22,6 +22,7 @@ const CreateAccount = ({ authType }: { authType: "login" | "signup" }) => {
     next_page: "getcred",
     email: "",
   });
+  console.log(isFormValid);
 
   function handleSubmitForm() {
     const form =
@@ -119,7 +120,7 @@ const CreateAccount = ({ authType }: { authType: "login" | "signup" }) => {
                   className="p-4 px-14 md:px-20 items-center flex justify-center pt-6"
                 >
                   <button
-                    disabled={!isFormValid}
+                    // disabled={!isFormValid}
                     onClick={handleSubmitForm}
                     className="bg-white disabled:bg-white/50  text-black items-center w-full py-[0.8rem] font-[700] rounded-full"
                   >

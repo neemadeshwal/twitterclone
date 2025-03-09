@@ -111,6 +111,8 @@ const Step2VerifyPass = ({
 
     return () => subscription.unsubscribe();
   }, [form, setIsFormValid, isPasswordIncorrect]);
+  console.log(isFormValid);
+
   return (
     <div>
       <div>
@@ -197,7 +199,7 @@ const Step2VerifyPass = ({
               </div>
               <div className=" items-center flex justify-center  w-full">
                 <button
-                  disabled={!isFormValid}
+                  // disabled={!isFormValid}
                   type="submit"
                   className="bg-white disabled:bg-white/50  text-black items-center w-full py-[0.8rem] font-[700] rounded-full"
                 >
