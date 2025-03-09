@@ -132,7 +132,6 @@ const CreateAccount = ({ authType }: { authType: "login" | "signup" }) => {
                     ) : (
                       " Next"
                     )}
-                    Next
                   </button>
                 </div>
               </div>
