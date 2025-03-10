@@ -7,7 +7,6 @@ import CurrentUser from "@/shared/currentUser";
 import TweetAction from "@/shared/singlePost/TweetAction";
 import MediaUpload from "@/shared/singlePost/MediaUpload";
 import TweetContent from "@/shared/singlePost/TweetContent";
-import Loading from "@/shared/loading";
 import { getCurrentUser } from "@/graphql/types";
 import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 import CharacterCircle from "@/shared/CharacterCircle";

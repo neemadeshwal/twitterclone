@@ -10,13 +10,11 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Image from "next/image";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import PostInteractions from "@/shared/PostDetail/PostInteractions";
 import { useCurrentUser } from "@/hooks/user";
 import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 import ComposePost from "../compostPost";
 import { useRouter } from "next/navigation";
-import { type SyntheticEvent } from "react";
 
 const isTweet = (tweet: Tweet | Comment): tweet is Tweet =>
   tweet !== undefined && tweet !== null && "repostTweet" in tweet;
@@ -37,14 +35,14 @@ const SmallScreenPhoto = ({
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(
     Number(photoNum) - 1
   );
-  const composerRef = useRef<HTMLDivElement>(null);
+  const composerRef = useRef<HTMLDivElement|null>(null);
   const [previousIndex, setPreviousIndex] = useState(Number(photoNum) - 1);
   const [showPhoto, setShowPhoto] = useState("");
   const [isSliding, setIsSliding] = useState(false);
   const [liked, setLiked] = useState(false);
   const [repost, setRepost] = useState(false);
   const[isFocused,setIsFocused]=useState(false)
-  const carouselApiRef = useRef<any>(null);
+  const carouselApiRef = useRef<HTMLDivElement|null>(null);
 
   const { user } = useCurrentUser();
 
@@ -129,7 +127,7 @@ const SmallScreenPhoto = ({
     }
   };
 
-  const handleCarouselChange = (api: any) => {
+  const handleCarouselChange = (api: string) => {
     if (!api || !tweet?.mediaArray) return;
 
     // Store the API reference
@@ -206,7 +204,7 @@ const SmallScreenPhoto = ({
           onSelect={handleCarouselChange}
         >
           <CarouselContent className="px-0 mx-0 pl-0 ml-0 w-full">
-            {tweet?.mediaArray.map((image: string, index: number) => (
+            {tweet?.mediaArray.map((image: string) => (
               <CarouselItem className="pl-0" key={image}>
                 <div className="flex justify-center">
                   <Image
