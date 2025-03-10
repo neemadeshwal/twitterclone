@@ -13,11 +13,13 @@ const TweetAction = ({
   setFiles,
   setLoading,
   containerType,
+  isInPhotoSection,
 }: {
   setTweetContent: any;
   setFiles: any;
   setLoading: any;
   containerType: string;
+  isInPhotoSection?: boolean;
 }) => {
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const [openGifContainer, setOpenGifContainer] = useState(false);
@@ -69,16 +71,20 @@ const TweetAction = ({
           <Icons.RadioIcon className="text-[22px] x-textcolor " />
         </div>
 
-        <div
-          onClick={() => setIsEmojiTableOpen((prevVal) => !prevVal)}
-          className="rounded-full p-2 hover:bg-[#081323]"
-        >
-          <Icons.EmojiSmile className="text-[22px] x-textcolor " />
-        </div>
+        {!isInPhotoSection && (
+          <div
+            onClick={() => setIsEmojiTableOpen((prevVal) => !prevVal)}
+            className="rounded-full p-2 hover:bg-[#081323]"
+          >
+            <Icons.EmojiSmile className="text-[22px] x-textcolor " />
+          </div>
+        )}
+        {!isInPhotoSection && (
+          <div className="rounded-full p-2 hover:bg-[#081323]">
+            <Icons.CLock className="text-[22px] x-textcolor " />
+          </div>
+        )}
 
-        <div className="rounded-full p-2 hover:bg-[#081323]">
-          <Icons.CLock className="text-[22px] x-textcolor " />
-        </div>
         <div className="rounded-full p-2 hover:bg-[#081323]">
           <Icons.Pin className="text-[22px] x-textcolor " />
         </div>

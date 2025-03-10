@@ -22,6 +22,7 @@ import { LuFolderClock } from "react-icons/lu";
 import { MdOutlineGifBox } from "react-icons/md";
 import { RiListRadio } from "react-icons/ri";
 import { LuDot } from "react-icons/lu";
+import { RiExpandDiagonalLine } from "react-icons/ri";
 import { PiBookmarkSimple,PiBookBookmarkFill,PiGear,PiGearFill } from "react-icons/pi";
 
 export const Icons={
@@ -54,7 +55,8 @@ export const Icons={
     BookMarkActive:PiBookBookmarkFill,
     Settings:PiGear,
     SettingsActive:PiGearFill,
-    Logout:CiLogout
+    Logout:CiLogout,
+    Expand:RiExpandDiagonalLine
 
 
 }

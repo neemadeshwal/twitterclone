@@ -15,6 +15,7 @@ import { TWEET_CHARACTER_LIMIT } from "@/lib/constants";
 import useOutsideClick from "@/shared/closeContainer";
 import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
 import { toast } from "@/hooks/use-toast";
+import { Icons } from "@/utils/icons";
 
 interface EmojiSelect {
   id: string;
@@ -30,12 +31,17 @@ const ComposePost = ({
   tweetId,
   isParentComment,
   isInPhotoSection,
+  isPhotoInputFocused,
+  userNameInPhoto
 }: {
   user: getCurrentUser | null;
   isComment?: boolean;
   tweetId?: string;
   isParentComment?: boolean;
   isInPhotoSection?: boolean;
+  isPhotoInputFocused?:boolean;
+  userNameInPhoto?:string;
+
 }) => {
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
@@ -174,8 +180,14 @@ const ComposePost = ({
       <div
         className={`w-full ${!isInPhotoSection && "p-6 pb-4"} px-0 sm:px-4 `}
       >
+        {
+          isInPhotoSection&&isPhotoInputFocused&&<div className="gray mt-4 mb-2 px-2">
+            Replying to <span className="text-[#1d9bf0]">@{userNameInPhoto}</span>
+          </div>
+        }
         <div className="flex gap-2 w-full">
           {!isInPhotoSection && <CurrentUser user={user} />}
+
 
           <div className="w-full mt-2 px-2">
             <TweetContent
@@ -185,6 +197,8 @@ const ComposePost = ({
               setTweetContent={setTweetContent}
             />
 
+            {isInPhotoSection&&isPhotoInputFocused&&<div className="border-[1.2px] mb-2 border-[#1d9bf0] border-b w-full "></div>}
+
             {loading && <div className="pb-3 pl-3"></div>}
 
             {files.length !== 0 && (
@@ -192,15 +206,19 @@ const ComposePost = ({
             )}
             {!isComment && <DivisionBar type="x" />}
           </div>
+          
+          {
+            isPhotoInputFocused&&<div className="absolute right-1"><Icons.Expand  className=" text-[#1d9bf0] text-[25px]"/></div>
+          }
         </div>
-        {!isInPhotoSection && (
           <div>
             <div
-              className={`pl-14 flex ${
+              className={` ${isInPhotoSection?"pl-0":"pl-14"} ${isInPhotoSection?isPhotoInputFocused?"inline-block":"hidden":"inline-block"} flex ${
                 isComment ? "pt-0" : "pt-3"
               } pb-0 justify-between`}
             >
               <TweetAction
+              isInPhotoSection={isInPhotoSection}
                 setTweetContent={setTweetContent}
                 setFiles={setFiles}
                 setLoading={setLoading}
@@ -255,9 +273,13 @@ const ComposePost = ({
               </div>
             </div>
           </div>
-        )}
       </div>
+      {
+        !isPhotoInputFocused&&(
       <DivisionBar type="x" />
+
+        )
+      }
       {isEmojiTableOpen && (
         <div
           ref={emojiCloseRef}
