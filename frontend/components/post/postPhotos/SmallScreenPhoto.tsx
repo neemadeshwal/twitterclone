@@ -8,6 +8,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import PostInteractions from "@/shared/PostDetail/PostInteractions";
@@ -35,18 +36,56 @@ const SmallScreenPhoto = ({
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(
     Number(photoNum) - 1
   );
-  const composerRef = useRef<HTMLDivElement|null>(null);
   const [previousIndex, setPreviousIndex] = useState(Number(photoNum) - 1);
   const [showPhoto, setShowPhoto] = useState("");
   const [isSliding, setIsSliding] = useState(false);
   const [liked, setLiked] = useState(false);
   const [repost, setRepost] = useState(false);
-  const[isFocused,setIsFocused]=useState(false)
-  const carouselApiRef = useRef<HTMLDivElement|null>(null);
+  const carouselApiRef = useRef<CarouselApi | null>(null);
 
   const { user } = useCurrentUser();
 
   const { likeTweet, repostTweet } = useTweetMutation({});
+
+  // Set up the carousel API reference
+  const setCarouselApi = React.useCallback(
+    (api: CarouselApi) => {
+      carouselApiRef.current = api;
+
+      // Initial setup when API is available
+      if (api && tweet?.mediaArray) {
+        const selectedIndex = api.selectedScrollSnap();
+        if (selectedIndex !== currentPhotoIndex) {
+          setCurrentPhotoIndex(selectedIndex);
+          setShowPhoto(tweet.mediaArray[selectedIndex]);
+        }
+      }
+    },
+    [currentPhotoIndex, tweet]
+  );
+
+  // Handle carousel selection changes
+  const handleCarouselSelect = React.useCallback(() => {
+    const api = carouselApiRef.current;
+    if (!api || !tweet?.mediaArray) return;
+
+    const selectedIndex = api.selectedScrollSnap();
+    const direction = selectedIndex > previousIndex ? "forward" : "backward";
+
+    console.log(
+      `Slide direction: ${direction}, New index: ${selectedIndex}, Previous index: ${previousIndex}`
+    );
+
+    // Update our state
+    setPreviousIndex(currentPhotoIndex);
+    setCurrentPhotoIndex(selectedIndex);
+    setShowPhoto(tweet.mediaArray[selectedIndex]);
+
+    // Update URL and release sliding lock
+    const newUrl = `${currentUrl}${selectedIndex + 1}`;
+    window.history.replaceState({ ...window.history.state }, "", newUrl);
+    setIsSliding(false);
+  }, [currentPhotoIndex, previousIndex, tweet, currentUrl]);
 
   // Repost handling function
   async function handleRepostTweet() {
@@ -114,6 +153,20 @@ const SmallScreenPhoto = ({
     }
   }, [photoNum, tweet]);
 
+  // Listen for carousel API select events
+  useEffect(() => {
+    const api = carouselApiRef.current;
+    if (!api) return;
+
+    // Set up event listeners
+    api.on("select", handleCarouselSelect);
+
+    // Clean up
+    return () => {
+      api.off("select", handleCarouselSelect);
+    };
+  }, [handleCarouselSelect]);
+
   const handleNavigation = (direction: "prev" | "next") => {
     if (isSliding || !tweet?.mediaArray || !carouselApiRef.current) return;
 
@@ -127,52 +180,14 @@ const SmallScreenPhoto = ({
     }
   };
 
-  const handleCarouselChange = (api: string) => {
-    if (!api || !tweet?.mediaArray) return;
-
-    // Store the API reference
-    carouselApiRef.current = api;
-
-    const selectedIndex = api.selectedScrollSnap();
-    const direction = selectedIndex > previousIndex ? "forward" : "backward";
-
-    console.log(
-      `Slide direction: ${direction}, New index: ${selectedIndex}, Previous index: ${previousIndex}`
-    );
-
-    // Update our state
-    setPreviousIndex(currentPhotoIndex);
-    setCurrentPhotoIndex(selectedIndex);
-    setShowPhoto(tweet.mediaArray[selectedIndex]);
-
-    // Update URL and release sliding lock
-    const newUrl = `${currentUrl}${selectedIndex + 1}`;
-    window.history.replaceState({ ...window.history.state }, "", newUrl);
-    setIsSliding(false);
-  };
-
   const handleTransitionEnd = () => {
     setIsSliding(false);
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event:MouseEvent) => {
-      if (composerRef.current && !composerRef.current.contains(event.target as Node)) {
-        setIsFocused(false);
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   if (!showPhoto) return null;
 
   return (
     <div className="py-4 relative w-full h-screen   ">
-      <div className="sticky top-0 z-[10000] backdrop-blur-md">
       <div className="flex justify-between px-4">
         <Icons.ArrowLeft className="" onClick={() => router.back()} />
         <Icons.VerticalDots />
@@ -193,15 +208,13 @@ const SmallScreenPhoto = ({
           </button>
         </div>
       </div>
-      </div>
-      <div className=" flex flex-col justify-between">
-        <div>
+      <div>
         <Carousel
           opts={{
             loop: false,
             startIndex: currentPhotoIndex,
           }}
-          onSelect={handleCarouselChange}
+          setApi={setCarouselApi}
         >
           <CarouselContent className="px-0 mx-0 pl-0 ml-0 w-full">
             {tweet?.mediaArray.map((image: string) => (
@@ -241,32 +254,26 @@ const SmallScreenPhoto = ({
 
         {/* Direction indicator for debugging */}
       </div>
-{
-  !isFocused&&(<PostInteractions
-    isInPhotoSection={true}
-    tweet={tweet}
-    liked={liked}
-    repost={repost}
-    handleRepostTweet={handleRepostTweet}
-    handleTweetLike={handleTweetLike}
-  />)
-}
-      <div className=" w-full bottom-0">
-        
-          <div className="" ref={composerRef} onClick={()=>setIsFocused(true)}>
+
+      <div className="absolute w-full bottom-10">
+        <PostInteractions
+          isInPhotoSection={true}
+          tweet={tweet}
+          liked={liked}
+          repost={repost}
+          handleRepostTweet={handleRepostTweet}
+          handleTweetLike={handleTweetLike}
+        />
+      </div>
+      <div className="absolute w-full bottom-2">
         <ComposePost
           user={user!}
           isInPhotoSection={true}
           tweetId={tweet.id}
           isParentComment={isComment}
           isComment={true}
-          isPhotoInputFocused={isFocused}
-          userNameInPhoto={tweet?.author.userName}
         />
       </div>
-      </div>
-      </div>
-    
     </div>
   );
 };
