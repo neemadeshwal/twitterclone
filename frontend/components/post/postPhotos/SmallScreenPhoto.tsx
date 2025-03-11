@@ -36,12 +36,14 @@ const SmallScreenPhoto = ({
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(
     Number(photoNum) - 1
   );
+  const composerRef = useRef<HTMLDivElement | null>(null);
   const [previousIndex, setPreviousIndex] = useState(Number(photoNum) - 1);
   const [showPhoto, setShowPhoto] = useState("");
   const [isSliding, setIsSliding] = useState(false);
   const [liked, setLiked] = useState(false);
   const [repost, setRepost] = useState(false);
   const carouselApiRef = useRef<CarouselApi | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   const { user } = useCurrentUser();
 
@@ -184,6 +186,22 @@ const SmallScreenPhoto = ({
     setIsSliding(false);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        composerRef.current &&
+        !composerRef.current.contains(event.target as Node)
+      ) {
+        setIsFocused(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   if (!showPhoto) return null;
 
   return (
@@ -254,8 +272,7 @@ const SmallScreenPhoto = ({
 
         {/* Direction indicator for debugging */}
       </div>
-
-      <div className="absolute w-full bottom-10">
+      {!isFocused && (
         <PostInteractions
           isInPhotoSection={true}
           tweet={tweet}
@@ -264,15 +281,19 @@ const SmallScreenPhoto = ({
           handleRepostTweet={handleRepostTweet}
           handleTweetLike={handleTweetLike}
         />
-      </div>
-      <div className="absolute w-full bottom-2">
-        <ComposePost
-          user={user!}
-          isInPhotoSection={true}
-          tweetId={tweet.id}
-          isParentComment={isComment}
-          isComment={true}
-        />
+      )}
+      <div className=" w-full bottom-0">
+        <div className="" ref={composerRef} onClick={() => setIsFocused(true)}>
+          <ComposePost
+            user={user!}
+            isInPhotoSection={true}
+            tweetId={tweet.id}
+            isParentComment={isComment}
+            isComment={true}
+            isPhotoInputFocused={isFocused}
+            userNameInPhoto={tweet?.author.userName}
+          />
+        </div>
       </div>
     </div>
   );
