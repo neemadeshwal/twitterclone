@@ -235,7 +235,7 @@ const SmallScreenPhoto = ({
               loop: false,
               startIndex: currentPhotoIndex,
             }}
-            // setApi={setEmblaApi}
+            setApi={setCarouselApi}
           >
             <CarouselContent className="px-0 mx-0 pl-0 ml-0 w-full">
               {tweet?.mediaArray.map((image: string) => (
