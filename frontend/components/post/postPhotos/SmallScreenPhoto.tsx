@@ -261,7 +261,7 @@ const SmallScreenPhoto = ({
                 }`}
               />
             </div>
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
+            <div className="absolute hidden right-2 top-1/2 -translate-y-1/2 z-10">
               <CarouselNext
                 onClick={() => handleNavigation("next")}
                 className={`${
@@ -299,97 +299,7 @@ const SmallScreenPhoto = ({
           </div>
         </div>
       </div>
-    <div className="py-4 relative w-full h-screen   ">
-      <div className="flex justify-between px-4">
-        <Icons.ArrowLeft className="" onClick={() => router.back()} />
-        <Icons.VerticalDots />
-      </div>
-      <div className="py-8 px-2 flex justify-between">
-        <div className="flex gap-4 items-center">
-          <AuthorProfile author={tweet?.author} />
-          <div>
-            <h2 className="capitalize">
-              {tweet?.author.firstName} {tweet?.author.lastName}
-            </h2>
-            <p>@{tweet?.author.userName}</p>
-          </div>
-        </div>
-        <div>
-          <button className="rounded-full px-6 py-1 capitalize border">
-            follow
-          </button>
-        </div>
-      </div>
-      <div>
-        <Carousel
-          opts={{
-            loop: false,
-            startIndex: currentPhotoIndex,
-          }}
-          setApi={setCarouselApi}
-        >
-          <CarouselContent className="px-0 mx-0 pl-0 ml-0 w-full">
-            {tweet?.mediaArray.map((image: string) => (
-              <CarouselItem className="pl-0" key={image}>
-                <div className="flex justify-center">
-                  <Image
-                    onTransitionEnd={handleTransitionEnd}
-                    src={image}
-                    alt=""
-                    width={1000}
-                    height={1000}
-                    className="transition-transform duration-500 ease-in-out h-[58vh] pl-0 px-0 w-screen object-contain"
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <div className="absolute hidden left-2 top-1/2 -translate-y-1/2 z-10">
-            <CarouselPrevious
-              onClick={() => handleNavigation("prev")}
-              className={`${
-                currentPhotoIndex === 0 ? "opacity-30 cursor-not-allowed" : ""
-              }`}
-            />
-          </div>
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
-            <CarouselNext
-              onClick={() => handleNavigation("next")}
-              className={`${
-                currentPhotoIndex === (tweet?.mediaArray?.length || 0) - 1
-                  ? "opacity-30 cursor-not-allowed"
-                  : ""
-              }`}
-            />
-          </div>
-        </Carousel>
-
-        {/* Direction indicator for debugging */}
-      </div>
-      {!isFocused && (
-        <PostInteractions
-          isInPhotoSection={true}
-          tweet={tweet}
-          liked={liked}
-          repost={repost}
-          handleRepostTweet={handleRepostTweet}
-          handleTweetLike={handleTweetLike}
-        />
-      )}
-      <div className=" w-full bottom-0">
-        <div className="" ref={composerRef} onClick={() => setIsFocused(true)}>
-          <ComposePost
-            user={user!}
-            isInPhotoSection={true}
-            tweetId={tweet.id}
-            isParentComment={isComment}
-            isComment={true}
-            isPhotoInputFocused={isFocused}
-            userNameInPhoto={tweet?.author.userName}
-          />
-        </div>
-      </div>
-    </div>
+   
     </div>
   );
 };
