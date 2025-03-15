@@ -216,3 +216,23 @@ export interface searchQueryProps {
     hashtag: HashTag[];
   };
 }
+
+export interface createTweetResult {
+  author: getCurrentUser;
+  id: string;
+  content: string;
+  mediaArray: string[];
+}
+
+export interface createCommentResult {
+  id: string;
+  content: string;
+  authorId: string;
+  tweetId: string;
+}
+
+export interface replyOnCommentResult {
+  id: string;
+  content: string;
+  authorIdL: string;
+}

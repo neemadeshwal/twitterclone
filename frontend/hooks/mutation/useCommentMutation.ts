@@ -1,5 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreateCommentProps } from "@/graphql/types";
+import {
+  CreateCommentProps,
+  createCommentResult,
+  replyOnCommentResult,
+} from "@/graphql/types";
 import {
   createCommentMutate,
   deleteCommentMutate,
@@ -12,6 +16,26 @@ interface useCommentMutationProps {
   onSuccess?: () => void;
   onError?: (error: unknown) => void;
 }
+interface createCommentResponse {
+  createComment: createCommentResult;
+}
+interface replyOnCommentResponse {
+  replyOnComment: replyOnCommentResult;
+}
+const typedCreateComment = (
+  data: CreateCommentProps
+): Promise<createCommentResponse> => {
+  return createCommentMutate(data) as Promise<createCommentResponse>;
+};
+
+const typedReplyOnComment = (data: {
+  content: string;
+  commentId: string;
+  mediaArray: string[];
+}): Promise<replyOnCommentResponse> => {
+  return replyOnCommentMutate(data) as Promise<replyOnCommentResponse>;
+};
+
 export const useCommentMutation = ({
   onSuccess,
   onError,
@@ -20,7 +44,7 @@ export const useCommentMutation = ({
   console.log("in ts file");
 
   const createCommentMutation = useMutation({
-    mutationFn: (body: CreateCommentProps) => createCommentMutate(body),
+    mutationFn: typedCreateComment,
 
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
@@ -31,6 +55,7 @@ export const useCommentMutation = ({
         queryKey: ["user-detail"],
       });
       onSuccess?.();
+      return response;
     },
     onError: (error) => {
       console.log(error);
@@ -50,14 +75,11 @@ export const useCommentMutation = ({
     },
   });
   const replyOnCommentMutation = useMutation({
-    mutationFn: (body: {
-      content: string;
-      commentId: string;
-      mediaArray: string[];
-    }) => replyOnCommentMutate(body),
+    mutationFn: typedReplyOnComment,
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["single-comment"] });
       queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
+      return response;
     },
   });
 
@@ -89,7 +111,8 @@ export const useCommentMutation = ({
 
   const createComment = async (body: CreateCommentProps) => {
     try {
-      await createCommentMutation.mutateAsync(body);
+      const response = await createCommentMutation.mutateAsync(body);
+      return response;
     } catch (error) {
       console.log(error);
     }
@@ -108,7 +131,8 @@ export const useCommentMutation = ({
     mediaArray: string[];
   }) => {
     try {
-      await replyOnCommentMutation.mutateAsync(body);
+      const response = await replyOnCommentMutation.mutateAsync(body);
+      return response;
     } catch (error) {
       console.log(error);
     }

@@ -5,6 +5,7 @@ import ShowSearchPreview from "./showSearchPreview";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Icons } from "@/utils/icons";
+import useOutsideClick from "@/shared/closeContainer";
 
 const useRecentSearches = () => {
   const addRecentSearch = (searchTerm: string) => {
@@ -40,12 +41,20 @@ const SearchInput = ({
   setIsSearchFocused: (value: boolean) => void;
   setShowPreview: (value: boolean) => void;
 }) => {
+  const pathname = usePathname();
+  useOutsideClick(inputRef, () => setIsSearchFocused(false));
   return (
     <div
       className={`relative py-1 ${
-        isSearchFocused ? "ml-10 w-[90%]" : "w-full"
+        isSearchFocused
+          ? ` ${
+              pathname.startsWith("/explore") || pathname.startsWith("/search")
+                ? "w-[90%] ml-10"
+                : "w-full"
+            } `
+          : "w-full"
       }`}
-    > 
+    >
       <input
         ref={inputRef}
         value={query}
@@ -92,7 +101,7 @@ const SearchBar = ({}) => {
   const { allSearchResult, isLoading } = useSearchquery(debouncedQuery);
   const searchParams = useSearchParams();
   const router = useRouter();
-  const pathname=usePathname()
+  const pathname = usePathname();
 
   const { addRecentSearch } = useRecentSearches();
 
@@ -151,17 +160,24 @@ const SearchBar = ({}) => {
 
   return (
     <div className="relative z-[100]">
-      {isSearchFocused && (
-        <button
-          onClick={handleBack}
-          className="absolute left-5 top-[12%] z-[100] p-2 hover:bg-[#5a5a5a3f] rounded-full"
-        >
-          <ArrowLeftIcon className="w-6 h-6" />
-        </button>
-      )}
+      {pathname.startsWith("/explore") ||
+        (pathname.startsWith("/search") && isSearchFocused && (
+          <button
+            onClick={handleBack}
+            className="absolute left-5 top-[12%] z-[100] p-2 hover:bg-[#5a5a5a3f] rounded-full"
+          >
+            <ArrowLeftIcon className="w-6 h-6" />
+          </button>
+        ))}
 
       <div className="backdrop-blur-md pt-1 bg-[#000000b0]">
-        <div className={`${(pathname.startsWith("/explore") || pathname.startsWith("/search")) ? "px-12" : ""} relative`}>
+        <div
+          className={`${
+            pathname.startsWith("/explore") || pathname.startsWith("/search")
+              ? "px-12"
+              : ""
+          } relative`}
+        >
           <SearchInput
             query={query}
             setQuery={setQuery}
@@ -187,4 +203,3 @@ const SearchBar = ({}) => {
 };
 
 export default SearchBar;
-

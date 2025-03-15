@@ -2,6 +2,7 @@ import React from "react";
 import { useGetAllTrending } from "@/hooks/tweet";
 import Loading from "@/shared/loading";
 import { Icons } from "@/utils/icons";
+import Link from "next/link";
 
 const TrendingTopics = () => {
   const { allTrending } = useGetAllTrending();
@@ -95,10 +96,11 @@ const TrendingTopics = () => {
           </div>
         ))}
       </div>
-
-      <button className="w-full text-left text-blue-400 hover:text-blue-300 transition-colors mt-4 text-sm">
-        Show more
-      </button>
+      <Link href="/explore/tabs/trending">
+        <button className="w-full text-left text-blue-400 hover:text-blue-300 transition-colors mt-4 text-sm">
+          Show more
+        </button>
+      </Link>
     </div>
   );
 };

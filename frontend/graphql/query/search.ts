@@ -17,6 +17,7 @@ export const getSearchByQuery = gql`
       hashtag {
         id
         text
+
         tweets {
           createdAt
           hashtags {

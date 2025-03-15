@@ -54,7 +54,6 @@ const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
       return;
     }
 
-
     setSaveBookmark((prevVal) => !prevVal);
 
     const body = {
@@ -66,8 +65,7 @@ const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
       toast({
         description: (
           <div className="flex items-center  justify-between w-full">
-            
-              Added to bookmarks
+            Added to bookmarks
           </div>
         ),
         className:

@@ -1,10 +1,8 @@
 "use client";
 import { getCurrentUser } from "@/graphql/types";
-import { useCurrentUser } from "@/hooks/user";
 import AuthorProfile from "@/shared/AuthorProfile";
-import React, { useEffect, useState } from "react";
 import DynamicNameTruncate from "./DynamicNameTruncate";
-import { userUserMutation } from "@/hooks/mutation/useUserMutation";
+import FollowUserBtn from "@/shared/followUserBtn";
 
 const SingleFollowUser = ({
   singleUser,
@@ -15,44 +13,7 @@ const SingleFollowUser = ({
   filterArray?: boolean;
   isBio?: boolean;
 }) => {
-  const { user } = useCurrentUser();
-  const [isAlreadyFollowing, setIsAlreadyFollowing] = useState(false);
-
-  const { followUserFn } = userUserMutation();
-  const handleFollowUser = async () => {
-    if (!singleUser.id) {
-      return;
-    }
-    const body = {
-      userToFollowId: singleUser.id,
-    };
-    try {
-      await followUserFn(body);
-      setIsAlreadyFollowing(true);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    console.log(singleUser, "singleUser");
-    console.log(user, "user");
-    console.log(filterArray, "fiilterararay");
-    if (!singleUser || !user || !filterArray) {
-      console.log("empty followers");
-      return;
-    }
-
-    console.log(singleUser, "followers");
-    const isFollowing = singleUser.followers.find(
-      (item) => item.followerId === user.id
-    );
-    console.log(isFollowing, "following");
-    if (isFollowing) {
-      setIsAlreadyFollowing(true);
-    } else {
-      setIsAlreadyFollowing(false);
-    }
-  }, [singleUser, user, filterArray]);
+  console.log(filterArray);
   return (
     <div className="w-full">
       <div className="flex justify-between w-full">
@@ -75,18 +36,7 @@ const SingleFollowUser = ({
           </div>
         </div>
         <div>
-          {isAlreadyFollowing ? (
-            <button className="px-3 text-[14px] xl:text-[16px]  py-1 rounded-full border border-gray-600 capitalize font-[600]">
-              following
-            </button>
-          ) : (
-            <button
-              onClick={handleFollowUser}
-              className="px-4 py-1 rounded-full bg-white text-black capitalize font-[600]"
-            >
-              follow
-            </button>
-          )}
+          <FollowUserBtn hoveredUser={singleUser} />
         </div>
       </div>
     </div>

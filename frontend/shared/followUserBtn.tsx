@@ -16,7 +16,7 @@ const FollowUserBtn = ({ hoveredUser }: { hoveredUser: authorType }) => {
       return;
     }
 
-    const isFollowing = hoveredUser?.followers.find(
+    const isFollowing = hoveredUser?.followers?.find(
       (item) => item.followerId === user.id
     );
     if (isFollowing) {

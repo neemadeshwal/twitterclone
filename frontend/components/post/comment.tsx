@@ -41,25 +41,28 @@ const CommentComponent = ({
       mediaArray: [],
     };
     try {
-      await replyOnComment(body);
-      toast({
-        description: (
-          <div className="flex items-center justify-between w-full">
-            <span>Your post is sent.</span>
-            <a
-              href={`http://localhost:5000/${tweet?.author?.userName}/comment/${tweet?.id}`} // Replace with your actual post view URL
-              className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
-              onClick={(e) => {
-                e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
-              }}
-            >
-              View
-            </a>
-          </div>
-        ),
-        className:
-          "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
-      });
+      const data = await replyOnComment(body);
+      if (data && data.replyOnComment) {
+        toast({
+          description: (
+            <div className="flex items-center justify-between w-full">
+              <span>Your post is sent.</span>
+              <a
+                href={`http://localhost:5000/${tweet?.author?.userName}/comment/${data.replyOnComment.id}`} // Replace with your actual post view URL
+                className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+                }}
+              >
+                View
+              </a>
+            </div>
+          ),
+          className:
+            "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+        });
+      }
+
       setShowDialogBox(false);
       setTweetComment("");
     } catch (error) {
@@ -75,25 +78,28 @@ const CommentComponent = ({
     };
 
     try {
-      await createComment(body);
-      toast({
-        description: (
-          <div className="flex items-center justify-between w-full">
-            <span>Your post is sent.</span>
-            <a
-              href={`http://localhost:5000/${tweet?.author?.userName}/comment/${tweet?.id}`} // Replace with your actual post view URL
-              className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
-              onClick={(e) => {
-                e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
-              }}
-            >
-              View
-            </a>
-          </div>
-        ),
-        className:
-          "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
-      });
+      const data = await createComment(body);
+      if (data && data.createComment) {
+        toast({
+          description: (
+            <div className="flex items-center justify-between w-full">
+              <span>Your post is sent.</span>
+              <a
+                href={`http://localhost:5000/${tweet?.author?.userName}/comment/${data.createComment.id}`} // Replace with your actual post view URL
+                className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+                }}
+              >
+                View
+              </a>
+            </div>
+          ),
+          className:
+            "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+        });
+      }
+
       setShowDialogBox(false);
       setTweetComment("");
     } catch (error) {

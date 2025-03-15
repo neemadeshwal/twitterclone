@@ -2,6 +2,7 @@ import { HashTag } from "@/graphql/types";
 import DivisionBar from "@/shared/divisionbar";
 import { Icons } from "@/utils/icons";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
 interface PeopleProps {
@@ -61,32 +62,36 @@ const ProfileImage = ({ user }: { user: PeopleProps }) => {
 
 // Separate component for hashtag item
 const HashtagItem = ({ hashtag }: { hashtag: HashTag }) => (
-  <div className="flex gap-3 items-center hover-bg cursor-pointer py-3 px-6">
-    <div>
-      <Icons.SearchIcon className="w-6 h-6" />
+  <Link href={`/search?q=%23${hashtag.text.slice(1)} `}>
+    <div className="flex gap-3 items-center hover-bg cursor-pointer py-3 px-6">
+      <div>
+        <Icons.SearchIcon className="w-6 h-6" />
+      </div>
+      <div className="leading-[20px]">
+        <p>{hashtag.text}</p>
+        <p className="gray capitalize text-[14px]">trending</p>
+      </div>
     </div>
-    <div className="leading-[20px]">
-      <p>{hashtag.text}</p>
-      <p className="gray capitalize text-[14px]">trending</p>
-    </div>
-  </div>
+  </Link>
 );
 
 // Separate component for person item
 const PersonItem = ({ person }: { person: PeopleProps }) => (
-  <div className="hover-bg cursor-pointer py-3 px-6">
-    <div className="flex gap-2 items-center">
-      <ProfileImage user={person} />
-      <div>
-        <h3 className="text-[16px] font-[500] capitalize hover:underline underline-white cursor-pointer">
-          {person.firstName} {person.lastName}
-        </h3>
-        <p className="gray text-[14px] font-[300] break-all">
-          @{person.userName}
-        </p>
+  <Link href={`/${person.userName}`}>
+    <div className="hover-bg cursor-pointer py-3 px-6">
+      <div className="flex gap-2 items-center">
+        <ProfileImage user={person} />
+        <div>
+          <h3 className="text-[16px] font-[500] capitalize hover:underline underline-white cursor-pointer">
+            {person.firstName} {person.lastName}
+          </h3>
+          <p className="gray text-[14px] font-[300] break-all">
+            @{person.userName}
+          </p>
+        </div>
       </div>
     </div>
-  </div>
+  </Link>
 );
 
 // Custom hook for recent searches

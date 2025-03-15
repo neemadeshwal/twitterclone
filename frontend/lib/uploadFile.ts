@@ -12,7 +12,7 @@ export async function previewFile(imgFile: FileList) {
   });
   try {
     const response = await fetch(
-      `http://localhost:8000/api/uploads/previewImages`,
+      `${process.env.NEXT_PUBLIC_SERVER_URL_API}/api/uploads/previewImages`,
       {
         method: "Post",
         body: imgFormData,
