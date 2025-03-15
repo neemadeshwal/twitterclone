@@ -85,7 +85,7 @@ const CommentComponent = ({
             <div className="flex items-center justify-between w-full">
               <span>Your post is sent.</span>
               <a
-                href={`http://localhost:5000/${tweet?.author?.userName}/comment/${data.createComment.id}`} // Replace with your actual post view URL
+                href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/${tweet?.author?.userName}/comment/${data.createComment.id}`} // Replace with your actual post view URL
                 className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
                 onClick={(e) => {
                   e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
