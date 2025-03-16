@@ -273,20 +273,22 @@ const SmallScreenPhoto = ({
             </div>
           </Carousel>
         </div>
-        {
-          !isFocused && (
-            <PostInteractions
-              isInPhotoSection={true}
-              tweet={tweet}
-              liked={liked}
-              repost={repost}
-              handleRepostTweet={handleRepostTweet}
-              handleTweetLike={handleTweetLike}
-            />
-          )
-        }
-        <div className="w-full bottom-0">
-          <div className="" ref={composerRef} onClick={() => setIsFocused(true)}>
+        {!isFocused && (
+          <PostInteractions
+            isInPhotoSection={true}
+            tweet={tweet}
+            liked={liked}
+            repost={repost}
+            handleRepostTweet={handleRepostTweet}
+            handleTweetLike={handleTweetLike}
+          />
+        )}
+        <div className="w-full bottom-0 px-4">
+          <div
+            className=""
+            ref={composerRef}
+            onClick={() => setIsFocused(true)}
+          >
             <ComposePost
               user={user!}
               isInPhotoSection={true}
@@ -299,7 +301,6 @@ const SmallScreenPhoto = ({
           </div>
         </div>
       </div>
-   
     </div>
   );
 };

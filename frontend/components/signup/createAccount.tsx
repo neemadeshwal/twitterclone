@@ -38,7 +38,6 @@ const CreateAccount = ({ authType }: { authType: "login" | "signup" }) => {
 
   return (
     <div>
-      <ScrollLock isOpen={true} />
       <div>
         <div>
           <button
