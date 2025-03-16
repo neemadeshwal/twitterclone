@@ -4,7 +4,6 @@ import { BsTwitterX, BsX } from "react-icons/bs";
 import Step1Creds from "./steps/step1-creds";
 import Step2VerifyOtp from "./steps/step2-verifyotp";
 import Step3Password from "./steps/step3-password";
-import ScrollLock from "@/shared/ScrollLock";
 import Loading from "@/shared/loading";
 
 export interface getDataProps {
