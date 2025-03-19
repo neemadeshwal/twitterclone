@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { BsEmojiFrown } from "react-icons/bs";
-import { FiUserX } from "react-icons/fi";
+import { FiUser, FiUserX } from "react-icons/fi";
 import { IoIosStats } from "react-icons/io";
 import { MdDelete, MdEditDocument } from "react-icons/md";
 import { PiSpeakerSimpleSlash } from "react-icons/pi";
@@ -20,21 +20,43 @@ const PostActivity = ({
   isDrawer,
   singleTweet,
   isComment,
+  setDeleteDialog,
+  deleteDialog,
+  setIsContainerOpen,
+  setEditPost,
 }: {
   setPostControlDialogOpen: any;
   singleTweet: Tweet | Comment;
   isDrawer?: boolean;
   setIsTriggerDrawerOpen?: any;
   isComment?: boolean;
+  deleteDialog:boolean;
+  editPost:boolean;
+  setIsContainerOpen:React.Dispatch<React.SetStateAction<boolean>>
+  setEditPost:React.Dispatch<React.SetStateAction<boolean>>
+
+  setDeleteDialog:React.Dispatch<React.SetStateAction<boolean>>
 }) => {
-  const postRef = useRef<HTMLDivElement>(null);
   const { user } = useCurrentUser();
   const [isUserPost, setIsUserPost] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
-  const [editPost, setEditPost] = useState(false);
-  const [deleteDialog, setDeleteDialog] = useState(false);
-  const [isContainerOpen, setIsContainerOpen] = useState(false);
+    const [isAlreadyFollowing, setIsAlreadyFollowing] = useState(false);
+  
+     useEffect(() => {
+        if (!singleTweet.author || !user) {
+          return;
+        }
+    
+        const isFollowing = singleTweet.author?.followers?.find(
+          (item) => item.followerId === user.id
+        );
+        if (isFollowing) {
+          setIsAlreadyFollowing(true);
+        } else {
+          setIsAlreadyFollowing(false);
+        }
+      }, [singleTweet.author, user]);
 
   useEffect(() => {
     if (!user || !singleTweet) {
@@ -48,29 +70,17 @@ const PostActivity = ({
     }
   }, [singleTweet.id, user]);
 
-  useEffect(() => {
-    const handlePostDialog = (event: MouseEvent) => {
-      if (postRef.current && !postRef.current.contains(event.target as Node)) {
-        setPostControlDialogOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handlePostDialog);
 
-    return () => {
-      document.removeEventListener("mousedown", handlePostDialog);
-    };
-  }, [setPostControlDialogOpen]);
 
   return (
     <>
       <div
-        ref={postRef}
         style={{
           boxShadow: !isDrawer ? "0 0 6px rgba(255, 255, 255, 0.6)" : "",
         }}
         className={`${
           !isDrawer ? "absolute w-[350px]" : "w-full"
-        } text-white p-4 py-8 right-0 top-0 z-[100] h-screen  bg-black rounded-[15px]`}
+        } text-white p-4 py-8 right-0 top-0 z-[1000] h-auto  bg-black rounded-[15px]`}
       >
         <div className="flex flex-col gap-6">
           {isUserPost ? (
@@ -78,12 +88,8 @@ const PostActivity = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setPostControlDialogOpen(false); // Close the post control dialog first
-                  setTimeout(() => {
-                    // Then open the delete dialog with a small delay
+                   setPostControlDialogOpen(false);
                     setDeleteDialog(true);
-                    setIsContainerOpen(true);
-                  }, 300); // Small delay to ensure close happens first
                 }}
                 className="flex gap-3 items-center font-[600] text-red-500"
               >
@@ -94,7 +100,9 @@ const PostActivity = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
+                  setIsContainerOpen(false)
                   setEditPost(true);
+                  
                   setIsContainerOpen(true);
                 }}
                 className="flex gap-3 items-center font-[600]"
@@ -110,8 +118,14 @@ const PostActivity = ({
                 Not interested in this post
               </button>
               <button className="flex gap-3 items-center font-[600]">
-                <FiUserX className="font-[600] text-[17px]" />
-                Unfollow @{singleTweet?.author.userName}
+                {
+                  isAlreadyFollowing?
+                <FiUserX className="font-[600] text-[17px]" />:
+                <FiUser className="font-[600] text-[17px]" />
+
+
+                }
+               {isAlreadyFollowing?"Unfollow":"Follow"}@{singleTweet?.author.userName}
               </button>
               <button className="flex gap-3 items-center font-[600]">
                 <PiSpeakerSimpleSlash className="font-[600] text-[17px]" />
@@ -131,24 +145,8 @@ const PostActivity = ({
             View post engagements
           </button>
         </div>
-        {editPost && isContainerOpen && (
-          <PostContainer
-            ref={postRef}
-            setPostControlDialogOpen={setPostControlDialogOpen}
-            isEdit={editPost}
-            editTweet={singleTweet}
-            isContainerOpen={isContainerOpen}
-            setIsContainerOpen={setIsContainerOpen}
-          />
-        )}
-        {deleteDialog && isContainerOpen && (
-          <DeletePostContainer
-            postId={singleTweet.id}
-            isComment={isComment}
-            setDeleteDialog={setDeleteDialog}
-            setPostControlDialogOpen={setPostControlDialogOpen}
-          />
-        )}
+      
+       
       </div>
     </>
   );

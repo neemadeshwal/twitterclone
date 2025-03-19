@@ -32,8 +32,8 @@ const Home = async () => {
           <DivisionBar type="y" />
         </div>
 
-        <div className="hidden lg:block   lg:w-[33%] xl1300:w-[30%] ">
-         <div className="sticky top-0 h-auto">
+        <div className="hidden lg:block    lg:w-[33%] xl1300:w-[30%] ">
+         <div className=" sticky top-0 h-auto">
          <RightSidebar />
 
          </div>

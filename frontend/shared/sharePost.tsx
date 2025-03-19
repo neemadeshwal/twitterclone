@@ -106,11 +106,11 @@ const SharePost = ({
 
   const drawerComp = (
     <div ref={mobileShareContainerRef} className="absolute z-50 top-0 w-full">
-      <div className="rounded-[15px] p-4 flex w-full min-h-[100px] h-auto bg-black">
+      <div className="rounded-[15px] p-4 pb-2 flex w-full min-h-[40%] h-auto bg-black">
         <div className="flex flex-col w-full">
           <div
             onClick={handleCopyLink}
-            className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-900 rounded-md"
+            className="flex items-center gap-2 py-3 px-3 cursor-pointer  rounded-md"
           >
             <p>
               <AiOutlineLink className="text-[20px]" />
@@ -121,7 +121,7 @@ const SharePost = ({
           </div>
           <div
             onClick={handleShare}
-            className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-900 rounded-md"
+            className="flex items-center gap-2 py-3 px-3 cursor-pointer  rounded-md"
           >
             <p>
               <RiShare2Line className="text-[20px]" />
@@ -144,12 +144,12 @@ const SharePost = ({
         >
           <RiShare2Line className="text-[16px] sm:text-[20px]" />
         </div>
-        <DrawDialog drawerTrigger={drawerTrigger} drawerComp={drawerComp} />
+        <DrawDialog setIsOpenProp={setOpenShareContainer}  drawerTrigger={drawerTrigger} drawerComp={drawerComp} />
       </div>
       {openShareContainer && (
         <div
           ref={shareContainerRef}
-          className="absolute z-[1000] top-0 right-0"
+          className="absolute z-[1000] hidden md:flex top-0 right-0"
         >
           <div
             style={{

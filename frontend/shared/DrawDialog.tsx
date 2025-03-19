@@ -10,7 +10,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import PortalContainerWrapper from "./PortalContainerWrapper";
-const DrawDialog = ({ drawerTrigger, drawerComp, setIsOpenProp }: any) => {
+const DrawDialog = ({ drawerTrigger, drawerComp, setIsOpenProp, }: {setIsOpenProp:React.Dispatch<React.SetStateAction<boolean>>,drawerComp:any,drawerTrigger:any}) => {
   const [isOpen, setIsOpen] = useState(false);
   const handleDrawerOpen = () => {
     setIsOpen((prev) => !prev);
@@ -21,23 +21,23 @@ const DrawDialog = ({ drawerTrigger, drawerComp, setIsOpenProp }: any) => {
   return (
     <div>
       <div className="h-full md:hidden">
-        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <Drawer  open={isOpen} onOpenChange={setIsOpen}>
           <DrawerTrigger onClick={handleDrawerOpen} className="">
             {drawerTrigger}
           </DrawerTrigger>
           <DrawerContent
-            onClick={() => setIsOpen(false)}
-            className="max-h-[55%] h-auto min-h-[30%] bg-black border-none text-white"
+             onClick={(e) => e.stopPropagation()}
+            className="max-h-[55%] h-auto min-h-[40%] z-[10000] bg-black border-none text-white md:hidden"
           >
             <DrawerTitle></DrawerTitle>
+            
             <div className="">
               {drawerComp}
-              {/* //</PortalContainerWrapper> {drawerComp} */}
             </div>
-            <DrawerFooter>
+            <DrawerFooter className="">
               <DrawerClose
                 className="rounded-full text-[18px] w-full border border-gray-500 py-2 "
-                onClick={() => setIsOpen(false)}
+                onClick={() => setIsOpenProp(false)}
               >
                 Cancel
               </DrawerClose>
