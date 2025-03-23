@@ -18,6 +18,8 @@ import TweetContent from "./singlePost/TweetContent";
 import { FaArrowLeft } from "react-icons/fa";
 import { useCurrentUser } from "@/hooks/user";
 import { Comment, Tweet } from "@/graphql/types";
+import CharacterCircle from "./CharacterCircle";
+import { TWEET_CHARACTER_LIMIT } from "@/lib/constants";
 const PostContainer = ({
   isEdit,
   editTweet,
@@ -205,6 +207,16 @@ const PostContainer = ({
               setLoading={setLoading}
               containerType="PostDialog"
             />
+            <div className="flex gap-2 items-center">
+              {tweetContent.length > 0 && (
+                <div>
+                  <CharacterCircle
+                    tweetContentLength={tweetContent.length}
+                    characterLimit={Number(TWEET_CHARACTER_LIMIT)}
+                  />
+                </div>
+              )}
+            </div>
             {isEdit ? (
               <button
                 onClick={onEdit}

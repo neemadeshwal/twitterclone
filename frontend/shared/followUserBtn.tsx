@@ -5,12 +5,14 @@ import { useMutation } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import PortalContainerWrapper from "./PortalContainerWrapper";
 import CenterDialog from "./CenterDialog";
+import Loading from "./loading";
 
 const FollowUserBtn = ({ hoveredUser }: { hoveredUser: authorType }) => {
   const { user } = useCurrentUser();
   const [isAlreadyFollowing, setIsAlreadyFollowing] = useState(false);
   const [onhoverFollowing, setOnhoverFollowing] = useState(false);
   const [isFollowingClicked, setIsFollowingClicked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     if (!hoveredUser || !user) {
       return;
@@ -107,7 +109,13 @@ const FollowUserBtn = ({ hoveredUser }: { hoveredUser: authorType }) => {
                   : "border-gray-600 text-white"
               } px-4 py-1 rounded-full border capitalize font-[600]`}
             >
-              {onhoverFollowing ? "unfollow" : "following"}
+              {isLoading ? (
+                <Loading small={true} />
+              ) : onhoverFollowing ? (
+                "unfollow"
+              ) : (
+                "following"
+              )}
             </button>
           }
           element={dialogElement}
@@ -117,7 +125,7 @@ const FollowUserBtn = ({ hoveredUser }: { hoveredUser: authorType }) => {
           onClick={handleFollowUser}
           className="px-4 py-1 rounded-full bg-white hover:bg-[#ffffffbf] text-black capitalize font-[600]"
         >
-          follow
+          {isLoading ? <Loading small={true} /> : "follow"}
         </button>
       )}
     </div>

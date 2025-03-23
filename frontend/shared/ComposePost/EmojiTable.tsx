@@ -32,7 +32,7 @@ const EmojiTable = ({
     <div>
       <div
         ref={emojiCloseRef}
-        className="absolute border rounded-[8px] border-gray-400  mx-[10%] z-[1000]"
+        className="absolute bottom-0 md:top-[30%]  border rounded-[8px] border-gray-400  mx-[10%] z-[1000]"
       >
         <div>
           <Picker
