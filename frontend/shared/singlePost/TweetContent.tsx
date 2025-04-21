@@ -38,6 +38,7 @@ const TweetContent = ({
       <div className="relative">
         <textarea
           value={tweetContent}
+          autoFocus
           onChange={(e) => handleContentChange(e.target.value)}
           rows={isInPhotoSection ? 1 : 2}
           className={` text-[15px] sm:text-[20px] resize-none overflow-visible bg-transparent   outline-none border-0 w-full placeholder:text-gray-600`}

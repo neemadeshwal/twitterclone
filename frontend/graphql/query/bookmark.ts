@@ -11,6 +11,8 @@ query getAllBookmarks{
         comment{
             id
             content
+            createdAt
+
             mediaArray
             likes{
                 userId
@@ -19,7 +21,7 @@ query getAllBookmarks{
             tweet{
                 id
             }
-            user{
+            author{
                 id
                 firstName
                 lastName
@@ -32,6 +34,7 @@ query getAllBookmarks{
         tweet{
             id
             content
+            createdAt
             author{
                 firstName
                 lastName

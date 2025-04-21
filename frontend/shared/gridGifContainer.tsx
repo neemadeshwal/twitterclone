@@ -25,7 +25,7 @@ const gridGifContainer = ({
     const response = await fetchGif.search(searchGif, { limit: 20 });
     console.log(response);
 
-    return response; 
+    return response;
   };
   console.log(selectedGif, "selectedgif");
   useEffect(() => {
@@ -36,8 +36,9 @@ const gridGifContainer = ({
   }, [selectedGif]);
   return fetched ? (
     <div
-    style={{ height: `${viewportHeight - 200}px` }}
-    className={`overflow-y-auto  flex flex-wrap`}>
+      style={{ height: `${viewportHeight - 200}px` }}
+      className={`overflow-y-auto  flex flex-wrap`}
+    >
       {!searchGif ? (
         <Grid
           fetchGifs={trendingGifs}
@@ -46,8 +47,8 @@ const gridGifContainer = ({
             event.preventDefault();
             setSelectedGif(gif.images.original.url);
           }}
-          width={containerWidth - 500}
-          columns={5}
+          width={500}
+          columns={3}
           gutter={6}
         />
       ) : (
