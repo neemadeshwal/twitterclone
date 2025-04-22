@@ -20,6 +20,8 @@ import { VscWand } from "react-icons/vsc";
 import { FaChevronDown, FaMagic, FaMicrophone } from "react-icons/fa";
 import AudioRecord from "./AudioRecord";
 import { Check, WandSparkles, X } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { rewriteTweetWithAi } from "@/graphql/mutation/ai";
 interface EmojiSelect {
   id: string;
   name: string;
@@ -63,7 +65,7 @@ const ComposePost = ({
   const [aiInstructText, setAiInstructText] = useState("");
   const [isAudioActive, setIsAudioActive] = useState(false);
   const [aiEnhancedText, setAiEnhancedText] = useState("");
-
+  const[aiResponse,setAiResponse]=useState("")
   useOutsideClick(emojiCloseRef, () => setIsEmojiTableOpen(false));
 
   const { createTweet } = useTweetMutation({
@@ -199,6 +201,32 @@ const ComposePost = ({
     }
   }
 
+  const handleWithAiMutation=useMutation({
+    mutationFn:rewriteTweetWithAi,
+    onSuccess:(response:any)=>{
+      
+    },
+    onError:(error)=>{
+      console.log(error)
+    }
+  })
+
+  const handleWithAI=async()=>{
+    const body={
+      tweet:tweetContent,
+      instructions:aiInstructText
+    }
+
+    try{
+       const data= await handleWithAiMutation.mutateAsync(body)
+       console.log(data,"data")
+       setAiEnhancedText(data.rewriteTweetWithAi.content)
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
+
   return (
     <div className="w-full relative">
       <div
@@ -284,8 +312,8 @@ const ComposePost = ({
                     <button
                       className="bg-blue-500/80  mt-6  hover:bg-blue-600 text-white rounded-full px-4 py-2 text-[16px] font-medium flex items-center gap-1.5 transition-colors duration-200"
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent toggling the drawer
-                        // Add your AI application logic here
+                        e.stopPropagation(); 
+                        handleWithAI()
                       }}
                     >
                       <WandSparkles strokeWidth={1.5} size={14} />
@@ -331,7 +359,8 @@ const ComposePost = ({
                       AI Enhanced:
                     </div>
                     <div className="text-gray-300">
-                      hello let me check out this is going{aiEnhancedText}
+
+                    {aiEnhancedText}
                     </div>
                     <div className="absolute top-3 right-3">
                       <button className="text-blue-500 hover:text-blue-400 transition-colors duration-200">
