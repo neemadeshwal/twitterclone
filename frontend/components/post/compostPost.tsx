@@ -1,6 +1,6 @@
 "use client";
 import DivisionBar from "@/shared/divisionbar";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import CurrentUser from "@/shared/currentUser";
@@ -22,6 +22,7 @@ import AudioRecord from "./AudioRecord";
 import { Check, WandSparkles, X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { rewriteTweetWithAi } from "@/graphql/mutation/ai";
+import Loading from "@/shared/loading";
 interface EmojiSelect {
   id: string;
   name: string;
@@ -65,7 +66,11 @@ const ComposePost = ({
   const [aiInstructText, setAiInstructText] = useState("");
   const [isAudioActive, setIsAudioActive] = useState(false);
   const [aiEnhancedText, setAiEnhancedText] = useState("");
-  const[aiResponse,setAiResponse]=useState("")
+  const [aiResponse, setAiResponse] = useState("");
+  const [displayAiResponse, setDisplayAiResponse] = useState(false);
+  const [originalText, setOriginalText] = useState("");
+
+  const [aiResponseLoading, setAiResponseLoading] = useState(false);
   useOutsideClick(emojiCloseRef, () => setIsEmojiTableOpen(false));
 
   const { createTweet } = useTweetMutation({
@@ -156,6 +161,10 @@ const ComposePost = ({
           className:
             "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
         });
+        setAiEnhancedText("");
+        setAiInstructText("");
+        setOriginalText("");
+        setDisplayAiResponse(false);
       }
     } catch (error) {
       console.log(error);
@@ -193,6 +202,10 @@ const ComposePost = ({
           className:
             "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
         });
+        setAiEnhancedText("");
+        setAiInstructText("");
+        setOriginalText("");
+        setDisplayAiResponse(false);
       }
     } catch (error) {
       console.log(error);
@@ -201,31 +214,50 @@ const ComposePost = ({
     }
   }
 
-  const handleWithAiMutation=useMutation({
-    mutationFn:rewriteTweetWithAi,
-    onSuccess:(response:any)=>{
-      
+  const handleWithAiMutation = useMutation({
+    mutationFn: rewriteTweetWithAi,
+    onSuccess: (response) => {},
+    onError: (error) => {
+      console.log(error);
     },
-    onError:(error)=>{
-      console.log(error)
-    }
-  })
+  });
 
-  const handleWithAI=async()=>{
-    const body={
-      tweet:tweetContent,
-      instructions:aiInstructText
+  const handleWithAI = async () => {
+    const body = {
+      tweet: tweetContent,
+      instructions: aiInstructText,
+    };
+    setAiResponseLoading(true);
+    try {
+      const data = await handleWithAiMutation.mutateAsync(body);
+      console.log(data, "data");
+      setOriginalText(tweetContent);
+      if (data && data.rewriteTweetWithAi) {
+        setAiEnhancedText(data.rewriteTweetWithAi.output);
+        setTweetContent(data.rewriteTweetWithAi.output);
+        setDisplayAiResponse(true);
+        setIsAiInstructionsActive(false);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setAiResponseLoading(false);
     }
+  };
 
-    try{
-       const data= await handleWithAiMutation.mutateAsync(body)
-       console.log(data,"data")
-       setAiEnhancedText(data.rewriteTweetWithAi.content)
+  useEffect(() => {
+    if (!tweetContent) {
+      setIsAiInstructionsActive(false);
     }
-    catch(error){
-      console.log(error)
+  }, [tweetContent]);
+
+  useEffect(() => {
+    if (displayAiResponse && aiEnhancedText) {
+      setTweetContent(aiEnhancedText);
+    } else {
+      setTweetContent(originalText);
     }
-  }
+  }, [aiEnhancedText, displayAiResponse]);
 
   return (
     <div className="w-full relative">
@@ -258,119 +290,138 @@ const ComposePost = ({
               isInPhotoSection={isInPhotoSection}
               setTweetContent={setTweetContent}
             />
-            <div className="  ">
-              <div className="rounded-[10px] border my-1 mb-4 border-[#44444574] px-4 py-2">
-                <div
-                  onClick={() => setIsAiInstructionsActive((prev) => !prev)}
-                  className="flex justify-between w-full items-center cursor-pointer"
-                >
-                  <div className="flex text-blue-500 gap-2 items-center text-[14px]">
+            {tweetContent && (
+              <div className="  ">
+                <div className="rounded-[10px] border my-1 mb-4 border-[#44444574] px-4 py-2">
+                  <div
+                    onClick={() => setIsAiInstructionsActive((prev) => !prev)}
+                    className="flex justify-between w-full items-center cursor-pointer"
+                  >
+                    <div className="flex text-blue-500 gap-2 items-center text-[14px]">
+                      <div>
+                        <WandSparkles strokeWidth={1} className="text-[12px]" />
+                      </div>
+                      <div>AI Instructions</div>
+                    </div>
                     <div>
-                      <WandSparkles strokeWidth={1} className="text-[12px]" />
+                      <FaChevronDown
+                        strokeWidth={1}
+                        className={`text-blue-500 ${
+                          isAiInstructionsActive ? "rotate-180" : ""
+                        } text-[12px] w-[15px] h-[15px] transition-all ease-in-out duration-300`}
+                      />
                     </div>
-                    <div>AI Instructions</div>
-                  </div>
-                  <div>
-                    <FaChevronDown
-                      strokeWidth={1}
-                      className={`text-blue-500 ${
-                        isAiInstructionsActive ? "rotate-180" : ""
-                      } text-[12px] w-[15px] h-[15px] transition-all ease-in-out duration-300`}
-                    />
-                  </div>
-                </div>
-
-                <div
-                  className={`overflow-hidden transition-all ease-in-out duration-500 ${
-                    isAiInstructionsActive
-                      ? "max-h-[400px] opacity-100 mt-2"
-                      : "max-h-0 opacity-0"
-                  }`}
-                >
-                  <div className="p-2">
-                    <textarea
-                      value={aiInstructText}
-                      onChange={(e) => setAiInstructText(e.target.value)}
-                      name=""
-                      placeholder="Tell AI what to do with your text (e.g., 'Make this more professional' or 'Add some hashtags')"
-                      className="w-full px-4 outline-none focus-within:border-blue-500/70 placeholder:text-gray-700 py-2 h-[100px] resize-none overflow-auto placeholder-break-words bg-black border border-[#44444574] rounded-[5px]"
-                    />
-
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {instructionExamples.map((item) => {
-                        return (
-                          <div
-                            onClick={() => setAiInstructText(item)}
-                            key={item}
-                            className="rounded-full cursor-pointer text-[14px] px-3 py-1 w-fit border border-blue-500 text-blue-500 hover:bg-blue-950/50 transition-colors duration-200"
-                          >
-                            {item}
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <button
-                      className="bg-blue-500/80  mt-6  hover:bg-blue-600 text-white rounded-full px-4 py-2 text-[16px] font-medium flex items-center gap-1.5 transition-colors duration-200"
-                      onClick={(e) => {
-                        e.stopPropagation(); 
-                        handleWithAI()
-                      }}
-                    >
-                      <WandSparkles strokeWidth={1.5} size={14} />
-                      Apply AI
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="my-4 ">
-              <div className="border border-gray-800 bg-gray-950 px-2 rounded-[10px]  overflow-hidden relative">
-                <div className="absolute right-[1.5px] top-[1.5px] cursor-pointer p-1 hover:bg-gray-900 rounded-full">
-                  <X strokeWidth={1} size={18} className="text-gray-400" />
-                </div>
-                <div className="justify-between flex items-center px-4 py-3  pb-0 ">
-                  <p className="font-medium text-[13px] text-gray-300">
-                    Before / After
-                  </p>
-                  <button className="bg-transparent text-[13px] hover:bg-gray-900 text-gray-300 border border-gray-700 px-3 py-1 rounded-full  transition-colors duration-200">
-                    Use original
-                  </button>
-                </div>
-
-                <div className="p-4 space-y-3">
-                  <div className="border border-gray-800 rounded-[6px] p-3 bg-black">
-                    <div className="text-sm  text-gray-500 mb-1.5 font-medium">
-                      Original:
-                    </div>
-                    <div className="text-gray-300">{tweetContent}</div>
                   </div>
 
-                  <div className="border border-gray-800 rounded-[6px] p-3 bg-black">
-                    <div className="text-sm text-gray-500 mb-1.5 font-medium">
-                      Instructions:
-                    </div>
-                    <div className="text-gray-300">{aiInstructText}</div>
-                  </div>
+                  <div
+                    className={`overflow-hidden transition-all ease-in-out duration-500 ${
+                      isAiInstructionsActive
+                        ? "max-h-[400px] opacity-100 mt-2"
+                        : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="p-2">
+                      <textarea
+                        value={aiInstructText}
+                        onChange={(e) => setAiInstructText(e.target.value)}
+                        name=""
+                        placeholder="Tell AI what to do with your text (e.g., 'Make this more professional' or 'Add some hashtags')"
+                        className="w-full px-4 outline-none focus-within:border-blue-500/70 placeholder:text-gray-700 py-2 h-[100px] resize-none overflow-auto placeholder-break-words bg-black border border-[#44444574] rounded-[5px]"
+                      />
 
-                  <div className="border border-gray-800 rounded-[6px] p-3 bg-blue-950/30 relative">
-                    <div className="text-sm text-blue-500 mb-1.5 font-medium flex items-center gap-1.5">
-                      <WandSparkles size={14} strokeWidth={1.5} />
-                      AI Enhanced:
-                    </div>
-                    <div className="text-gray-300">
-
-                    {aiEnhancedText}
-                    </div>
-                    <div className="absolute top-3 right-3">
-                      <button className="text-blue-500 hover:text-blue-400 transition-colors duration-200">
-                        <Check size={16} />
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {instructionExamples.map((item) => {
+                          return (
+                            <div
+                              onClick={() => setAiInstructText(item)}
+                              key={item}
+                              className="rounded-full cursor-pointer text-[14px] px-3 py-1 w-fit border border-blue-500 text-blue-500 hover:bg-blue-950/50 transition-colors duration-200"
+                            >
+                              {item}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <button
+                        className="bg-blue-500/80 min-w-[120px]  mt-6  hover:bg-blue-600 text-white rounded-full px-4 py-2 text-[16px] font-medium flex items-center gap-1.5 transition-colors duration-200"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleWithAI();
+                        }}
+                      >
+                        {aiResponseLoading ? (
+                          <>
+                            <Loading small={true} /> loading....
+                          </>
+                        ) : (
+                          <>
+                            <WandSparkles strokeWidth={1.5} size={14} />
+                            Apply AI
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
+            {aiEnhancedText && (
+              <div className="my-4 ">
+                <div className="border border-gray-800 bg-gray-950 px-2 rounded-[10px]  overflow-hidden relative">
+                  <div
+                    onClick={() => setAiEnhancedText("")}
+                    className="absolute right-[1.5px] top-[1.5px] cursor-pointer p-1 hover:bg-gray-900 rounded-full"
+                  >
+                    <X strokeWidth={1} size={18} className="text-gray-400" />
+                  </div>
+                  <div className="justify-between flex items-center px-4 py-3  pb-0 ">
+                    <p className="font-medium text-[13px] text-gray-300">
+                      Before / After
+                    </p>
+                    <div onClick={() => setDisplayAiResponse((prev) => !prev)}>
+                      {displayAiResponse ? (
+                        <button className="bg-transparent text-[13px] hover:bg-gray-900 text-gray-300 border border-gray-700 px-3 py-1 rounded-full  transition-colors duration-200">
+                          Use original
+                        </button>
+                      ) : (
+                        <button className="bg-transparent text-[13px] hover:bg-gray-900 text-gray-300 border border-gray-700 px-3 py-1 rounded-full  transition-colors duration-200">
+                          Use ai response
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="p-4 space-y-3">
+                    <div className="border border-gray-800 rounded-[6px] p-3 bg-black">
+                      <div className="text-sm  text-gray-500 mb-1.5 font-medium">
+                        Original:
+                      </div>
+                      <div className="text-gray-300">{originalText}</div>
+                    </div>
+
+                    <div className="border border-gray-800 rounded-[6px] p-3 bg-black">
+                      <div className="text-sm text-gray-500 mb-1.5 font-medium">
+                        Instructions:
+                      </div>
+                      <div className="text-gray-300">{aiInstructText}</div>
+                    </div>
+
+                    <div className="border border-gray-800 rounded-[6px] p-3 bg-blue-950/30 relative">
+                      <div className="text-sm text-blue-500 mb-1.5 font-medium flex items-center gap-1.5">
+                        <WandSparkles size={14} strokeWidth={1.5} />
+                        AI Enhanced:
+                      </div>
+                      <div className="text-gray-300">{aiEnhancedText}</div>
+                      <div className="absolute top-3 right-3">
+                        <button className="text-blue-500 hover:text-blue-400 transition-colors duration-200">
+                          <Check size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {isInPhotoSection && isPhotoInputFocused && (
               <div className="border-[1.2px] mb-2 border-[#1d9bf0] border-b w-full "></div>

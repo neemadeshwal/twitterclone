@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import HashtagContainer from "../HashtagContainer";
 
 const TweetContent = ({
@@ -17,7 +17,17 @@ const TweetContent = ({
   const [isHashTagDialogOpen, setHashTagDialog] = useState(false);
   const [hashtagPart, setHashtagPart] = useState("");
   const [isListening, setIsListening] = useState(false);
+  const textareaRef = useRef(null);
 
+  // Effect to resize the textarea whenever tweetContent changes
+  useEffect(() => {
+    if (textareaRef.current) {
+      // Reset height to auto to get the correct scrollHeight
+      textareaRef.current.style.height = "auto";
+      // Set the height to match the content
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [tweetContent]);
   function handleContentChange(content: string) {
     const parts = content.split(/(\s|$)/);
     const lastPart = parts[parts.length - 1];
@@ -36,6 +46,7 @@ const TweetContent = ({
     }
     setTweetContent(content);
   }
+
   return (
     <div>
       <div className="relative">
@@ -54,11 +65,12 @@ const TweetContent = ({
 
         {
           <textarea
+            ref={textareaRef}
             value={tweetContent}
             autoFocus
             onChange={(e) => handleContentChange(e.target.value)}
-            rows={isInPhotoSection ? 1 : 2}
-            className={` text-[15px] sm:text-[20px] resize-none overflow-visible bg-transparent   outline-none border-0 w-full placeholder:text-gray-600`}
+            rows={1}
+            className={`text-[15px] sm:text-[20px] resize-none overflow-hidden bg-transparent outline-none border-0 w-full placeholder:text-gray-600`}
             placeholder={
               isRecording && !tweetContent
                 ? ""
@@ -66,6 +78,7 @@ const TweetContent = ({
                 ? "Post Your Reply"
                 : "What is happening?!"
             }
+            style={{ minHeight: isInPhotoSection ? "24px" : "48px" }}
           ></textarea>
         }
 

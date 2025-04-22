@@ -1,18 +1,20 @@
 import { graphqlClient } from "@/clients/api";
 import { gql } from "@apollo/client";
 
-
-const REWRITE_TWEET_WITH_AI=gql`
-mutation rewriteTweetWithAi($payload:rewriteTweetWithAiPayload){
-    rewriteTweetWithAi(payload:$payload){
-        output
+const REWRITE_TWEET_WITH_AI = gql`
+  mutation rewriteTweetWithAi($payload: rewriteTweetWithAiPayload) {
+    rewriteTweetWithAi(payload: $payload) {
+      output
     }
-}
-`
+  }
+`;
 
-export const rewriteTweetWithAi=async(payload:{tweet:string,instructions:string})=>{
-    const data=await graphqlClient.request(REWRITE_TWEET_WITH_AI,{
-        payload
-    })
-    return data;
-}
+export const rewriteTweetWithAi = async (payload: {
+  tweet: string;
+  instructions: string;
+}): Promise<{ rewriteTweetWithAi: { output: string } }> => {
+  const data = await graphqlClient.request(REWRITE_TWEET_WITH_AI, {
+    payload,
+  });
+  return data as { rewriteTweetWithAi: { output: string } };
+};
