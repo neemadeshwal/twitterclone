@@ -28,7 +28,7 @@ const SaveComment = ({ singleComment, user }: any) => {
     if (!singleComment || !singleComment.id) {
       return;
     }
-    console.log("he hey");
+    console.log("he hey"); 
     const body = {
       commentId: singleComment.id,
     };

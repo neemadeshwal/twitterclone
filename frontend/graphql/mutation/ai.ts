@@ -9,6 +9,14 @@ const REWRITE_TWEET_WITH_AI = gql`
   }
 `;
 
+const GENERATE_AUTOMATED_REPLIES = gql`
+  mutation generateAutomatedReplies($payload: generateAutomatedRepliesPayload) {
+    generateAutomatedReplies(payload: $payload) {
+      output
+    }
+  }
+`;
+
 export const rewriteTweetWithAi = async (payload: {
   tweet: string;
   instructions: string;
@@ -17,4 +25,13 @@ export const rewriteTweetWithAi = async (payload: {
     payload,
   });
   return data as { rewriteTweetWithAi: { output: string } };
+};
+
+export const aiCommentSuggestionMutate = async (payload: {
+  tweetId: string;
+}): Promise<{ generateAutomatedReplies: { output: [string] } }> => {
+  const data = await graphqlClient.request(GENERATE_AUTOMATED_REPLIES, {
+    payload,
+  });
+  return data as { generateAutomatedReplies: { output: [string] } };
 };

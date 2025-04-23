@@ -21,8 +21,9 @@ import { FaChevronDown, FaMagic, FaMicrophone } from "react-icons/fa";
 import AudioRecord from "./AudioRecord";
 import { Check, WandSparkles, X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { rewriteTweetWithAi } from "@/graphql/mutation/ai";
+import { aiCommentSuggestionMutate, rewriteTweetWithAi } from "@/graphql/mutation/ai";
 import Loading from "@/shared/loading";
+import { LuSparkles } from "react-icons/lu";
 interface EmojiSelect {
   id: string;
   name: string;
@@ -71,6 +72,29 @@ const ComposePost = ({
   const [originalText, setOriginalText] = useState("");
 
   const [aiResponseLoading, setAiResponseLoading] = useState(false);
+
+  const [aiCommentSuggestionLoading, setAiCommentSuggestionLoading] =
+    useState(true);
+
+  const [aiCommentSuggestion, setAiCommentSuggestion] = useState<string[]>([]);
+  const [position, setPosition] = useState(-100);
+
+
+
+  useEffect(() => {
+    const animateShimmer = () => {
+      setPosition((prevPosition) => {
+        if (prevPosition > 100) {
+          return -100;
+        }
+        return prevPosition + 1.5;
+      });
+      requestAnimationFrame(animateShimmer);
+    };
+
+    const animationId = requestAnimationFrame(animateShimmer);
+    return () => cancelAnimationFrame(animationId);
+  }, []);
   useOutsideClick(emojiCloseRef, () => setIsEmojiTableOpen(false));
 
   const { createTweet } = useTweetMutation({
@@ -214,6 +238,14 @@ const ComposePost = ({
     }
   }
 
+  const handleGenerateComment=useMutation({
+    mutationFn:aiCommentSuggestionMutate,
+    onSuccess:(response)=>{},
+    onError:()=>{}
+  })
+
+
+
   const handleWithAiMutation = useMutation({
     mutationFn: rewriteTweetWithAi,
     onSuccess: (response) => {},
@@ -221,6 +253,36 @@ const ComposePost = ({
       console.log(error);
     },
   });
+
+  const handleAiCommentSuggestion=async()=>{
+    const body={
+      tweetId:tweetId!
+    }
+    setAiCommentSuggestionLoading(true)
+    try{
+     
+      const data=await handleGenerateComment.mutateAsync(body)
+      console.log(data)
+
+      if(data&&data.generateAutomatedReplies){
+        setAiCommentSuggestion(data.generateAutomatedReplies.output)
+
+      }
+
+
+    }
+    catch(error){
+      console.log(error)
+    }
+    finally{
+      setAiCommentSuggestionLoading(false)
+    }
+  }
+
+  useEffect(()=>{
+    handleAiCommentSuggestion()
+  },[])
+  
 
   const handleWithAI = async () => {
     const body = {
@@ -259,6 +321,8 @@ const ComposePost = ({
     }
   }, [aiEnhancedText, displayAiResponse]);
 
+
+
   return (
     <div className="w-full relative">
       <div
@@ -290,6 +354,45 @@ const ComposePost = ({
               isInPhotoSection={isInPhotoSection}
               setTweetContent={setTweetContent}
             />
+            {isComment && !tweetContent && (aiCommentSuggestionLoading ? (
+              <div className="space-y-3">
+                <div className="flex gap-1 items-center">
+                  <LuSparkles className="text-blue-600" size={20}/>
+                  <p className="text-slate-300 font-[500]">Suggested Replies</p>
+                </div>
+                {[1, 2].map((item) => (
+                  <div key={item} className="flex space-x-3 mb-3">
+                    <div className="flex-1 h-8 mb-2 bg-gray-900 rounded relative overflow-hidden">
+              <div 
+                className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-gray-800 to-transparent opacity-30" 
+                style={{ transform: `translateX(${position}%)` }}
+              />
+            </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div>
+                 <div className="flex gap-1 items-center">
+                  <LuSparkles className="text-blue-600" size={20}/>
+                  <p className="text-slate-300 font-[500]">Suggested Replies</p>
+                </div>
+              <div className="flex flex-wrap gap-2 mt-3 mb-3">
+                 
+                        {aiCommentSuggestion&&aiCommentSuggestion.length>0&&aiCommentSuggestion.map((item,index) => {
+                          return (
+                            <div
+                              onClick={() => setTweetContent(item)}
+                              key={item+"index"+index}
+                              className="rounded-full cursor-pointer text-[14px] px-3 py-1 w-fit border border-blue-500 text-blue-500 hover:bg-blue-950/50 transition-colors duration-200"
+                            >
+                              {item}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      </div>
+           ) )}
             {tweetContent && (
               <div className="  ">
                 <div className="rounded-[10px] border my-1 mb-4 border-[#44444574] px-4 py-2">
