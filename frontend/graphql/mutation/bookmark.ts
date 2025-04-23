@@ -4,14 +4,23 @@ import { gql } from "@apollo/client";
 const TOGGLE_BOOKMARK_TWEET = gql`
   mutation ToggleBookmarkTweet($payload: toggleSaveTweetInput) {
     toggleSaveTweet(payload: $payload) {
-      id
+      tweet {
+        id
+        content
+      }
+
+      msg
     }
   }
 `;
 const TOGGLE_BOOKMARK_COMMENT = gql`
   mutation ToggleBookmarkComment($payload: saveUnsaveCommentInput) {
     toggleSaveComment(payload: $payload) {
-      id
+      comment {
+        id
+        content
+      }
+      msg
     }
   }
 `;

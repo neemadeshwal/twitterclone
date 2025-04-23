@@ -43,7 +43,19 @@ const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
     };
 
     try {
-      await saveComment(body);
+      const response = await saveComment(body);
+
+      if (response && response.toggleSaveComment.msg === "comment saved") {
+        toast({
+          description: (
+            <div className="flex items-center  justify-between w-full">
+              Added to bookmarks
+            </div>
+          ),
+          className:
+            "bg-blue-500 text-[16px] font-[500] text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -61,16 +73,19 @@ const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
     };
 
     try {
-      await saveTweet(body);
-      toast({
-        description: (
-          <div className="flex items-center  justify-between w-full">
-            Added to bookmarks
-          </div>
-        ),
-        className:
-          "bg-blue-500 text-[16px] font-[500] text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
-      });
+      const response = await saveTweet(body);
+      console.log(response, "response");
+      if (response && response.toggleSaveTweet.msg === "tweet saved") {
+        toast({
+          description: (
+            <div className="flex items-center  justify-between w-full">
+              Added to bookmarks
+            </div>
+          ),
+          className:
+            "bg-blue-500 text-[16px] font-[500] text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+        });
+      }
     } catch (error) {
       console.log(error);
     }
