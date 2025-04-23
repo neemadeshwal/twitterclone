@@ -17,7 +17,7 @@ const TweetContent = ({
   const [isHashTagDialogOpen, setHashTagDialog] = useState(false);
   const [hashtagPart, setHashtagPart] = useState("");
   const [isListening, setIsListening] = useState(false);
-  const textareaRef = useRef(null);
+  const textareaRef = useRef<any>(null);
 
   // Effect to resize the textarea whenever tweetContent changes
   useEffect(() => {
