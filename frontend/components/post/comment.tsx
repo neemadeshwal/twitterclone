@@ -4,7 +4,7 @@ import { useCurrentUser } from "@/hooks/user";
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
 import CurrentUser from "@/shared/currentUser";
 import UserProfile from "@/shared/AuthorProfile";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { BiX } from "react-icons/bi";
 import { BsChat } from "react-icons/bs";
 import { FaArrowLeft, FaChevronDown } from "react-icons/fa";
@@ -29,6 +29,7 @@ const instructionExamples = [
   "Rewrite this to be more engaging",
   "Shorten this to fit the character limit",
 ];
+
 const CommentComponent = ({
   tweet,
   iconColor,
@@ -52,22 +53,24 @@ const CommentComponent = ({
   const [files, setFiles] = useState<string[]>([]);
   const [tweetContent, setTweetContent] = useState("");
   const [aiResponseLoading, setAiResponseLoading] = useState(false);
-  // const [aiCommentSuggestionLoading, setAiCommentSuggestionLoading] =
-  //   useState(true);
-  // const [aiCommentSuggestion, setAiCommentSuggestion] = useState<string[]>([]);
   const [position, setPosition] = useState(-100);
-  const { createComment } = useCommentMutation({});
   const [loading, setLoading] = useState(false);
+  const { user } = useCurrentUser();
 
-  // const handleViewComment=()=>{
-  //   router.push()
-  // }
+  const { createComment } = useCommentMutation({
+    onSuccess: () => {
+      setTweetContent("");
+      setFiles([]);
+    },
+  });
+  console.log(position);
   const { replyOnComment } = useCommentMutation({
     onSuccess: () => {
       setTweetContent("");
       setFiles([]);
     },
   });
+
   const handleWithAiMutation = useMutation({
     mutationFn: rewriteTweetWithAi,
     onSuccess: () => {},
@@ -75,14 +78,33 @@ const CommentComponent = ({
       console.log(error);
     },
   });
-  console.log(position);
+
   const { createTweet } = useTweetMutation({
     onSuccess: () => {
       setTweetContent("");
       setFiles([]);
     },
   });
-  const handleWithAI = async () => {
+
+  // Fixed animation loop
+  useEffect(() => {
+    let animationId: number;
+
+    const animateShimmer = () => {
+      setPosition((prevPosition) => {
+        return prevPosition > 100 ? -100 : prevPosition + 1.5;
+      });
+      animationId = requestAnimationFrame(animateShimmer);
+    };
+
+    animationId = requestAnimationFrame(animateShimmer);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
+
+  const handleWithAI = useCallback(async () => {
     const body = {
       tweet: tweetContent,
       instructions: aiInstructText,
@@ -90,7 +112,6 @@ const CommentComponent = ({
     setAiResponseLoading(true);
     try {
       const data = await handleWithAiMutation.mutateAsync(body);
-      console.log(data, "data");
       setOriginalText(tweetContent);
       if (data && data.rewriteTweetWithAi) {
         setAiEnhancedText(data.rewriteTweetWithAi.output);
@@ -103,8 +124,9 @@ const CommentComponent = ({
     } finally {
       setAiResponseLoading(false);
     }
-  };
-  async function replyOnCommentSubmit() {
+  }, [tweetContent, aiInstructText, handleWithAiMutation]);
+
+  const replyOnCommentSubmit = useCallback(async () => {
     setLoading(true);
     const body = {
       content: tweetContent,
@@ -114,7 +136,6 @@ const CommentComponent = ({
     try {
       const data = await replyOnComment(body);
 
-      console.log(data, "dataf");
       if (data && data.replyOnComment) {
         toast({
           description: (
@@ -122,10 +143,10 @@ const CommentComponent = ({
               <span>Your post is sent.</span>
 
               <a
-                href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/${user?.userName}/comment/${data.replyOnComment.id}`} // Replace with your actual post view URL
+                href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/${user?.userName}/comment/${data.replyOnComment.id}`}
                 className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+                  e.stopPropagation();
                 }}
               >
                 View
@@ -141,23 +162,92 @@ const CommentComponent = ({
     } finally {
       setLoading(false);
     }
-  }
+  }, [tweetContent, files, tweet.id, replyOnComment, toast, user?.userName]);
 
-  useEffect(() => {
-    const animateShimmer = () => {
-      setPosition((prevPosition) => {
-        if (prevPosition > 100) {
-          return -100;
-        }
-        return prevPosition + 1.5;
-      });
-      requestAnimationFrame(animateShimmer);
+  const onSubmit = useCallback(async () => {
+    setLoading(true);
+    const body = {
+      content: tweetContent,
+      mediaArray: files,
     };
+    try {
+      const response = await createTweet(body);
+      if (response && response.createTweet) {
+        toast({
+          description: (
+            <div className="flex items-center justify-between w-full">
+              <span>Your post is sent.</span>
+              <a
+                href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/${user?.userName}/status/${response.createTweet?.id}`}
+                className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                View
+              </a>
+            </div>
+          ),
+          className:
+            "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+        });
+        setAiEnhancedText("");
+        setAiInstructText("");
+        setOriginalText("");
+        setDisplayAiResponse(false);
+        setShowDialogBox(false);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+      setTweetContent("");
+    }
+  }, [tweetContent, files, createTweet, toast, user?.userName]);
 
-    const animationId = requestAnimationFrame(animateShimmer);
-    return () => cancelAnimationFrame(animationId);
-  }, []);
-  const handleReplyOnComment = async () => {
+  const onCommentSubmit = useCallback(async () => {
+    setLoading(true);
+    const body = {
+      content: tweetContent,
+      mediaArray: files,
+      tweetId: tweet.id ?? "",
+    };
+    try {
+      const data = await createComment(body);
+      if (data && data.createComment) {
+        toast({
+          description: (
+            <div className="flex items-center justify-between w-full">
+              <span>Your post is sent.</span>
+              <a
+                href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/${user?.userName}/comment/${data.createComment?.id}`}
+                className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                View
+              </a>
+            </div>
+          ),
+          className:
+            "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+        });
+        setAiEnhancedText("");
+        setAiInstructText("");
+        setOriginalText("");
+        setDisplayAiResponse(false);
+        setShowDialogBox(false);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+      setTweetContent("");
+    }
+  }, [tweetContent, files, tweet.id, createComment, toast, user?.userName]);
+
+  const handleReplyOnComment = useCallback(async () => {
     const body = {
       content: tweetContent,
       commentId: tweet.id,
@@ -171,10 +261,10 @@ const CommentComponent = ({
             <div className="flex items-center justify-between w-full">
               <span>Your post is sent.</span>
               <a
-                href={`http://localhost:5000/${tweet?.author?.userName}/comment/${data.replyOnComment.id}`} // Replace with your actual post view URL
+                href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/${tweet?.author?.userName}/comment/${data.replyOnComment.id}`}
                 className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+                  e.stopPropagation();
                 }}
               >
                 View
@@ -191,93 +281,9 @@ const CommentComponent = ({
     } catch (error) {
       console.log(error);
     }
-  };
-  async function onSubmit() {
-    setLoading(true);
-    const body = {
-      content: tweetContent,
-      mediaArray: files,
-    };
-    try {
-      const response = await createTweet(body);
-      console.log(response, "response");
-      if (response && response.createTweet) {
-        toast({
-          description: (
-            <div className="flex items-center justify-between w-full">
-              <span>Your post is sent.</span>
-              <a
-                href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/${user?.userName}/status/${response.createTweet?.id}`} // Replace with your actual post view URL
-                className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
-                }}
-              >
-                View
-              </a>
-            </div>
-          ),
-          className:
-            "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
-        });
-        setAiEnhancedText("");
-        setAiInstructText("");
-        setOriginalText("");
-        setDisplayAiResponse(false);
-        setShowDialogBox(false);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-      setTweetContent("");
-    }
-  }
+  }, [tweetContent, tweet.id, tweet?.author?.userName, replyOnComment, toast]);
 
-  async function onCommentSubmit() {
-    setLoading(true);
-    const body = {
-      content: tweetContent,
-      mediaArray: files,
-      tweetId: tweet.id ?? "",
-    };
-    try {
-      console.log("commemt");
-      const data = await createComment(body);
-      if (data && data.createComment) {
-        toast({
-          description: (
-            <div className="flex items-center justify-between w-full">
-              <span>Your post is sent.</span>
-              <a
-                href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/${user?.userName}/comment/${data.createComment?.id}`} // Replace with your actual post view URL
-                className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
-                }}
-              >
-                View
-              </a>
-            </div>
-          ),
-          className:
-            "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
-        });
-        setAiEnhancedText("");
-        setAiInstructText("");
-        setOriginalText("");
-        setDisplayAiResponse(false);
-        setShowDialogBox(false);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-      setTweetContent("");
-    }
-  }
-
-  const handleComment = async () => {
+  const handleComment = useCallback(async () => {
     const body = {
       content: tweetContent,
       tweetId: tweet.id,
@@ -292,10 +298,10 @@ const CommentComponent = ({
             <div className="flex items-center justify-between w-full">
               <span>Your post is sent.</span>
               <a
-                href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/${tweet?.author?.userName}/comment/${data.createComment.id}`} // Replace with your actual post view URL
+                href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/${tweet?.author?.userName}/comment/${data.createComment.id}`}
                 className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+                  e.stopPropagation();
                 }}
               >
                 View
@@ -312,8 +318,9 @@ const CommentComponent = ({
     } catch (error) {
       console.log(error);
     }
-  };
-  const getCount = () => {
+  }, [tweetContent, tweet.id, tweet?.author?.userName, createComment, toast]);
+
+  const getCount = useMemo(() => {
     if (!tweet) return 0;
 
     if (isComment) {
@@ -321,13 +328,35 @@ const CommentComponent = ({
     } else {
       return (tweet as Tweet).commentAuthor?.length || 0;
     }
-  };
-  console.log(isComment, "isComent");
-  const { user } = useCurrentUser();
+  }, [tweet, isComment]);
+
+  const handleCloseDialog = useCallback(() => {
+    setShowDialogBox(false);
+  }, []);
+
+  const handleInstructTextChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setAiInstructText(e.target.value);
+    },
+    []
+  );
+
+  const handleSetInstruction = useCallback((instruction: string) => {
+    setAiInstructText(instruction);
+  }, []);
+
+  const toggleAiInstructions = useCallback(() => {
+    setIsAiInstructionsActive((prev) => !prev);
+  }, []);
+
+  const handleOpenDialog = useCallback(() => {
+    setShowDialogBox(true);
+  }, []);
+
   return (
     <div>
       <div
-        onClick={() => setShowDialogBox(true)}
+        onClick={handleOpenDialog}
         className={`flex gap-[2px] sm:gap-1 items-center ${
           iconColor == "white" ? "white" : "gray"
         }  text-[13px] font-[400] cursor-pointer group hover:text-blue-400  relative`}
@@ -335,24 +364,21 @@ const CommentComponent = ({
         <div className="p-2 rounded-full group-hover:bg-[#1e2034a5] ">
           <BsChat className="text-[16px] sm:text-[20px] " />
         </div>
-        <p className="ml-0 pl-0 -right-[0.35rem] absolute">{getCount()}</p>
+        <p className="ml-0 pl-0 -right-[0.35rem] absolute">{getCount}</p>
       </div>
       {showDialogBox && (
         <div className="fixed top-0 left-0 w-full h-full z-[1000] dimBg flex items-center justify-center">
           <div className="bg-black max-h-[100%]  md:max-h-[90%] overflow-y-auto z-[1000] relative  md:rounded-[20px] w-full  md:w-[600px]  h-full md:h-auto md:py-6">
             <div className="overflow-y-auto">
               <div
-                onClick={() => {
-                  setShowDialogBox(false);
-                  console.log("hello check x");
-                }}
+                onClick={handleCloseDialog}
                 className="absolute top-2 left-2 hidden md:block rounded-full p-1 z-50 hover:bg-[#0f0f0f] cursor-pointer"
               >
                 <BiX className="text-[30px] " />
               </div>
 
               <div
-                onClick={() => setShowDialogBox(false)}
+                onClick={handleCloseDialog}
                 className="absolute top-2 left-2 rounded-full p-1  md:hidden  z-50 hover:bg-[#0f0f0f] cursor-pointer"
               >
                 <FaArrowLeft className="text-[20px] " strokeWidth={1} />
@@ -471,67 +497,11 @@ const CommentComponent = ({
                           />
                         </div>
 
-                        {/* {isComment &&
-                          !tweetContent &&
-                          (aiCommentSuggestionLoading ? (
-                            <div className="space-y-3">
-                              <div className="flex gap-1 items-center">
-                                <LuSparkles
-                                  className="text-blue-600"
-                                  size={20}
-                                />
-                                <p className="text-slate-300 font-[500]">
-                                  Suggested Replies
-                                </p>
-                              </div>
-                              {[1, 2].map((item) => (
-                                <div key={item} className="flex space-x-3 mb-3">
-                                  <div className="flex-1 h-8 mb-2 bg-gray-900 rounded relative overflow-hidden">
-                                    <div
-                                      className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-gray-800 to-transparent opacity-30"
-                                      style={{
-                                        transform: `translateX(${position}%)`,
-                                      }}
-                                    />
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div>
-                              <div className="flex gap-1 items-center">
-                                <LuSparkles
-                                  className="text-blue-600"
-                                  size={20}
-                                />
-                                <p className="text-slate-300 font-[500]">
-                                  Suggested Replies
-                                </p>
-                              </div>
-                              <div className="flex flex-wrap gap-2 mt-3 mb-3">
-                                {aiCommentSuggestion &&
-                                  aiCommentSuggestion.length > 0 &&
-                                  aiCommentSuggestion.map((item, index) => {
-                                    return (
-                                      <div
-                                        onClick={() => setTweetContent(item)}
-                                        key={item + "index" + index}
-                                        className="rounded-full cursor-pointer text-[14px] px-3 py-1 w-fit border border-blue-500 text-blue-500 hover:bg-blue-950/50 transition-colors duration-200"
-                                      >
-                                        {item}
-                                      </div>
-                                    );
-                                  })}
-                              </div>
-                            </div>
-                          ))} */}
                         {tweetContent && (
                           <div className="  ">
                             <div className="rounded-[10px] border my-1 mb-4 border-[#44444574] px-4 py-2">
                               <div
-                                onClick={() =>
-                                  setIsAiInstructionsActive((prev) => !prev)
-                                }
+                                onClick={toggleAiInstructions}
                                 className="flex justify-between w-full items-center cursor-pointer"
                               >
                                 <div className="flex text-blue-500 gap-2 items-center text-[14px]">
@@ -563,9 +533,7 @@ const CommentComponent = ({
                                 <div className="p-2">
                                   <textarea
                                     value={aiInstructText}
-                                    onChange={(e) =>
-                                      setAiInstructText(e.target.value)
-                                    }
+                                    onChange={handleInstructTextChange}
                                     name=""
                                     placeholder="Tell AI what to do with your text (e.g., 'Make this more professional' or 'Add some hashtags')"
                                     className="w-full px-4 outline-none focus-within:border-blue-500/70 placeholder:text-gray-700 py-2 h-[100px] resize-none overflow-auto placeholder-break-words bg-black border border-[#44444574] rounded-[5px]"
@@ -576,7 +544,7 @@ const CommentComponent = ({
                                       return (
                                         <div
                                           onClick={() =>
-                                            setAiInstructText(item)
+                                            handleSetInstruction(item)
                                           }
                                           key={item}
                                           className="rounded-full cursor-pointer text-[14px] px-3 py-1 w-fit border border-blue-500 text-blue-500 hover:bg-blue-950/50 transition-colors duration-200"
@@ -766,4 +734,4 @@ const CommentComponent = ({
   );
 };
 
-export default CommentComponent;
+export default React.memo(CommentComponent);
