@@ -125,7 +125,7 @@ const CommentComponent = ({
       setAiResponseLoading(false);
     }
   }, [tweetContent, aiInstructText, handleWithAiMutation]);
-
+  console.log("check changes");
   const replyOnCommentSubmit = useCallback(async () => {
     setLoading(true);
     const body = {
