@@ -104,6 +104,8 @@ const CommentComponent = ({
     };
   }, []);
 
+  console.log("heey");
+
   const handleWithAI = useCallback(async () => {
     const body = {
       tweet: tweetContent,
