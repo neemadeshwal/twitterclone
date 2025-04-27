@@ -15,11 +15,23 @@ import GifContainer from "./GifContainer";
 import TweetAction from "./singlePost/TweetAction";
 import MediaUpload from "./singlePost/MediaUpload";
 import TweetContent from "./singlePost/TweetContent";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaChevronDown } from "react-icons/fa";
 import { useCurrentUser } from "@/hooks/user";
 import { Comment, Tweet } from "@/graphql/types";
 import CharacterCircle from "./CharacterCircle";
 import { TWEET_CHARACTER_LIMIT } from "@/lib/constants";
+import { Check, WandSparkles, X } from "lucide-react";
+import Loading from "./loading";
+import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
+import { toast } from "@/hooks/use-toast";
+import { rewriteTweetWithAi } from "@/graphql/mutation/ai";
+const instructionExamples = [
+  "Make this sound more professional",
+  "Complete this thought in a funny way",
+  "Add some relevant hashtags",
+  "Rewrite this to be more engaging",
+  "Shorten this to fit the character limit",
+];
 const PostContainer = ({
   isEdit,
   editTweet,
@@ -40,19 +52,21 @@ const PostContainer = ({
   const [openGifContainer, setOpenGifContainer] = useState(false);
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const [files, setFiles] = useState<string[]>([]);
+  const [isAudioActive, setIsAudioActive] = useState(false);
+  const [aiInstructText, setAiInstructText] = useState("");
+  const [displayAiResponse, setDisplayAiResponse] = useState(false);
+  const [aiResponseLoading, setAiResponseLoading] = useState(false);
+  const [isAiInstructionsActive, setIsAiInstructionsActive] = useState(false);
+  const [originalText, setOriginalText] = useState("");
+  const [aiEnhancedText, setAiEnhancedText] = useState("");
+
   const [tweetContent, setTweetContent] = useState("");
   const { user } = useCurrentUser();
-  const mutation = useMutation({
-    mutationFn: createTweetMutate,
-    onSuccess: (response) => {
-      console.log(response);
-      queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
+
+  const { createTweet } = useTweetMutation({
+    onSuccess: () => {
       setTweetContent("");
       setFiles([]);
-      setIsContainerOpen(false);
-    },
-    onError: (error) => {
-      console.log(error);
     },
   });
 
@@ -81,17 +95,88 @@ const PostContainer = ({
     }
   }
   async function onSubmit() {
+    setLoading(true);
     const body = {
       content: tweetContent,
       mediaArray: files,
     };
     try {
-      await mutation.mutateAsync(body);
+      const response = await createTweet(body);
+      console.log(response, "response");
+      if (response && response.createTweet) {
+        toast({
+          description: (
+            <div className="flex items-center justify-between w-full">
+              <span>Your post is sent.</span>
+              <a
+                href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/${user?.userName}/status/${response.createTweet?.id}`} // Replace with your actual post view URL
+                className="ml-2 underline font-medium cursor-pointer hover:text-gray-300"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevents the toast from being dismissed when clicking the link
+                }}
+              >
+                View
+              </a>
+            </div>
+          ),
+          className:
+            "bg-black text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+        });
+        setAiEnhancedText("");
+        setAiInstructText("");
+        setOriginalText("");
+        setDisplayAiResponse(false);
+      }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
+      setIsContainerOpen(false);
     }
   }
 
+  const handleWithAI = async () => {
+    const body = {
+      tweet: tweetContent,
+      instructions: aiInstructText,
+    };
+    setAiResponseLoading(true);
+    try {
+      const data = await handleWithAiMutation.mutateAsync(body);
+      console.log(data, "data");
+      setOriginalText(tweetContent);
+      if (data && data.rewriteTweetWithAi) {
+        setAiEnhancedText(data.rewriteTweetWithAi.output);
+        setTweetContent(data.rewriteTweetWithAi.output);
+        setDisplayAiResponse(true);
+        setIsAiInstructionsActive(false);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setAiResponseLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!tweetContent) {
+      setIsAiInstructionsActive(false);
+    }
+  }, [tweetContent]);
+  const handleWithAiMutation = useMutation({
+    mutationFn: rewriteTweetWithAi,
+    onSuccess: (response) => {},
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  useEffect(() => {
+    if (displayAiResponse && aiEnhancedText) {
+      setTweetContent(aiEnhancedText);
+    } else {
+      setTweetContent(originalText);
+    }
+  }, [aiEnhancedText, displayAiResponse]);
   useEffect(() => {
     if (isContainerOpen) {
       document.body.style.overflow = "hidden";
@@ -183,9 +268,148 @@ const PostContainer = ({
             </div>
             <div className="w-full pt-1  h-auto px-2">
               <TweetContent
+                isRecording={isAudioActive}
                 tweetContent={tweetContent}
                 setTweetContent={setTweetContent}
               />
+
+              {tweetContent && (
+                <div className="  ">
+                  <div className="rounded-[10px] border my-1 mb-4 border-[#44444574] px-4 py-2">
+                    <div
+                      onClick={() => setIsAiInstructionsActive((prev) => !prev)}
+                      className="flex justify-between w-full items-center cursor-pointer"
+                    >
+                      <div className="flex text-blue-500 gap-2 items-center text-[14px]">
+                        <div>
+                          <WandSparkles
+                            strokeWidth={1}
+                            className="text-[12px]"
+                          />
+                        </div>
+                        <div>AI Instructions</div>
+                      </div>
+                      <div>
+                        <FaChevronDown
+                          strokeWidth={1}
+                          className={`text-blue-500 ${
+                            isAiInstructionsActive ? "rotate-180" : ""
+                          } text-[12px] w-[15px] h-[15px] transition-all ease-in-out duration-300`}
+                        />
+                      </div>
+                    </div>
+
+                    <div
+                      className={`overflow-hidden transition-all ease-in-out duration-500 ${
+                        isAiInstructionsActive
+                          ? "max-h-[400px] opacity-100 mt-2"
+                          : "max-h-0 opacity-0"
+                      }`}
+                    >
+                      <div className="p-2">
+                        <textarea
+                          value={aiInstructText}
+                          onChange={(e) => setAiInstructText(e.target.value)}
+                          name=""
+                          placeholder="Tell AI what to do with your text (e.g., 'Make this more professional' or 'Add some hashtags')"
+                          className="w-full px-4 outline-none focus-within:border-blue-500/70 placeholder:text-gray-700 py-2 h-[100px] resize-none overflow-auto placeholder-break-words bg-black border border-[#44444574] rounded-[5px]"
+                        />
+
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {instructionExamples.map((item) => {
+                            return (
+                              <div
+                                onClick={() => setAiInstructText(item)}
+                                key={item}
+                                className="rounded-full cursor-pointer text-[14px] px-3 py-1 w-fit border border-blue-500 text-blue-500 hover:bg-blue-950/50 transition-colors duration-200"
+                              >
+                                {item}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <button
+                          className="bg-blue-500/80 min-w-[120px]  mt-6  hover:bg-blue-600 text-white rounded-full px-4 py-2 text-[16px] font-medium flex items-center gap-1.5 transition-colors duration-200"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleWithAI();
+                          }}
+                        >
+                          {aiResponseLoading ? (
+                            <>
+                              <Loading small={true} /> applying ai....
+                            </>
+                          ) : (
+                            <>
+                              <WandSparkles strokeWidth={1.5} size={14} />
+                              Apply AI
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {aiEnhancedText && (
+                <div className="my-4 ">
+                  <div className="border border-gray-800 bg-gray-950 px-2 rounded-[10px]  overflow-hidden relative">
+                    <div
+                      onClick={() => setAiEnhancedText("")}
+                      className="absolute right-[1.5px] top-[1.5px] cursor-pointer p-1 hover:bg-gray-900 rounded-full"
+                    >
+                      <X strokeWidth={1} size={18} className="text-gray-400" />
+                    </div>
+                    <div className="justify-between flex items-center px-4 py-3  pb-0 ">
+                      <p className="font-medium text-[13px] text-gray-300">
+                        Before / After
+                      </p>
+                      <div
+                        onClick={() => setDisplayAiResponse((prev) => !prev)}
+                      >
+                        {displayAiResponse ? (
+                          <button className="bg-transparent text-[13px] hover:bg-gray-900 text-gray-300 border border-gray-700 px-3 py-1 rounded-full  transition-colors duration-200">
+                            Use original
+                          </button>
+                        ) : (
+                          <button className="bg-transparent text-[13px] hover:bg-gray-900 text-gray-300 border border-gray-700 px-3 py-1 rounded-full  transition-colors duration-200">
+                            Use ai response
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="p-4 space-y-3">
+                      <div className="border border-gray-800 rounded-[6px] p-3 bg-black">
+                        <div className="text-sm  text-gray-500 mb-1.5 font-medium">
+                          Original:
+                        </div>
+                        <div className="text-gray-300">{originalText}</div>
+                      </div>
+
+                      <div className="border border-gray-800 rounded-[6px] p-3 bg-black">
+                        <div className="text-sm text-gray-500 mb-1.5 font-medium">
+                          Instructions:
+                        </div>
+                        <div className="text-gray-300">{aiInstructText}</div>
+                      </div>
+
+                      <div className="border border-gray-800 rounded-[6px] p-3 bg-blue-950/30 relative">
+                        <div className="text-sm text-blue-500 mb-1.5 font-medium flex items-center gap-1.5">
+                          <WandSparkles size={14} strokeWidth={1.5} />
+                          AI Enhanced:
+                        </div>
+                        <div className="text-gray-300">{aiEnhancedText}</div>
+                        <div className="absolute top-3 right-3">
+                          <button className="text-blue-500 hover:text-blue-400 transition-colors duration-200">
+                            <Check size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {loading && <div>Loading....</div>}
 
@@ -206,6 +430,9 @@ const PostContainer = ({
               setFiles={setFiles}
               setLoading={setLoading}
               containerType="PostDialog"
+              isRecording={isAudioActive}
+              setIsRecording={setIsAudioActive}
+              tweetContent={tweetContent}
             />
             <div className="flex gap-2 items-center">
               {tweetContent.length > 0 && (

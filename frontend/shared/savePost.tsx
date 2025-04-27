@@ -1,9 +1,6 @@
 "use client";
 
 import { Bookmarks, Comment, Tweet } from "@/graphql/types";
-import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
-import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
-import { toast } from "@/hooks/use-toast";
 import { useCurrentUser } from "@/hooks/user";
 import React, { useEffect, useState } from "react";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
@@ -11,85 +8,19 @@ import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 interface SavePostProps {
   singleTweet: Tweet | Comment;
   isComment?: boolean;
+  handleSaveComment?: () => void;
+  handleSaveTweet?: () => void;
+  savePost: boolean;
 }
 
-const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
+const SavePost: React.FC<SavePostProps> = ({
+  singleTweet,
+  isComment,
+  handleSaveComment,
+  handleSaveTweet,
+  savePost,
+}) => {
   const user = useCurrentUser();
-  const [saveBookmark, setSaveBookmark] = useState(false);
-
-  const { saveComment } = useCommentMutation({
-    onError: () => {
-      // Revert the bookmark state on error
-      setSaveBookmark((prev) => !prev);
-    },
-  });
-
-  const { saveTweet } = useTweetMutation({
-    onError: () => {
-      // Revert the bookmark state on error
-      setSaveBookmark((prev) => !prev);
-    },
-  });
-
-  async function handleSaveComment() {
-    if (!singleTweet || !singleTweet.id) {
-      return;
-    }
-
-    setSaveBookmark((prevVal) => !prevVal);
-
-    const body = {
-      commentId: singleTweet.id,
-    };
-
-    try {
-      const response = await saveComment(body);
-
-      if (response && response.toggleSaveComment.msg === "comment saved") {
-        toast({
-          description: (
-            <div className="flex items-center  justify-between w-full">
-              Added to bookmarks
-            </div>
-          ),
-          className:
-            "bg-blue-500 text-[16px] font-[500] text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function handleSaveTweet() {
-    if (!singleTweet || !singleTweet.id) {
-      return;
-    }
-
-    setSaveBookmark((prevVal) => !prevVal);
-
-    const body = {
-      tweetId: singleTweet.id,
-    };
-
-    try {
-      const response = await saveTweet(body);
-      console.log(response, "response");
-      if (response && response.toggleSaveTweet.msg === "tweet saved") {
-        toast({
-          description: (
-            <div className="flex items-center  justify-between w-full">
-              Added to bookmarks
-            </div>
-          ),
-          className:
-            "bg-blue-500 text-[16px] font-[500] text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   useEffect(() => {
     if (!singleTweet || !user) {
@@ -101,13 +32,7 @@ const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
       isSaved = singleTweet.savedPost?.some(
         (post: any) => post.commentId === singleTweet.id
       );
-    } else {
-      isSaved = singleTweet.savedPost?.some(
-        (post: any) => post.tweetId === singleTweet.id
-      );
     }
-
-    setSaveBookmark(!!isSaved);
   }, [singleTweet, user]);
 
   return (
@@ -116,7 +41,7 @@ const SavePost: React.FC<SavePostProps> = ({ singleTweet, isComment }) => {
         onClick={isComment ? handleSaveComment : handleSaveTweet}
         className="flex gap-1 items-center cursor-pointer text-[13px] font-[400]"
       >
-        {saveBookmark ? (
+        {savePost ? (
           <div className="p-2 text-blue-500">
             <FaBookmark className="text-[16px] sm:text-[20px] text-blue-500" />
           </div>

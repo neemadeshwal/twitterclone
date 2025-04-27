@@ -15,13 +15,13 @@ import useOutsideClick from "@/shared/closeContainer";
 import { useCommentMutation } from "@/hooks/mutation/useCommentMutation";
 import { toast } from "@/hooks/use-toast";
 import { Icons } from "@/utils/icons";
-import { FiType } from "react-icons/fi";
-import { VscWand } from "react-icons/vsc";
-import { FaChevronDown, FaMagic, FaMicrophone } from "react-icons/fa";
-import AudioRecord from "./AudioRecord";
+import { FaChevronDown } from "react-icons/fa";
 import { Check, WandSparkles, X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { aiCommentSuggestionMutate, rewriteTweetWithAi } from "@/graphql/mutation/ai";
+import {
+  aiCommentSuggestionMutate,
+  rewriteTweetWithAi,
+} from "@/graphql/mutation/ai";
 import Loading from "@/shared/loading";
 import { LuSparkles } from "react-icons/lu";
 interface EmojiSelect {
@@ -67,7 +67,6 @@ const ComposePost = ({
   const [aiInstructText, setAiInstructText] = useState("");
   const [isAudioActive, setIsAudioActive] = useState(false);
   const [aiEnhancedText, setAiEnhancedText] = useState("");
-  const [aiResponse, setAiResponse] = useState("");
   const [displayAiResponse, setDisplayAiResponse] = useState(false);
   const [originalText, setOriginalText] = useState("");
 
@@ -78,8 +77,6 @@ const ComposePost = ({
 
   const [aiCommentSuggestion, setAiCommentSuggestion] = useState<string[]>([]);
   const [position, setPosition] = useState(-100);
-
-
 
   useEffect(() => {
     const animateShimmer = () => {
@@ -238,51 +235,42 @@ const ComposePost = ({
     }
   }
 
-  const handleGenerateComment=useMutation({
-    mutationFn:aiCommentSuggestionMutate,
-    onSuccess:(response)=>{},
-    onError:()=>{}
-  })
-
-
+  const handleGenerateComment = useMutation({
+    mutationFn: aiCommentSuggestionMutate,
+    onSuccess: () => {},
+    onError: () => {},
+  });
 
   const handleWithAiMutation = useMutation({
     mutationFn: rewriteTweetWithAi,
-    onSuccess: (response) => {},
+    onSuccess: () => {},
     onError: (error) => {
       console.log(error);
     },
   });
 
-  const handleAiCommentSuggestion=async()=>{
-    const body={
-      tweetId:tweetId!
-    }
-    setAiCommentSuggestionLoading(true)
-    try{
-     
-      const data=await handleGenerateComment.mutateAsync(body)
-      console.log(data)
+  const handleAiCommentSuggestion = async () => {
+    const body = {
+      tweetId: tweetId!,
+    };
+    setAiCommentSuggestionLoading(true);
+    try {
+      const data = await handleGenerateComment.mutateAsync(body);
+      console.log(data);
 
-      if(data&&data.generateAutomatedReplies){
-        setAiCommentSuggestion(data.generateAutomatedReplies.output)
-
+      if (data && data.generateAutomatedReplies) {
+        setAiCommentSuggestion(data.generateAutomatedReplies.output);
       }
-
-
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setAiCommentSuggestionLoading(false);
     }
-    catch(error){
-      console.log(error)
-    }
-    finally{
-      setAiCommentSuggestionLoading(false)
-    }
-  }
+  };
 
-  useEffect(()=>{
-    handleAiCommentSuggestion()
-  },[])
-  
+  useEffect(() => {
+    handleAiCommentSuggestion();
+  }, []);
 
   const handleWithAI = async () => {
     const body = {
@@ -321,8 +309,6 @@ const ComposePost = ({
     }
   }, [aiEnhancedText, displayAiResponse]);
 
-
-
   return (
     <div className="w-full relative">
       <div
@@ -337,13 +323,6 @@ const ComposePost = ({
         <div className="flex gap-2 w-full">
           <div className="flex flex-col items-center gap-8">
             {!isInPhotoSection && <CurrentUser user={user} />}
-
-            <AudioRecord
-              isRecording={isAudioActive}
-              setIsRecording={setIsAudioActive}
-              tweetContent={tweetContent}
-              setTweetContent={setTweetContent}
-            />
           </div>
 
           <div className="w-full mt-2 px-2">
@@ -354,45 +333,52 @@ const ComposePost = ({
               isInPhotoSection={isInPhotoSection}
               setTweetContent={setTweetContent}
             />
-            {isComment && !tweetContent && (aiCommentSuggestionLoading ? (
-              <div className="space-y-3">
-                <div className="flex gap-1 items-center">
-                  <LuSparkles className="text-blue-600" size={20}/>
-                  <p className="text-slate-300 font-[500]">Suggested Replies</p>
-                </div>
-                {[1, 2].map((item) => (
-                  <div key={item} className="flex space-x-3 mb-3">
-                    <div className="flex-1 h-8 mb-2 bg-gray-900 rounded relative overflow-hidden">
-              <div 
-                className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-gray-800 to-transparent opacity-30" 
-                style={{ transform: `translateX(${position}%)` }}
-              />
-            </div>
+            {isComment &&
+              !tweetContent &&
+              (aiCommentSuggestionLoading ? (
+                <div className="space-y-3">
+                  <div className="flex gap-1 items-center">
+                    <LuSparkles className="text-blue-600" size={20} />
+                    <p className="text-slate-300 font-[500]">
+                      Suggested Replies
+                    </p>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div>
-                 <div className="flex gap-1 items-center">
-                  <LuSparkles className="text-blue-600" size={20}/>
-                  <p className="text-slate-300 font-[500]">Suggested Replies</p>
+                  {[1, 2].map((item) => (
+                    <div key={item} className="flex space-x-3 mb-3">
+                      <div className="flex-1 h-8 mb-2 bg-gray-900 rounded relative overflow-hidden">
+                        <div
+                          className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-gray-800 to-transparent opacity-30"
+                          style={{ transform: `translateX(${position}%)` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              <div className="flex flex-wrap gap-2 mt-3 mb-3">
-                 
-                        {aiCommentSuggestion&&aiCommentSuggestion.length>0&&aiCommentSuggestion.map((item,index) => {
-                          return (
-                            <div
-                              onClick={() => setTweetContent(item)}
-                              key={item+"index"+index}
-                              className="rounded-full cursor-pointer text-[14px] px-3 py-1 w-fit border border-blue-500 text-blue-500 hover:bg-blue-950/50 transition-colors duration-200"
-                            >
-                              {item}
-                            </div>
-                          );
-                        })}
-                      </div>
-                      </div>
-           ) )}
+              ) : (
+                <div>
+                  <div className="flex gap-1 items-center">
+                    <LuSparkles className="text-blue-600" size={20} />
+                    <p className="text-slate-300 font-[500]">
+                      Suggested Replies
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-3 mb-3">
+                    {aiCommentSuggestion &&
+                      aiCommentSuggestion.length > 0 &&
+                      aiCommentSuggestion.map((item, index) => {
+                        return (
+                          <div
+                            onClick={() => setTweetContent(item)}
+                            key={item + "index" + index}
+                            className="rounded-full cursor-pointer text-[14px] px-3 py-1 w-fit border border-blue-500 text-blue-500 hover:bg-blue-950/50 transition-colors duration-200"
+                          >
+                            {item}
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              ))}
             {tweetContent && (
               <div className="  ">
                 <div className="rounded-[10px] border my-1 mb-4 border-[#44444574] px-4 py-2">
@@ -454,7 +440,7 @@ const ComposePost = ({
                       >
                         {aiResponseLoading ? (
                           <>
-                            <Loading small={true} /> loading....
+                            <Loading small={true} /> applying ai....
                           </>
                         ) : (
                           <>
@@ -560,6 +546,9 @@ const ComposePost = ({
               setFiles={setFiles}
               setLoading={setLoading}
               containerType="MainPost"
+              isRecording={isAudioActive}
+              setIsRecording={setIsAudioActive}
+              tweetContent={tweetContent}
             />
             <div className="flex gap-2 items-center">
               {tweetContent.length > 0 && (

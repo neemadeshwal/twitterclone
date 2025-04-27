@@ -7,6 +7,7 @@ import EmojiTable from "../ComposePost/EmojiTable";
 import ScrollLock from "../ScrollLock";
 import useOutsideClick from "../closeContainer";
 import { Icons } from "@/utils/icons";
+import AudioRecord from "@/components/post/AudioRecord";
 
 const TweetAction = ({
   setTweetContent,
@@ -14,12 +15,18 @@ const TweetAction = ({
   setLoading,
   containerType,
   isInPhotoSection,
+  isRecording,
+  setIsRecording,
+  tweetContent,
 }: {
   setTweetContent: any;
   setFiles: any;
   setLoading: any;
   containerType: string;
   isInPhotoSection?: boolean;
+  isRecording: boolean;
+  setIsRecording: React.Dispatch<React.SetStateAction<boolean>>;
+  tweetContent: string;
 }) => {
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const [openGifContainer, setOpenGifContainer] = useState(false);
@@ -48,7 +55,13 @@ const TweetAction = ({
   return (
     <div>
       <div className="flex gap-2 ">
-        <div className="rounded-full p-2 hover:bg-[#081323] ">
+        <AudioRecord
+          isRecording={isRecording}
+          setIsRecording={setIsRecording}
+          tweetContent={tweetContent}
+          setTweetContent={setTweetContent}
+        />
+        <div className="rounded-full p-3 hover:bg-[#081323] ">
           <label htmlFor={containerType}>
             <input
               type="file"
@@ -61,31 +74,31 @@ const TweetAction = ({
           </label>
         </div>
         <div
-          className="rounded-full p-2 hover:bg-[#081323]"
+          className="rounded-full p-3 hover:bg-[#081323]"
           onClick={() => setOpenGifContainer(true)}
         >
           <Icons.GifIcon className="text-[22px] x-textcolor " />
         </div>
 
-        <div className="rounded-full p-2 hover:bg-[#081323]">
+        <div className="rounded-full p-3 hover:bg-[#081323]">
           <Icons.RadioIcon className="text-[22px] x-textcolor " />
         </div>
 
         {!isInPhotoSection && (
           <div
             onClick={() => setIsEmojiTableOpen((prevVal) => !prevVal)}
-            className="rounded-full p-2 hover:bg-[#081323]"
+            className="rounded-full p-3 hover:bg-[#081323]"
           >
             <Icons.EmojiSmile className="text-[22px] x-textcolor " />
           </div>
         )}
         {!isInPhotoSection && (
-          <div className="rounded-full p-2 hover:bg-[#081323]">
+          <div className="rounded-full p-3 hover:bg-[#081323]">
             <Icons.CLock className="text-[22px] x-textcolor " />
           </div>
         )}
 
-        <div className="rounded-full p-2 hover:bg-[#081323]">
+        <div className="rounded-full p-3 hover:bg-[#081323]">
           <Icons.Pin className="text-[22px] x-textcolor " />
         </div>
       </div>

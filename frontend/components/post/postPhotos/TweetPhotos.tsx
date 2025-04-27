@@ -5,6 +5,7 @@ import PostInteractions from "@/shared/PostDetail/PostInteractions";
 import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 import Photos from "./Photos";
 import { Comment, Like, Repost, Tweet } from "@/graphql/types";
+import { toast } from "@/hooks/use-toast";
 
 // Type guard functions for Tweet and Comment
 
@@ -31,7 +32,9 @@ const TweetPhotos = ({
   const [repost, setRepost] = useState(false);
 
   const { user } = useCurrentUser();
-
+  const [likeCount, setLikeCount] = useState(0);
+  const [repostCount, setRepostCount] = useState(0);
+  const [savePost, setSavePost] = useState(false);
   const { likeTweet, repostTweet } = useTweetMutation({});
 
   // Repost handling function
@@ -48,13 +51,51 @@ const TweetPhotos = ({
       console.log(error);
     }
   }
+  const { saveTweet } = useTweetMutation({
+    onError: () => {
+      // Revert the bookmark state on error
+      setSavePost((prev) => !prev);
+    },
+  });
 
-  // Like handling function
-  async function handleTweetLike() {
-    setLiked((prevVal) => !prevVal);
-    if (!tweet?.id) {
+  async function handleSaveTweet() {
+    if (!tweet || !tweet.id) {
       return;
     }
+
+    setSavePost((prevVal) => !prevVal);
+
+    const body = {
+      tweetId: tweet.id,
+    };
+
+    try {
+      const response = await saveTweet(body);
+      console.log(response, "response");
+      if (response && response.toggleSaveTweet.msg === "tweet saved") {
+        toast({
+          description: (
+            <div className="flex items-center  justify-between w-full">
+              Added to bookmarks
+            </div>
+          ),
+          className:
+            "bg-blue-500 text-[16px] font-[500] text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function handleTweetLike() {
+    setLiked((prevVal) => !prevVal);
+    if (liked) {
+      setLikeCount((prevVal) => prevVal - 1);
+    } else {
+      setLikeCount((prevVal) => prevVal + 1);
+    }
+
     const body = {
       tweetId: tweet.id,
     };
@@ -62,20 +103,36 @@ const TweetPhotos = ({
       await likeTweet(body);
     } catch (error) {
       console.log(error);
+      toast({
+        variant: "destructive",
+        description: "Failed to like this post.Please try again.",
+      });
     }
   }
+  // Like handling function
 
   // UseEffect hook for managing like and repost state
   useEffect(() => {
     if (isTweet(tweet)) {
       // Logic specific to Tweet
-      if (tweet?.likedBy && user) {
-        setLiked(tweet.likedBy.some((like: Like) => like.userId === user.id));
+
+      if (tweet.likedBy && user) {
+        setLikeCount(tweet.likedBy.length);
+        setLiked(tweet.likedBy.some((like) => like.userId === user.id));
       }
-      if (tweet?.repostTweet && user) {
+
+      // Handle tweet reposts
+      if (tweet.repostTweet && user) {
+        setRepostCount(tweet.repostTweet.length);
         setRepost(
-          tweet.repostTweet.some((repost: Repost) => repost.userId === user.id)
+          tweet.repostTweet.some((repost) => repost.userId === user.id)
         );
+      }
+      if (tweet.savedPost && user) {
+        const isSaved = tweet.savedPost.some(
+          (post) => post.tweetId === tweet.id
+        );
+        setSavePost(isSaved);
       }
     } else if (isComment(tweet)) {
       // Logic specific to Comment
@@ -113,6 +170,10 @@ const TweetPhotos = ({
           repost={repost}
           handleRepostTweet={handleRepostTweet}
           handleTweetLike={handleTweetLike}
+          likedCount={likeCount}
+          repostCount={repostCount}
+          savePost={savePost}
+          handleSaveTweet={handleSaveTweet}
         />
       </div>
     </div>
