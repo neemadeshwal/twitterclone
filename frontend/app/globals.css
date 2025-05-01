@@ -22,7 +22,7 @@ p {
 .x-bgcolor {
   background-color: #1d9bf0;
 }
-.x-bgcolor:disabled{
+.x-bgcolor:disabled {
   background-color: #84adc81f;
 }
 
@@ -93,8 +93,6 @@ p {
   margin-bottom: 1rem;
 }
 @media (min-width: 1300px) {
-  
- 
   .showIcon {
     display: inline-block;
   }
@@ -140,17 +138,40 @@ p {
     padding: 0.75rem;
   }
 }
-.animate-moveLine{
-  left: -100%;  
- animation:moveLine 15s ease-in-out infinite
+.animate-moveLine {
+  left: -100%;
+  animation: moveLine 15s ease-in-out infinite;
 }
 
-@keyframes moveLine{
-    0% { left: -100% }  
-    50% {left:0}
-    100%   { left: 100% }
+@keyframes moveLine {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 0;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
+@layer base {
+}
+.record-indicator {
+  animation: pulse 1.5s ease-in-out infinite;
+}
 
-
-@layer base {}
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

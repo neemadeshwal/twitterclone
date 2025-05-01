@@ -11,6 +11,11 @@ interface PostInteractionsProps {
   handleRepostTweet: () => void;
   isComment?: boolean;
   isInPhotoSection?: boolean;
+  likedCount: number;
+  repostCount: number;
+  handleSaveComment?: () => void;
+  handleSaveTweet?: () => void;
+  savePost: boolean;
 }
 const PostInteractions = ({
   tweet,
@@ -20,6 +25,11 @@ const PostInteractions = ({
   handleTweetLike,
   isInPhotoSection,
   isComment,
+  likedCount,
+  repostCount,
+  handleSaveTweet,
+  handleSaveComment,
+  savePost,
 }: PostInteractionsProps) => {
   return (
     <div>
@@ -29,9 +39,14 @@ const PostInteractions = ({
           tweet={tweet}
           liked={liked}
           repost={repost}
+          likedCount={likedCount}
           handleRepostTweet={handleRepostTweet}
+          repostCount={repostCount}
           handleTweetLike={handleTweetLike}
           isComment={isComment}
+          handleSaveTweet={handleSaveTweet}
+          handleSaveComment={handleSaveComment}
+          savePost={savePost}
         />
         {!isInPhotoSection && <DivisionBar type="x" />}
       </div>

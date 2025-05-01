@@ -16,6 +16,7 @@ import Link from "next/link";
 import { userUserMutation } from "@/hooks/mutation/useUserMutation";
 import Loading from "@/shared/loading";
 import { toast } from "sonner";
+import GuestUser from "@/shared/GuestUser";
 
 const formSchema = z.object({
   email: z
@@ -209,6 +210,10 @@ const Step1CheckEmail = ({
             </div>
           </form>
         </Form>
+      </div>
+      <div className="py-8">
+      <GuestUser widthFull={true}/>
+
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from "react";
-import Comment from "../comment";
+import CommentComponent from "../comment";
 import { LuRepeat2 } from "react-icons/lu";
 import { FaHeart } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
@@ -14,6 +14,11 @@ const PostActions = ({
   handleRepostTweet,
   handleTweetLike,
   isComment,
+  likedCount,
+  repostCount,
+  handleSaveTweet,
+  savePost,
+  handleSaveComment,
 }: {
   tweet: Tweet | CommentType;
   liked: boolean;
@@ -21,23 +26,21 @@ const PostActions = ({
   handleRepostTweet: () => void;
   handleTweetLike: () => void;
   isComment?: boolean;
+  likedCount: number;
+  repostCount: number;
+  handleSaveTweet?: () => void;
+  savePost: boolean;
+  handleSaveComment?: () => void;
 }) => {
   const shareLink = isComment
     ? `${process.env.NEXT_PUBLIC_CLIENT_URL}/${tweet?.author?.userName}/comment/${tweet?.id}`
     : `${process.env.NEXT_PUBLIC_CLIENT_URL}/${tweet?.author?.userName}/status/${tweet?.id}`;
 
-  // Type-checking tweet object for both Tweet and CommentType
-  const isTweetCheck = (tweet: Tweet | CommentType): tweet is Tweet =>
-    tweet !== undefined && tweet !== null && "repostTweet" in tweet;
-
-  const isCommentCheck = (tweet: Tweet | CommentType): tweet is CommentType =>
-    tweet !== undefined && tweet !== null && "repostComment" in tweet;
-
   return (
     <div>
       <div className="flex justify-between py-2 pt-3 pb-4">
         <div className="flex items-center justify-center">
-          <Comment tweet={tweet} isComment={isComment} />
+          <CommentComponent tweet={tweet} isComment={isComment} />
         </div>
         <div
           onClick={handleRepostTweet}
@@ -57,11 +60,7 @@ const PostActions = ({
                  ml-0 pl-0 -right-[0.3rem]  absolute`}
           >
             {/* Access repost data based on type */}
-            {isCommentCheck(tweet)
-              ? tweet?.repostComment?.length
-              : isTweetCheck(tweet)
-              ? tweet?.repostTweet?.length
-              : 0}
+            {repostCount}
           </p>
         </div>
         <div
@@ -85,16 +84,18 @@ const PostActions = ({
             } -right-[0.3rem]  absolute`}
           >
             {/* Access likes data based on type */}
-            {isCommentCheck(tweet)
-              ? tweet?.likes?.length
-              : isTweetCheck(tweet)
-              ? tweet?.likedBy?.length
-              : 0}
+            {likedCount}
           </p>
         </div>
         {<SharePost link={shareLink} />}
 
-        <SavePost isComment={isComment} singleTweet={tweet} />
+        <SavePost
+          isComment={isComment}
+          singleTweet={tweet}
+          savePost={savePost}
+          handleSaveTweet={handleSaveTweet}
+          handleSaveComment={handleSaveComment}
+        />
       </div>
     </div>
   );

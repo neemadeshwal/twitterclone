@@ -22,6 +22,23 @@ interface createCommentResponse {
 interface replyOnCommentResponse {
   replyOnComment: replyOnCommentResult;
 }
+
+interface toggleSaveCommentProps {
+  commentId: string;
+}
+
+interface toggleSaveCommentResponse {
+  toggleSaveComment: {
+    comment: Comment;
+    msg: string;
+  };
+}
+
+const typedSaveComment = (
+  data: toggleSaveCommentProps
+): Promise<toggleSaveCommentResponse> => {
+  return toggleBookmarkComment(data) as Promise<toggleSaveCommentResponse>;
+};
 const typedCreateComment = (
   data: CreateCommentProps
 ): Promise<createCommentResponse> => {
@@ -41,7 +58,6 @@ export const useCommentMutation = ({
   onError,
 }: useCommentMutationProps = {}) => {
   const queryClient = useQueryClient();
-  console.log("in ts file");
 
   const createCommentMutation = useMutation({
     mutationFn: typedCreateComment,
@@ -91,11 +107,17 @@ export const useCommentMutation = ({
     },
   });
 
-  const saveCommentMutation = useMutation({
-    mutationFn: (body: { commentId: string }) => toggleBookmarkComment(body),
+  const saveCommentMutation = useMutation<
+    toggleSaveCommentResponse,
+    Error,
+    toggleSaveCommentProps
+  >({
+    mutationFn: typedSaveComment,
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["single-comment"] });
       queryClient.invalidateQueries({ queryKey: ["single-tweet"] });
+
+      return response;
     },
   });
 
@@ -154,7 +176,8 @@ export const useCommentMutation = ({
 
   const saveComment = async (body: { commentId: string }) => {
     try {
-      await saveCommentMutation.mutateAsync(body);
+      const response = await saveCommentMutation.mutateAsync(body);
+      return response;
     } catch (error) {
       console.log(error);
     }

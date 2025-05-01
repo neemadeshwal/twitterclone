@@ -6,15 +6,25 @@ import {
   createTweetMutateProps,
   createTweetResult,
   toggleLikeTweetProps,
+  Tweet,
 } from "@/graphql/types";
 import { toggleLikeTweet } from "@/graphql/mutation/like";
 import { repostTweetMutate } from "@/graphql/mutation/repost";
 import { toggleBookmarkTweet } from "@/graphql/mutation/bookmark";
 
+interface toggleSaveTweetMutationProps {
+  tweetId: string;
+}
 interface createTweetResponse {
   createTweet: createTweetResult;
 }
 
+interface toggleSaveTweetResponse {
+  toggleSaveTweet: {
+    tweet: Tweet;
+    msg: string;
+  };
+}
 interface UseTweetMutationProps {
   onSuccess?: () => void;
   onError?: (error: unknown) => void;
@@ -24,6 +34,12 @@ const typedCreateTweet = (
   data: createTweetMutateProps
 ): Promise<createTweetResponse> => {
   return createTweetMutate(data) as Promise<createTweetResponse>;
+};
+
+const typedSaveBookmark = (
+  data: toggleSaveTweetMutationProps
+): Promise<toggleSaveTweetResponse> => {
+  return toggleBookmarkTweet(data) as Promise<toggleSaveTweetResponse>;
 };
 
 export const useTweetMutation = ({
@@ -85,8 +101,12 @@ export const useTweetMutation = ({
     },
   });
 
-  const saveTweetMutation = useMutation({
-    mutationFn: (body: { tweetId: string }) => toggleBookmarkTweet(body),
+  const saveTweetMutation = useMutation<
+    toggleSaveTweetResponse,
+    Error,
+    toggleSaveTweetMutationProps
+  >({
+    mutationFn: typedSaveBookmark,
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["all-tweet"] });
       queryClient.invalidateQueries({
@@ -95,6 +115,7 @@ export const useTweetMutation = ({
       queryClient.invalidateQueries({
         queryKey: ["user-detail"],
       });
+      return response;
     },
   });
   const deleteTweetMutation = useMutation({
@@ -134,7 +155,8 @@ export const useTweetMutation = ({
   };
   const saveTweet = async (body: { tweetId: string }) => {
     try {
-      await saveTweetMutation.mutateAsync(body);
+      const response = await saveTweetMutation.mutateAsync(body);
+      return response;
     } catch (error) {
       console.log(error);
     }

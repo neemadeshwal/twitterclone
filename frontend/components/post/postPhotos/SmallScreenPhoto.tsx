@@ -16,6 +16,7 @@ import { useCurrentUser } from "@/hooks/user";
 import { useTweetMutation } from "@/hooks/mutation/useTweetMutation";
 import ComposePost from "../compostPost";
 import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 const isTweet = (tweet: Tweet | Comment): tweet is Tweet =>
   tweet !== undefined && tweet !== null && "repostTweet" in tweet;
@@ -44,11 +45,90 @@ const SmallScreenPhoto = ({
   const [repost, setRepost] = useState(false);
   const carouselApiRef = useRef<CarouselApi | null>(null);
   const [isFocused, setIsFocused] = useState(false);
-
+  const [likeCount, setLikeCount] = useState(0);
+  const [repostCount, setRepostCount] = useState(0);
+  const [savePost, setSavePost] = useState(false);
   const { user } = useCurrentUser();
 
   const { likeTweet, repostTweet } = useTweetMutation({});
+  const { saveTweet } = useTweetMutation({
+    onError: () => {
+      // Revert the bookmark state on error
+      setSavePost((prev) => !prev);
+    },
+  });
+  async function handleSaveTweet() {
+    if (!tweet || !tweet.id) {
+      return;
+    }
 
+    setSavePost((prevVal) => !prevVal);
+
+    const body = {
+      tweetId: tweet.id,
+    };
+
+    try {
+      const response = await saveTweet(body);
+      console.log(response, "response");
+      if (response && response.toggleSaveTweet.msg === "tweet saved") {
+        toast({
+          description: (
+            <div className="flex items-center  justify-between w-full">
+              Added to bookmarks
+            </div>
+          ),
+          className:
+            "bg-blue-500 text-[16px] font-[500] text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function handleRepostTweet() {
+    const body = {
+      tweetId: tweet.id,
+    };
+    try {
+      setRepost((prevVal) => !prevVal);
+
+      if (repost) {
+        setRepostCount((prevVal) => prevVal - 1);
+      } else {
+        setRepostCount((prevVal) => prevVal + 1);
+      }
+      await repostTweet(body);
+    } catch (error) {
+      console.log(error);
+      toast({
+        variant: "destructive",
+        description: "Failed to repost this post.Please try again.",
+      });
+    }
+  }
+
+  async function handleTweetLike() {
+    setLiked((prevVal) => !prevVal);
+    if (liked) {
+      setLikeCount((prevVal) => prevVal - 1);
+    } else {
+      setLikeCount((prevVal) => prevVal + 1);
+    }
+
+    const body = {
+      tweetId: tweet.id,
+    };
+    try {
+      await likeTweet(body);
+    } catch (error) {
+      console.log(error);
+      toast({
+        variant: "destructive",
+        description: "Failed to like this post.Please try again.",
+      });
+    }
+  }
   // Set up the carousel API reference
   const setCarouselApi = React.useCallback(
     (api: CarouselApi) => {
@@ -88,37 +168,6 @@ const SmallScreenPhoto = ({
     window.history.replaceState({ ...window.history.state }, "", newUrl);
     setIsSliding(false);
   }, [currentPhotoIndex, previousIndex, tweet, currentUrl]);
-
-  // Repost handling function
-  async function handleRepostTweet() {
-    if (!tweet || !tweet.id) {
-      return;
-    }
-    const body = {
-      tweetId: tweet.id,
-    };
-    try {
-      await repostTweet(body);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  // Like handling function
-  async function handleTweetLike() {
-    setLiked((prevVal) => !prevVal);
-    if (!tweet?.id) {
-      return;
-    }
-    const body = {
-      tweetId: tweet.id,
-    };
-    try {
-      await likeTweet(body);
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   const router = useRouter();
   useEffect(() => {
@@ -281,6 +330,10 @@ const SmallScreenPhoto = ({
             repost={repost}
             handleRepostTweet={handleRepostTweet}
             handleTweetLike={handleTweetLike}
+            likedCount={likeCount}
+            repostCount={repostCount}
+            savePost={savePost}
+            handleSaveTweet={handleSaveTweet}
           />
         )}
         <div className="w-full bottom-0 px-4">
