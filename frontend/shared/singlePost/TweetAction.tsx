@@ -8,6 +8,7 @@ import ScrollLock from "../ScrollLock";
 import useOutsideClick from "../closeContainer";
 import { Icons } from "@/utils/icons";
 import AudioRecord from "@/components/post/AudioRecord";
+import CharacterCircle from "../CharacterCircle";
 
 const TweetAction = ({
   setTweetContent,
@@ -18,6 +19,7 @@ const TweetAction = ({
   isRecording,
   setIsRecording,
   tweetContent,
+  isComment
 }: {
   setTweetContent: any;
   setFiles: any;
@@ -27,6 +29,7 @@ const TweetAction = ({
   isRecording: boolean;
   setIsRecording: React.Dispatch<React.SetStateAction<boolean>>;
   tweetContent: string;
+  isComment?:boolean
 }) => {
   const [isEmojiTableOpen, setIsEmojiTableOpen] = useState(false);
   const [openGifContainer, setOpenGifContainer] = useState(false);
@@ -54,7 +57,7 @@ const TweetAction = ({
 
   return (
     <div>
-      <div className="flex gap-2 ">
+      <div className="flex gap-1 ">
         <AudioRecord
           isRecording={isRecording}
           setIsRecording={setIsRecording}
@@ -119,6 +122,7 @@ const TweetAction = ({
           <ScrollLock isOpen={openGifContainer} />
         </div>
       )}
+    
     </div>
   );
 };

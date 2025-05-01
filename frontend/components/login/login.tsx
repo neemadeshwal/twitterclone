@@ -5,8 +5,11 @@ import SignupFacebook from "../signup/signupFacebook";
 import DivisionBar from "@/shared/divisionbar";
 import Link from "next/link";
 import SigninAccountbtn from "./signinbtn";
+import GuestUser from "@/shared/GuestUser";
 
 const Login = () => {
+
+  
   return (
     <div className="">
       {" "}
@@ -17,12 +20,15 @@ const Login = () => {
           </div>
           <div className="lg:w-[460px]">
             <div>
-              <div className="py-[40px]">
-                <h2 className="font-[700] tracking-[1px] text-[40px] sm:text-[64px] leading-[52px] sm:leading-[80px]">
+              <div className="py-[40px] pb-4">
+                <h2 className="font-[700] tracking-[1px] text-[40px] sm:text-[64px] leading-[52px] sm:leading-[70px]">
                   Happening now
                 </h2>
               </div>
-              <div className="lg:w-[70%]">
+              <div>
+                 <GuestUser/>
+              </div>
+              <div className="lg:w-[70%] mt-6">
                 <h3 className="font-[700] leading-[28px] text-[23px]">
                   Sign in to catchup
                 </h3>

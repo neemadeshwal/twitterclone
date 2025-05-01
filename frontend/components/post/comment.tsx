@@ -4,7 +4,7 @@ import { useCurrentUser } from "@/hooks/user";
 import { formatTimeAgo, getDateTime } from "@/lib/timeStamp";
 import CurrentUser from "@/shared/currentUser";
 import UserProfile from "@/shared/AuthorProfile";
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { BiX } from "react-icons/bi";
 import { BsChat } from "react-icons/bs";
 import { FaArrowLeft, FaChevronDown } from "react-icons/fa";
@@ -55,7 +55,6 @@ const CommentComponent = ({
   // const [aiCommentSuggestionLoading, setAiCommentSuggestionLoading] =
   //   useState(true);
   // const [aiCommentSuggestion, setAiCommentSuggestion] = useState<string[]>([]);
-  const [position, setPosition] = useState(-100);
   const { createComment } = useCommentMutation({});
   const [loading, setLoading] = useState(false);
 
@@ -75,7 +74,6 @@ const CommentComponent = ({
       console.log(error);
     },
   });
-  console.log(position);
   const { createTweet } = useTweetMutation({
     onSuccess: () => {
       setTweetContent("");
@@ -143,20 +141,7 @@ const CommentComponent = ({
     }
   }
 
-  useEffect(() => {
-    const animateShimmer = () => {
-      setPosition((prevPosition) => {
-        if (prevPosition > 100) {
-          return -100;
-        }
-        return prevPosition + 1.5;
-      });
-      requestAnimationFrame(animateShimmer);
-    };
-
-    const animationId = requestAnimationFrame(animateShimmer);
-    return () => cancelAnimationFrame(animationId);
-  }, []);
+  
   const handleReplyOnComment = async () => {
     const body = {
       content: tweetContent,
@@ -762,6 +747,20 @@ const CommentComponent = ({
           </div>
         </div>
       )}
+      <style jsx global>{`
+        @keyframes shimmer {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
+        }
+        
+        .shimmer-animation {
+          animation: shimmer 2s infinite;
+        }
+      `}</style>
     </div>
   );
 };

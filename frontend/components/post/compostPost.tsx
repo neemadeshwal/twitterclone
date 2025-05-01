@@ -1,6 +1,6 @@
 "use client";
 import DivisionBar from "@/shared/divisionbar";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import CurrentUser from "@/shared/currentUser";
@@ -24,6 +24,7 @@ import {
 } from "@/graphql/mutation/ai";
 import Loading from "@/shared/loading";
 import { LuSparkles } from "react-icons/lu";
+
 interface EmojiSelect {
   id: string;
   name: string;
@@ -76,22 +77,7 @@ const ComposePost = ({
     useState(true);
 
   const [aiCommentSuggestion, setAiCommentSuggestion] = useState<string[]>([]);
-  const [position, setPosition] = useState(-100);
 
-  useEffect(() => {
-    const animateShimmer = () => {
-      setPosition((prevPosition) => {
-        if (prevPosition > 100) {
-          return -100;
-        }
-        return prevPosition + 1.5;
-      });
-      requestAnimationFrame(animateShimmer);
-    };
-
-    const animationId = requestAnimationFrame(animateShimmer);
-    return () => cancelAnimationFrame(animationId);
-  }, []);
   useOutsideClick(emojiCloseRef, () => setIsEmojiTableOpen(false));
 
   const { createTweet } = useTweetMutation({
@@ -308,11 +294,11 @@ const ComposePost = ({
       setTweetContent(originalText);
     }
   }, [aiEnhancedText, displayAiResponse]);
-
+ console.log(isInPhotoSection,"inin")
   return (
     <div className="w-full relative">
       <div
-        className={`w-full ${!isInPhotoSection && "p-6 pb-4"} px-0 sm:px-4 `}
+        className={`w-full  ${isInPhotoSection ? "" : "p-4 pb-4"}  sm:px-4 `}
       >
         {isInPhotoSection && isPhotoInputFocused && (
           <div className="gray mt-4 mb-2 px-2">
@@ -347,8 +333,7 @@ const ComposePost = ({
                     <div key={item} className="flex space-x-3 mb-3">
                       <div className="flex-1 h-8 mb-2 bg-gray-900 rounded relative overflow-hidden">
                         <div
-                          className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-gray-800 to-transparent opacity-30"
-                          style={{ transform: `translateX(${position}%)` }}
+                          className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-gray-800 to-transparent opacity-30 shimmer-animation"
                         />
                       </div>
                     </div>
@@ -538,7 +523,7 @@ const ComposePost = ({
                   ? "inline-block"
                   : "hidden"
                 : "inline-block"
-            } flex ${isComment ? "pt-0" : "pt-3"} pb-0 justify-between`}
+            } flex ${isComment ? "pt-0 flex-col sm:flex-row" : "pt-3 flex-row"} pb-0 justify-between`}
           >
             <TweetAction
               isInPhotoSection={isInPhotoSection}
@@ -549,8 +534,10 @@ const ComposePost = ({
               isRecording={isAudioActive}
               setIsRecording={setIsAudioActive}
               tweetContent={tweetContent}
+              isComment={isComment}
             />
-            <div className="flex gap-2 items-center">
+            
+            <div className={`flex gap-2   ${isComment?"justify-end sm:justify-start":""} items-center`}>
               {tweetContent.length > 0 && (
                 <div>
                   <CharacterCircle
@@ -564,7 +551,7 @@ const ComposePost = ({
                 isParentComment ? (
                   <button
                     onClick={replyOnCommentSubmit}
-                    className="py-2 rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
+                    className="py-2  rounded-full text-black px-4 bg-white font-bold disabled:bg-[#ffffff71] disabled:cursor-not-allowed"
                     disabled={
                       loading ||
                       (files.length === 0 && tweetContent.trim() === "")
@@ -616,6 +603,20 @@ const ComposePost = ({
           </div>
         </div>
       )}
+      <style jsx global>{`
+        @keyframes shimmer {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
+        }
+        
+        .shimmer-animation {
+          animation: shimmer 2s infinite;
+        }
+      `}</style>
     </div>
   );
 };

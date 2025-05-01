@@ -6,12 +6,14 @@ import { FaArrowLeft } from "react-icons/fa";
 import SingleBookmark from "./SingleBookmark";
 import Loading from "@/shared/loading";
 import { Bookmarks } from "@/graphql/types";
+import { useRouter } from "next/navigation";
 
 const BookmarkList = () => {
   const { allBookmark } = useAllBookmark();
   const [searchTerm, setSearchTerm] = useState("");
   const [bookmarkData, setBookmarkData] = useState<Bookmarks[]>([]);
 
+  const router=useRouter()
   // Set bookmarkData initially and when allBookmark changes
   useEffect(() => {
     if (allBookmark && allBookmark.length > 0) {
@@ -63,7 +65,7 @@ const BookmarkList = () => {
     <div className="flex flex-col h-full">
       <div className="sticky top-0 z-50 backdrop-blur-sm py-1 px-4 bg-black/60">
         <div className="flex gap-9 items-center">
-          <div>
+          <div onClick={()=>router.back()}>
             <FaArrowLeft />
           </div>
           <div className="py-2">

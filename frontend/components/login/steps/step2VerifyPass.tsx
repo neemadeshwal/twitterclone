@@ -17,6 +17,7 @@ import Link from "next/link";
 import { userUserMutation } from "@/hooks/mutation/useUserMutation";
 import { toast } from "sonner";
 import Loading from "@/shared/loading";
+import GuestUser from "@/shared/GuestUser";
 
 const formSchema = z.object({
   password: z
@@ -217,6 +218,10 @@ const Step2VerifyPass = ({
           </form>
         </Form>
       </div>
+      <div className="py-8">
+            <GuestUser widthFull={true}/>
+      
+            </div>
     </div>
   );
 };
