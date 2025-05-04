@@ -1,12 +1,14 @@
 import { Icons } from "@/utils/icons";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 const PostHeader = () => {
+  const router = useRouter();
   return (
     <div>
       <div className="sticky top-0 z-50 backdrop-blur-sm py-1 px-4 bg-black/60">
         <div className="flex gap-9 items-center w-full">
-          <div>
+          <div className="cursor-pointer" onClick={() => router.back()}>
             <Icons.ArrowLeft />
           </div>
           <div className="flex justify-between items-center w-full py-2">

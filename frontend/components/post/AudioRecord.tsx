@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { TiMicrophoneOutline } from "react-icons/ti";
 
 interface AudioRecordProps {
@@ -63,45 +63,86 @@ const AudioRecord: React.FC<AudioRecordProps> = ({
   isRecording,
   setIsRecording,
   setTweetContent,
+  tweetContent,
 }) => {
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const isListeningRef = useRef<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  // Track the last transcript to prevent duplicates
+  const lastTranscriptRef = useRef<string>("");
+
+  // Detect if user is on mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent.toLowerCase();
+      return /android|webos|iphone|ipad|ipod|blackberry|windows phone/.test(
+        userAgent
+      );
+    };
+
+    setIsMobile(checkMobile());
+  }, []);
 
   useEffect(() => {
     const SpeechRecognition = getSpeechRecognition();
 
     if (!SpeechRecognition) {
-      console.log("Speech Recognition not working.");
+      console.log("Speech Recognition not available.");
       return;
     }
 
     const recognition = new SpeechRecognition();
-    recognition.continuous = true;
+
+    // For mobile devices, don't use continuous mode to avoid repetition
+    recognition.continuous = !isMobile;
     recognition.interimResults = true;
     recognition.lang = "en-US";
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let appendedText = "";
+      let currentTranscript = "";
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript.trim();
+
         if (event.results[i].isFinal) {
-          appendedText += event.results[i][0].transcript + "";
+          // For mobile, check if this is a duplicate of the last transcript
+          if (isMobile && lastTranscriptRef.current === transcript) {
+            continue;
+          }
+
+          // Add space only if needed
+          const needsSpace =
+            tweetContent.length > 0 &&
+            !tweetContent.endsWith(" ") &&
+            !transcript.startsWith(" ");
+
+          currentTranscript += (needsSpace ? " " : "") + transcript;
+          lastTranscriptRef.current = transcript;
         }
       }
-      if (appendedText) {
-        setTweetContent((prevVal) => prevVal + appendedText);
+
+      if (currentTranscript) {
+        setTweetContent((prevVal) => prevVal + currentTranscript);
       }
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.log("Speech recognition error");
+      console.log("Speech recognition error:", event.error);
 
       if (event.error === "no-speech") {
-        if (isListeningRef.current) {
+        if (isListeningRef.current && !isMobile) {
+          // For desktop, restart after a delay
           recognition.stop();
           setTimeout(() => {
-            recognition.start();
-          }, 100);
+            if (isListeningRef.current) {
+              recognition.start();
+            }
+          }, 300);
+        } else if (isMobile) {
+          // For mobile, don't auto-restart to prevent loops
+          setIsRecording(false);
+          isListeningRef.current = false;
         }
       } else {
         setIsRecording(false);
@@ -110,18 +151,34 @@ const AudioRecord: React.FC<AudioRecordProps> = ({
     };
 
     recognition.onend = () => {
-      if (isListeningRef.current) {
-        recognition.start();
+      // For mobile, only restart if explicitly recording
+      if (isListeningRef.current && (!isMobile || (isMobile && isRecording))) {
+        // Add a small delay before restarting on mobile
+        setTimeout(
+          () => {
+            if (isListeningRef.current) {
+              try {
+                recognition.start();
+              } catch (err) {
+                console.log("Error restarting recognition:", err);
+                setIsRecording(false);
+                isListeningRef.current = false;
+              }
+            }
+          },
+          isMobile ? 300 : 50
+        );
       } else if (isRecording) {
         setIsRecording(false);
       }
     };
+
     recognitionRef.current = recognition;
 
     return () => {
       recognition.stop();
     };
-  }, [setIsRecording]);
+  }, [setIsRecording, isMobile, tweetContent]);
 
   useEffect(() => {
     if (isRecording) {
@@ -133,15 +190,24 @@ const AudioRecord: React.FC<AudioRecordProps> = ({
 
   const startRecording = () => {
     setTweetContent("");
+    lastTranscriptRef.current = ""; // Reset the last transcript
     setIsRecording(true);
     isListeningRef.current = true;
 
-    recognitionRef.current?.start();
+    try {
+      recognitionRef.current?.start();
+    } catch (err) {
+      console.log("Error starting recording:", err);
+    }
   };
 
   const stopRecording = () => {
     isListeningRef.current = false;
-    recognitionRef.current?.stop();
+    try {
+      recognitionRef.current?.stop();
+    } catch (err) {
+      console.log("Error stopping recording:", err);
+    }
   };
 
   return (

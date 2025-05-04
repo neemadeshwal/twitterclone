@@ -150,7 +150,7 @@ const ShowSearchPreview: React.FC<SearchPreviewProps> = ({
     <div
       ref={previewRef}
       style={{ boxShadow: "0 0 6px rgba(255, 255, 255, 0.6)" }}
-      className="bg-black rounded-[10px] z-50 w-full absolute min-h-[100px] max-h-[300px] h-auto overflow-auto my-2"
+      className="bg-black w-[350px] rounded-[10px] z-50 sm:w-full absolute min-h-[100px] max-h-[300px] h-auto overflow-auto my-2"
     >
       {allSearchResult &&
       allSearchResult.hashtag.length + allSearchResult.people.length > 0 ? (
