@@ -31,11 +31,36 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
     },
   });
 
+  // This is the corrected useEffect from SinglePost.tsx
+  useEffect(() => {
+    if (tweet.likedBy && user) {
+      setLikeCount(tweet.likedBy.length);
+      setLiked(tweet.likedBy.some((like) => like.userId === user.id));
+    }
+    if (tweet.repostTweet && user) {
+      setRepostCount(tweet.repostTweet.length);
+      setRepost(tweet.repostTweet.some((repost) => repost.userId === user.id));
+    }
+    if (tweet.savedPost && user) {
+      const isSaved = tweet.savedPost.some(
+        (post) => post.userId === user.id && post.tweetId === tweet.id
+      );
+      setSavePost(isSaved);
+    } else {
+      setSavePost(false); // Ensure it's false if there's no savedPost data
+    }
+  }, [tweet, user]);
+
+  // And here's the corrected handleSaveTweet function
   async function handleSaveTweet() {
-    if (!tweet || !tweet.id) {
+    if (!tweet || !tweet.id || !user) {
       return;
     }
 
+    // Save the previous state in case we need to revert
+    const previousSaveState = savePost;
+
+    // Optimistically update UI
     setSavePost((prevVal) => !prevVal);
 
     const body = {
@@ -45,19 +70,36 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
     try {
       const response = await saveTweet(body);
       console.log(response, "response");
+
       if (response && response.toggleSaveTweet.msg === "tweet saved") {
         toast({
           description: (
-            <div className="flex items-center  justify-between w-full">
+            <div className="flex items-center justify-between w-full">
               Added to bookmarks
             </div>
           ),
           className:
             "bg-blue-500 text-[16px] font-[500] text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
         });
+      } else if (response && response.toggleSaveTweet.msg === "tweet unsaved") {
+        toast({
+          description: (
+            <div className="flex items-center justify-between w-full">
+              Removed from bookmarks
+            </div>
+          ),
+          className:
+            "bg-gray-800 text-[16px] font-[500] text-white border bottom-0 sm:bottom-0 md:bottom-0 border-gray-700 rounded-[10px] shadow-[0 -0.4px 0px rgba(255,255,255,0.5)]",
+        });
       }
     } catch (error) {
       console.log(error);
+      // Revert the UI state if there was an error
+      setSavePost(previousSaveState);
+      toast({
+        variant: "destructive",
+        description: "Failed to update bookmark status. Please try again.",
+      });
     }
   }
 
@@ -105,22 +147,22 @@ const SinglePost = ({ tweet }: { tweet: Tweet }) => {
     }
   }
 
-  useEffect(() => {
-    if (tweet.likedBy && user) {
-      setLikeCount(tweet.likedBy.length);
-      setLiked(tweet.likedBy.some((like) => like.userId === user.id));
-    }
-    if (tweet.repostTweet && user) {
-      setRepostCount(tweet.repostTweet.length);
-      setRepost(tweet.repostTweet.some((repost) => repost.userId === user.id));
-    }
-    if (tweet.savedPost && user) {
-      const isSaved = tweet.savedPost?.some(
-        (post) => post.tweetId === tweet.id
-      );
-      setSavePost(isSaved);
-    }
-  }, [tweet, user]);
+  // useEffect(() => {
+  //   if (tweet.likedBy && user) {
+  //     setLikeCount(tweet.likedBy.length);
+  //     setLiked(tweet.likedBy.some((like) => like.userId === user.id));
+  //   }
+  //   if (tweet.repostTweet && user) {
+  //     setRepostCount(tweet.repostTweet.length);
+  //     setRepost(tweet.repostTweet.some((repost) => repost.userId === user.id));
+  //   }
+  //   if (tweet.savedPost && user) {
+  //     const isSaved = tweet.savedPost?.some(
+  //       (post) => post.tweetId === tweet.id
+  //     );
+  //     setSavePost(isSaved);
+  //   }
+  // }, [tweet, user]);
 
   return (
     <div className="w-full cursor-pointer   py-3">

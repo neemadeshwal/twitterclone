@@ -1,8 +1,7 @@
 "use client";
-
 import { Bookmarks, Comment, Tweet } from "@/graphql/types";
 import { useCurrentUser } from "@/hooks/user";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 
 interface SavePostProps {
@@ -20,20 +19,8 @@ const SavePost: React.FC<SavePostProps> = ({
   handleSaveTweet,
   savePost,
 }) => {
-  const user = useCurrentUser();
-
-  useEffect(() => {
-    if (!singleTweet || !user) {
-      return;
-    }
-
-    let isSaved;
-    if (isComment) {
-      isSaved = singleTweet.savedPost?.some(
-        (post: any) => post.commentId === singleTweet.id
-      );
-    }
-  }, [singleTweet, user]);
+  // Removed the useEffect as it wasn't properly implemented and was redundant
+  // The savePost state should be managed by the parent component
 
   return (
     <div className="flex gap-1 items-center text-[13px] font-[400]">
